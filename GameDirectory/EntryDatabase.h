@@ -1,8 +1,6 @@
 #pragma once	
 
-#pragma region stdlib
-#include <vector>
-using std::vector;
+#pragma region filestreams
 
 #include <istream>
 using std::fstream;
@@ -11,6 +9,7 @@ using std::ofstream;
 
 #pragma endregion
 
+#include "Common.h"
 #include "Entries.h"
 
 class EntryDatabase

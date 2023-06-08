@@ -10,9 +10,9 @@ Entry::~Entry()
 {
 }
 
-ENTRYID Entry::ID() { return mId; }
+ENTRYID Entry::Id() { return mId; }
 
-string Entry::NAME() { return mName; }
+string Entry::Name() { return mName; }
 
 char* Entry::ToFile()
 {
@@ -27,7 +27,7 @@ char* Entry::ToFile()
 GameEntry::GameEntry()
 {
 	mId = 37;
-
+	mName = "Penguin Village";
 }
 
 GameEntry::GameEntry(char* rawData)

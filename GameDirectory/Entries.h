@@ -1,7 +1,6 @@
 #pragma once
 
-#include <string>
-using std::string;
+#include "Common.h"
 
 using ENTRYID = uint16_t;
 
@@ -13,8 +12,8 @@ public:
 	Entry();
 	virtual ~Entry();
 
-	ENTRYID ID();
-	string NAME();
+	ENTRYID Id();
+	string Name();
 		
 	virtual char* ToFile();
 
@@ -36,6 +35,13 @@ public:
 	char* ToFile();
 
 	int Rating();
+
+private:
+
+	//list of studios which created this game
+	vector<ENTRYID> mStudioIds;
+	
+	uint8_t mOverallRating;
 
 };
 

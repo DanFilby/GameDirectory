@@ -15,4 +15,12 @@ using std::static_pointer_cast;
 
 #pragma endregion
 
+#pragma region StandardLibs
 
+#include <string>
+using std::string;
+
+#include <vector>
+using std::vector;
+
+#pragma endregion
