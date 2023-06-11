@@ -94,9 +94,9 @@ struct EntryInfo_Short {
 	}
 
 	//serialize struct to binary
-	char* ToBinary() {
-		char* binaryData = new char[32];
-		
+	unique_ptr<char[]> ToBinary() {
+		unique_ptr<char[]> binaryData = unique_ptr<char[]>(new char[32]);
+
 		//TODO: find out better way to do this, sstream?
 		char* idPtr = (char*)&id;
 		char* typePtr = (char*)&type;

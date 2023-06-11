@@ -24,9 +24,9 @@ int main()
     cout << "id: " << info.id << "\n";
     cout << "type: " << info.type << "\n";
 
-    char * binDat = info.ToBinary();
+    unique_ptr<char[]> binDat = info.ToBinary();
 
-    EntryInfo_Short info2(binDat);
+    EntryInfo_Short info2(binDat.get());
 
     cout << "name: " << info2.name << "\n";
     cout << "id: " << info2.id << "\n";
