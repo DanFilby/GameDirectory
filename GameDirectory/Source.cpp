@@ -18,7 +18,7 @@ int main()
 
     string gameName = "Penguin village";
 
-    EntryInfo_Short info = ge.get()->GetInfoShort();
+    EntryInfo_Short info = ge.get()->GetInfo_Short();
 
     //EntryInfo_Short info{ 662, T_Game, gameName };
 
@@ -26,7 +26,7 @@ int main()
     cout << "info id: " << info.id << "\n";
     cout << "info type: " << info.type << "\n\n";
 
-    unique_ptr<char[]> binDat = ge.get()->ToFile();
+    unique_ptr<char[]> binDat = ge.get()->GetRawData_Short();
 
     EntryInfo_Short info2(binDat.get());
 

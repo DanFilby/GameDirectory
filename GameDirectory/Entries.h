@@ -21,8 +21,15 @@ public:
 	string Name();
 	virtual const EntryType Type() { return T_Base; };
 
-	virtual EntryInfo_Short GetInfoShort();
-	virtual unique_ptr<char[]> ToFile();
+	/// <summary>
+	/// returns a struct summarizing the entry: id, name and type
+	/// </summary>
+	virtual EntryInfo_Short GetInfo_Short();
+	/// <summary>
+	/// returns a pointer to the summary in raw data format: byte array 
+	/// </summary>
+	virtual unique_ptr<char[]> GetRawData_Short();
+
 
 protected:
 	ENTRYID mId;
@@ -41,8 +48,8 @@ public:
 
 	const EntryType Type() { return T_Game; };
 
-	EntryInfo_Short GetInfoShort();
-	unique_ptr<char[]> ToFile();
+	EntryInfo_Short GetInfo_Short();
+	unique_ptr<char[]> GetRawData_Short();
 
 	int Rating();
 
@@ -67,8 +74,8 @@ public:
 
 	const EntryType Type() { return T_Studio; };
 
-	EntryInfo_Short GetInfoShort();
-	unique_ptr<char[]> ToFile();
+	EntryInfo_Short GetInfo_Short();
+	unique_ptr<char[]> GetRawData_Short();
 
 };
 
