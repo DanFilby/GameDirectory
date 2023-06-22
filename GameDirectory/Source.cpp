@@ -13,18 +13,20 @@ int main()
 
     cout << "game entry name: " << ge->Name() << "\n";
     cout << "game entry id: " << entry->Id() << "\n";
-    cout << "game entry rating: " << ge->Rating();
+    cout << "game entry rating: " << ge->Rating() << "\n";
+    cout << "game entry type: " << ge->Type() << "\n\n";
 
     string gameName = "Penguin village";
 
-    EntryInfo_Short info{ 662, T_Game, gameName };
+    EntryInfo_Short info = ge.get()->GetInfoShort();
 
-    cout << "\n\nsize of entry struct " << sizeof(EntryInfo_Short) << "\n";
-    cout << "name: " << info.name << "\n";
-    cout << "id: " << info.id << "\n";
-    cout << "type: " << info.type << "\n";
+    //EntryInfo_Short info{ 662, T_Game, gameName };
 
-    unique_ptr<char[]> binDat = info.ToBinary();
+    cout << "info name: " << info.name << "\n";
+    cout << "info id: " << info.id << "\n";
+    cout << "info type: " << info.type << "\n\n";
+
+    unique_ptr<char[]> binDat = ge.get()->ToFile();
 
     EntryInfo_Short info2(binDat.get());
 

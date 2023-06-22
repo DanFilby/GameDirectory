@@ -2,6 +2,8 @@
 
 #include "Common.h"
 
+#include <iostream>
+
 using ENTRYID = uint16_t;
 
 //will have to include how each entree links to others so can easily search for related, maybe list of tags/ genre
@@ -17,8 +19,10 @@ public:
 
 	ENTRYID Id();
 	string Name();
-		
-	virtual char* ToFile();
+	virtual const EntryType Type() { return T_Base; };
+
+	virtual EntryInfo_Short GetInfoShort();
+	virtual unique_ptr<char[]> ToFile();
 
 protected:
 	ENTRYID mId;
@@ -35,7 +39,10 @@ public:
 
 	~GameEntry();
 
-	char* ToFile();
+	const EntryType Type() { return T_Game; };
+
+	EntryInfo_Short GetInfoShort();
+	unique_ptr<char[]> ToFile();
 
 	int Rating();
 
@@ -54,11 +61,14 @@ private: const uint8_t BYTESIZE = 0;
 
 public:
 	StudioEntry();
-	StudioEntry(char* rawData);
+	StudioEntry(char* rawData);	
 
 	~StudioEntry();
 
-	char* ToRawData();
+	const EntryType Type() { return T_Studio; };
+
+	EntryInfo_Short GetInfoShort();
+	unique_ptr<char[]> ToFile();
 
 };
 
@@ -112,4 +122,6 @@ struct EntryInfo_Short {
 	ENTRYID id;		//Entries' id (2 bytes)
 	EntryType type;	//Entries' type (2 bytes)
 	char name[28];	//Entries' name (28 bytes)
+
+	static const int BYTESIZE = 32;
 };
