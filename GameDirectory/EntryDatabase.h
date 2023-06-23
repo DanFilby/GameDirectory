@@ -28,7 +28,7 @@ class EntryDatabase
 	//entries.dat contains each entry's name and link to its folder location. dupes?
 
 	const string DIR_PATH = "Data/";
-	const string ENTRIES_DIR_PATH = DIR_PATH + "Entries-Data/";
+	const string ENTRIESDATA_DIR_PATH = DIR_PATH + "Entries-Data/";
 	const string ENTRIESLIST_FNAME = "Entries.dat";
 
 public: 
@@ -41,7 +41,9 @@ private:
 	/// Checks for the correct folders, creates them if they don't exsist
 	/// </summary>
 	void FolderSetup();
-
+	/// <summary>
+	/// Checks a folder exsists, creates one if not
+	/// </summary>
 	void CheckFolder(string folderPath);
 
 	//all entries found on start-up or added during the session 
