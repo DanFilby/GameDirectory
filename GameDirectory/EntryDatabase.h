@@ -2,7 +2,7 @@
 
 #pragma region filestreams
 
-#include <istream>
+#include <fstream>
 using std::fstream;
 using std::ifstream;
 using std::ofstream;
@@ -45,6 +45,12 @@ private:
 	/// Checks a folder exsists, creates one if not
 	/// </summary>
 	void CheckFolder(string folderPath);
+
+	/// <summary>
+	/// Reads entries file to find all saved entry's summary : id, name and type
+	/// </summary>
+	void LoadEntries();
+
 
 	//all entries found on start-up or added during the session 
 	vector<ENTRYID> mActiveEntries;
