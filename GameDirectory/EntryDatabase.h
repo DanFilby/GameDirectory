@@ -9,6 +9,9 @@ using std::ofstream;
 
 #pragma endregion
 
+#include <Windows.h>
+#include <iostream>
+
 #include "Common.h"
 #include "Entries.h"
 
@@ -20,12 +23,11 @@ using std::ofstream;
 *	-> each entries-data file will start with a header containing amount of entries
 */
 
-
 class EntryDatabase
 {
 	//entries.dat contains each entry's name and link to its folder location. dupes?
 
-	const string DIR_PATH = "/Data/";
+	const string DIR_PATH = "Data/";
 	const string ENTRIES_DIR_PATH = DIR_PATH + "Entries-Data/";
 	const string ENTRIESLIST_FNAME = "Entries.dat";
 
@@ -34,9 +36,16 @@ public:
 	~EntryDatabase();
 
 private:
+	
+	/// <summary>
+	/// Checks for the correct folders, creates them if they don't exsist
+	/// </summary>
+	void FolderSetup();
+
+	void CheckFolder(string folderPath);
+
 	//all entries found on start-up or added during the session 
 	vector<ENTRYID> mActiveEntries;
-
 
 };
 

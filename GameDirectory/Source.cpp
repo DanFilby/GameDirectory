@@ -4,8 +4,17 @@ using std::cout;
 #include "Common.h"
 #include "EntryDatabase.h"
 
+void DataBase() {
+
+    EntryDatabase dataBase{};
+
+}
+
+
 int main()
 {
+    DataBase();
+
     std::cout << "Hello World!\n";
 
     auto ge = make_shared<GameEntry>();
@@ -35,5 +44,6 @@ int main()
     cout << "type: " << info2.type << "\n";
 
     cout << "\n";
+
 }
 

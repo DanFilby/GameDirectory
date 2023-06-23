@@ -2,11 +2,9 @@
 
 #include "Common.h"
 
-#include <iostream>
-
 using ENTRYID = uint16_t;
 
-//will have to include how each entree links to others so can easily search for related, maybe list of tags/ genre
+//will have to include how each entry links to others so can easily search for related, maybe list of tags/ genre
 
 enum EntryType : uint16_t{ T_Base = 0, T_Game = 1, T_Studio = 2};
 struct EntryInfo_Short;
@@ -79,7 +77,7 @@ public:
 
 };
 
-//Contains shortened info for each entry, limited to 32 bytes
+//Contains summurised info for each entry, limited to 32 bytes
 struct EntryInfo_Short {
 
 	EntryInfo_Short(ENTRYID _id, EntryType _type, string _name) :
