@@ -24,6 +24,8 @@ using std::ofstream;
 *	-> each entries-data file will start with a header containing amount of entries
 */
 
+struct EntryFileHeader;
+
 class EntryDatabase
 {
 	//entries.dat contains each entry's name and link to its folder location. dupes?
@@ -32,12 +34,19 @@ class EntryDatabase
 	const string ENTRIESDATA_DIR_PATH = DIR_PATH + "Entries-Data/";
 	const string ENTRIESLIST_FNAME = "Entries.dat";
 
+	const uint8_t ENTRIESHEADER_BYTESIZE = 4 * sizeof(uint16_t);
+
 public: 
 	EntryDatabase();
 	~EntryDatabase();
 
 	int GetEntryCount();
 	std::map<EntryType, int> GetEntryTypeCount();
+
+	/// <summary>
+	/// writes all the current entries' summary to the entries file
+	/// </summary>
+	void UpdateEntriesFile();
 
 private:
 	
@@ -55,12 +64,38 @@ private:
 	/// </summary>
 	void LoadEntries();
 
-	void WriteEntries();
-
-	
 
 	//all entries found on start-up or added during the session 
-	vector<EntryInfo_Short> mActiveEntries;
+public:	vector<EntryInfo_Short> mActiveEntries;
 
+};
+
+struct EntryFileHeader {
+
+	//load the header from current entries dict
+	EntryFileHeader(std::map<EntryType, int> entries) {
+		baseEntries = (uint16_t)entries[ET_Base]; 
+		gameEntries = (uint16_t)entries[ET_Game];
+		studioEntries = (uint16_t)entries[ET_Studio];
+		totalEntries = baseEntries + gameEntries + studioEntries;
+	}
+
+	//load the header back from binary format
+	EntryFileHeader(uint16_t* binHeader) {
+		totalEntries = binHeader[0]; baseEntries = binHeader[1];
+		gameEntries = binHeader[2]; studioEntries = binHeader[3];
+	}
+
+	//convert the header into binary: (8 bytes - four 16 bit uints)
+	unique_ptr<uint16_t[]> ToBinary() {
+
+		//init an 8 byte header: **| num of entries | num of base entries | num of game entries | num of studio entries |**
+		unique_ptr<uint16_t[]> bin = unique_ptr<uint16_t[]>(
+			new uint16_t[4]{ totalEntries, baseEntries, gameEntries, studioEntries });
+
+		return bin;
+	}
+
+	uint16_t totalEntries, baseEntries, gameEntries, studioEntries;
 };
 

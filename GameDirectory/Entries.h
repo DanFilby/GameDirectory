@@ -6,7 +6,7 @@ using ENTRYID = uint16_t;
 
 //will have to include how each entry links to others so can easily search for related, maybe list of tags/ genre
 
-enum EntryType : uint16_t{ T_Base = 0, T_Game = 1, T_Studio = 2};
+enum EntryType : uint16_t{ ET_Base = 0, ET_Game = 1, ET_Studio = 2};
 struct EntryInfo_Short;
 
 class Entry {
@@ -17,7 +17,7 @@ public:
 
 	ENTRYID Id();
 	string Name();
-	virtual const EntryType Type() { return T_Base; };
+	virtual const EntryType Type() { return ET_Base; };
 
 	/// <summary>
 	/// returns a struct summarizing the entry: id, name and type
@@ -44,7 +44,7 @@ public:
 
 	~GameEntry();
 
-	const EntryType Type() { return T_Game; };
+	const EntryType Type() { return ET_Game; };
 
 	EntryInfo_Short GetInfo_Short();
 	unique_ptr<char[]> GetRawData_Short();
@@ -70,7 +70,7 @@ public:
 
 	~StudioEntry();
 
-	const EntryType Type() { return T_Studio; };
+	const EntryType Type() { return ET_Studio; };
 
 	EntryInfo_Short GetInfo_Short();
 	unique_ptr<char[]> GetRawData_Short();
@@ -109,7 +109,7 @@ struct EntryInfo_Short {
 	}
 
 	//serialize struct to binary
-	unique_ptr<char[]> ToBinary() {
+	unique_ptr<char[]> ToBinary() const{
 		unique_ptr<char[]> binaryData = unique_ptr<char[]>(new char[32]);
 
 		//TODO: find out better way to do this, sstream?
@@ -130,3 +130,5 @@ struct EntryInfo_Short {
 
 	static const int BYTESIZE = 32;
 };
+
+//TODO: Add year to entry info

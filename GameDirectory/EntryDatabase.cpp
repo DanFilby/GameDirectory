@@ -23,7 +23,7 @@ int EntryDatabase::GetEntryCount()
 
 std::map<EntryType, int> EntryDatabase::GetEntryTypeCount()
 {
-	std::map<EntryType, int> entryTypeMap{ {T_Base, 0},{T_Game, 0}, {T_Studio, 0 } };
+	std::map<EntryType, int> entryTypeMap{ {ET_Base, 0},{ET_Game, 0}, {ET_Studio, 0 } };
 	
 	for (auto& entry : mActiveEntries) {
 		entryTypeMap[entry.type]++;
@@ -77,28 +77,29 @@ void EntryDatabase::LoadEntries()
 	}
 
 	//read header
+	uint16_t* fileHeader = new uint16_t[4];
+	entriesFile.read((char*)fileHeader, ENTRIESHEADER_BYTESIZE);
+	EntryFileHeader entriesHeader = EntryFileHeader(fileHeader);
 
 	//loop over file reading each entree and add to active entries
 
 }
 
-void EntryDatabase::WriteEntries()
+void EntryDatabase::UpdateEntriesFile()
 {
 	ofstream entriesFile = std::ofstream(DIR_PATH + ENTRIESLIST_FNAME, std::ios::out | std::ios::binary);
 
-	//write header
-
-	//16 byte header
-	uint16_t* header = new uint16_t[8];
-
-	header[0] = (uint16_t)GetEntryCount();
-
-
-
-
-	//write the frame's header to file
-	//mWriteFileStream.write((char*)header, mFrameHeaderSize * sizeof(uint64_t));
+	//generate the file's header, containing number of each entry stored
+	EntryFileHeader entriesHeader = EntryFileHeader(GetEntryTypeCount());
+	
+	//write the frame's header to file. 
+	entriesFile.write((char*)entriesHeader.ToBinary().get(), ENTRIESHEADER_BYTESIZE);
+	//write twice to total 16 bytes and for validation
+	entriesFile.write((char*)entriesHeader.ToBinary().get(), ENTRIESHEADER_BYTESIZE);
 
 	//loops over entries writing each to file
+	for (const auto& entry : mActiveEntries) {
+		entriesFile.write((char*)entry.ToBinary().get(), EntryInfo_Short::BYTESIZE);
+	}
 
 }

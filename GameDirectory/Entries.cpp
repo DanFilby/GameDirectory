@@ -46,7 +46,7 @@ GameEntry::~GameEntry()
 EntryInfo_Short GameEntry::GetInfo_Short()
 {
 	//pass game's id, name and the game type into the struct
-	EntryInfo_Short info{ this->mId, T_Game, mName };
+	EntryInfo_Short info{ this->mId, ET_Game, mName };
 
 	return info;
 }

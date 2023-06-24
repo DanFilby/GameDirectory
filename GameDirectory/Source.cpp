@@ -3,11 +3,21 @@ using std::cout;
 
 #include "Common.h"
 #include "EntryDatabase.h"
+#include "entries.h"
 
 void DataBase() {
+     EntryDatabase dataBase{};
 
-    EntryDatabase dataBase{};
+     EntryInfo_Short info{ 1, ET_Game, "penguin Village" };
+     EntryInfo_Short info2{ 2, ET_Game, "back to hell" };
+     EntryInfo_Short info23{ 3, ET_Studio, "Shady Seals" };
 
+     dataBase.mActiveEntries.push_back(info);
+     dataBase.mActiveEntries.push_back(info2);
+     dataBase.mActiveEntries.push_back(info23);
+
+
+     dataBase.UpdateEntriesFile();
 }
 
 
