@@ -11,6 +11,7 @@ using std::ofstream;
 
 #include <Windows.h>
 #include <iostream>
+#include <map>
 
 #include "Common.h"
 #include "Entries.h"
@@ -35,6 +36,9 @@ public:
 	EntryDatabase();
 	~EntryDatabase();
 
+	int GetEntryCount();
+	std::map<EntryType, int> GetEntryTypeCount();
+
 private:
 	
 	/// <summary>
@@ -51,9 +55,12 @@ private:
 	/// </summary>
 	void LoadEntries();
 
+	void WriteEntries();
+
+	
 
 	//all entries found on start-up or added during the session 
-	vector<ENTRYID> mActiveEntries;
+	vector<EntryInfo_Short> mActiveEntries;
 
 };
 
