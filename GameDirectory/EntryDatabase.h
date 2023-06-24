@@ -70,6 +70,8 @@ public:	vector<EntryInfo_Short> mActiveEntries;
 
 };
 
+
+//header for the entries file, contains count of each type of entry
 struct EntryFileHeader {
 
 	//load the header from current entries dict
@@ -86,7 +88,9 @@ struct EntryFileHeader {
 		gameEntries = binHeader[2]; studioEntries = binHeader[3];
 	}
 
-	//convert the header into binary: (8 bytes - four 16 bit uints)
+	/// <summary>
+	/// convert the header into binary: (8 bytes - four 2 byte uints)
+	/// </summary>
 	unique_ptr<uint16_t[]> ToBinary() {
 
 		//init an 8 byte header: **| num of entries | num of base entries | num of game entries | num of studio entries |**

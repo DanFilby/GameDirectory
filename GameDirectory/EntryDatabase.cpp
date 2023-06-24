@@ -60,7 +60,6 @@ void EntryDatabase::CheckFolder(string folderPath)
 
 void EntryDatabase::LoadEntries()
 {
-	//check if file is valid
 	fstream entriesFile(DIR_PATH + ENTRIESLIST_FNAME, std::ios::in | std::ios::binary);
 
 	//check file exsists
@@ -76,10 +75,12 @@ void EntryDatabase::LoadEntries()
 		return;
 	}
 
-	//read header
-	uint16_t* fileHeader = new uint16_t[8];
-	entriesFile.read((char*)fileHeader, ENTRIESHEADER_BYTESIZE * 2);
-	EntryFileHeader entriesHeader = EntryFileHeader(fileHeader);
+	//read the header into buffer
+	uint16_t* fileHeaderBuf = new uint16_t[8];
+	entriesFile.read((char*)fileHeaderBuf, ENTRIESHEADER_BYTESIZE * 2);
+
+	//get info from header. (total entries, num of each type)
+	EntryFileHeader entriesHeader = EntryFileHeader(fileHeaderBuf);
 
 	//read each entry from the file into this buffer
 	char* entryBuffer = new char[32];
