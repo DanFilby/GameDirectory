@@ -77,12 +77,22 @@ void EntryDatabase::LoadEntries()
 	}
 
 	//read header
-	uint16_t* fileHeader = new uint16_t[4];
-	entriesFile.read((char*)fileHeader, ENTRIESHEADER_BYTESIZE);
+	uint16_t* fileHeader = new uint16_t[8];
+	entriesFile.read((char*)fileHeader, ENTRIESHEADER_BYTESIZE * 2);
 	EntryFileHeader entriesHeader = EntryFileHeader(fileHeader);
 
-	//loop over file reading each entree and add to active entries
+	//read each entry from the file into this buffer
+	char* entryBuffer = new char[32];
 
+	//loop over file reading each entree and add to active entries
+	for (size_t i = 0; i < entriesHeader.totalEntries; i++)
+	{
+		entriesFile.read((char*)entryBuffer, EntryInfo_Short::BYTESIZE);
+
+		EntryInfo_Short entrySummary = EntryInfo_Short(entryBuffer);
+
+		mActiveEntries.push_back(entrySummary);
+	}
 }
 
 void EntryDatabase::UpdateEntriesFile()
@@ -92,12 +102,13 @@ void EntryDatabase::UpdateEntriesFile()
 	//generate the file's header, containing number of each entry stored
 	EntryFileHeader entriesHeader = EntryFileHeader(GetEntryTypeCount());
 	
-	//write the frame's header to file. 
+	//write a header to the entry file to hold the counts of each entry stored
 	entriesFile.write((char*)entriesHeader.ToBinary().get(), ENTRIESHEADER_BYTESIZE);
+
 	//write twice to total 16 bytes and for validation
 	entriesFile.write((char*)entriesHeader.ToBinary().get(), ENTRIESHEADER_BYTESIZE);
 
-	//loops over entries writing each to file
+	//write each entry to the file. each are 32 bytes
 	for (const auto& entry : mActiveEntries) {
 		entriesFile.write((char*)entry.ToBinary().get(), EntryInfo_Short::BYTESIZE);
 	}

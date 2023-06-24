@@ -98,13 +98,14 @@ struct EntryInfo_Short {
 	{
 		if (binaryData != nullptr) {
 
+			//cast bytes to needed types
 			ENTRYID* _id = (ENTRYID*)&binaryData[0];
 			EntryType* _type = (EntryType*)&binaryData[2];
 
-			id = *_id;
-			type = *_type;
+			id = ENTRYID(*_id);
+			type = EntryType(*_type);
 
-			for (size_t i = 0; i <= 27; i++) { name[i] = binaryData[i + 4]; }
+			for (size_t i = 0; i <= 27; i++) { name[i] = char(binaryData[i + 4]); }
 		}
 	}
 
