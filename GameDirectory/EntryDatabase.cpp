@@ -32,6 +32,17 @@ std::map<EntryType, int> EntryDatabase::GetEntryTypeCount()
 	return entryTypeMap;
 }
 
+void EntryDatabase::PrintActiveEntries()
+{
+	for (const auto& entry : mActiveEntries)
+	{
+		std::cout << "info name: " << entry.name << "\n";
+		std::cout << "info id: " << entry.id << "\n";
+		std::cout << "info type: " << entry.type << "\n";
+		std::cout << "info year: " << entry.year << "\n\n";
+	}
+}
+
 void EntryDatabase::FolderSetup()
 {
 	//check data directory

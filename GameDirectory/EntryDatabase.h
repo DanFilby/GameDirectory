@@ -42,6 +42,7 @@ public:
 
 	int GetEntryCount();
 	std::map<EntryType, int> GetEntryTypeCount();
+	void PrintActiveEntries();
 
 	/// <summary>
 	/// writes all the current entries' summary to the entries file
@@ -103,3 +104,5 @@ struct EntryFileHeader {
 	uint16_t totalEntries, baseEntries, gameEntries, studioEntries;
 };
 
+
+//TODO: Add an 'add entry interface'

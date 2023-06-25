@@ -8,11 +8,18 @@ using std::cout;
 void DataBase() {
      EntryDatabase dataBase{};
 
-     //EntryInfo_Short info{ 1, ET_Game, "penguin Village" };
-     //EntryInfo_Short info2{ 2, ET_Game, "back to hell" };
-     //EntryInfo_Short info23{ 3, ET_Studio, "Shady Seals" };
+     EntryInfo_Short info{ 1, ET_Game, 2023, "Penguin Village" };
+     EntryInfo_Short info2{ 2, ET_Game, 2022, "Back to hell" };
+     EntryInfo_Short info23{ 3, ET_Studio, 2023, "Shady Seals" };
+
+     //dataBase.mActiveEntries.clear();
+     //dataBase.mActiveEntries.push_back(info);
+     //dataBase.mActiveEntries.push_back(info2);
+     //dataBase.mActiveEntries.push_back(info23);
 
      dataBase.UpdateEntriesFile();
+     dataBase.PrintActiveEntries();
+
 }
 
 
@@ -38,7 +45,8 @@ int main()
 
     cout << "info name: " << info.name << "\n";
     cout << "info id: " << info.id << "\n";
-    cout << "info type: " << info.type << "\n\n";
+    cout << "info type: " << info.type << "\n";
+    cout << "info year: " << info.year << "\n\n";
 
     unique_ptr<char[]> binDat = ge.get()->GetRawData_Short();
 
@@ -47,6 +55,7 @@ int main()
     cout << "name: " << info2.name << "\n";
     cout << "id: " << info2.id << "\n";
     cout << "type: " << info2.type << "\n";
+    cout << "year: " << info.year << "\n";
 
     cout << "\n";
 

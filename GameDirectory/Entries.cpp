@@ -32,6 +32,7 @@ unique_ptr<char[]> Entry::GetRawData_Short()
 GameEntry::GameEntry()
 {
 	mId = 37;
+	mYear = 2023;
 	mName = "Penguin Village";
 }
 
@@ -46,7 +47,7 @@ GameEntry::~GameEntry()
 EntryInfo_Short GameEntry::GetInfo_Short()
 {
 	//pass game's id, name and the game type into the struct
-	EntryInfo_Short info{ this->mId, ET_Game, mName };
+	EntryInfo_Short info{ mId, ET_Game, mYear, mName };
 
 	return info;
 }

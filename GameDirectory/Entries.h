@@ -31,6 +31,7 @@ public:
 
 protected:
 	ENTRYID mId;
+	uint16_t mYear;
 	string mName;
 };
 
@@ -79,57 +80,62 @@ public:
 
 //Contains summurised info for each entry, limited to 32 bytes
 struct EntryInfo_Short {
+	static const uint8_t BYTESIZE = 32;
+	static const uint8_t NAMELENGTH = 26;
 
-	EntryInfo_Short(ENTRYID _id, EntryType _type, string _name) :
-		id(_id), type(_type)
+	ENTRYID id;		//Entry's id (2 bytes)
+	EntryType type;	//Entry's type (2 bytes)
+	uint16_t year;	//Entry's Year (2 bytes)
+	char name[NAMELENGTH];	//Entry's name (26 bytes)
+
+	EntryInfo_Short(ENTRYID _id, EntryType _type, uint16_t _year, string _name) :
+		id(_id), type(_type), year(_year)
 	{
 		//set-up name, restricting to max char count and filling with blank if less than
-		for (size_t i = 0; i < 27; i++)
+		for (size_t i = 0; i < NAMELENGTH - 1; i++)
 		{
 			if (_name.length() > i) { name[i] = _name[i]; }
 			else { name[i] = '\0'; }
 		}
-		name[27] = '\0';
+		name[NAMELENGTH - 1] = '\0';
 	}
 
 	//convert struct from binary storage
 	EntryInfo_Short(char * binaryData):
-		id(), type(), name()
+		id(), type(), name(), year()
 	{
 		if (binaryData != nullptr) {
 
 			//cast bytes to needed types
 			ENTRYID* _id = (ENTRYID*)&binaryData[0];
 			EntryType* _type = (EntryType*)&binaryData[2];
+			uint16_t* _year = (uint16_t*)&binaryData[4];
 
 			id = ENTRYID(*_id);
 			type = EntryType(*_type);
+			year = uint16_t(*_year);
 
-			for (size_t i = 0; i <= 27; i++) { name[i] = char(binaryData[i + 4]); }
+			for (size_t i = 0; i <= NAMELENGTH - 1; i++) { name[i] = char(binaryData[i + 6]); }
 		}
 	}
 
-	//serialize struct to binary
+	//serialize struct to char bytes
 	unique_ptr<char[]> ToBinary() const{
 		unique_ptr<char[]> binaryData = unique_ptr<char[]>(new char[32]);
 
 		//TODO: find out better way to do this, sstream?
 		char* idPtr = (char*)&id;
 		char* typePtr = (char*)&type;
+		char* yearPtr = (char*)&year;
 
 		binaryData[0] = idPtr[0]; binaryData[1] = idPtr[1];
 		binaryData[2] = typePtr[0]; binaryData[3] = typePtr[1];
+		binaryData[4] = yearPtr[0]; binaryData[5] = yearPtr[1];
 
-		for (size_t i = 0; i <= 27; i++) { binaryData[i + 4] = name[i]; }
+		for (size_t i = 0; i <= NAMELENGTH - 1; i++) { binaryData[i + 6] = name[i]; }
 
 		return binaryData;
 	}
-
-	ENTRYID id;		//Entries' id (2 bytes)
-	EntryType type;	//Entries' type (2 bytes)
-	char name[28];	//Entries' name (28 bytes)
-
-	static const int BYTESIZE = 32;
 };
 
 //TODO: Add year to entry info
