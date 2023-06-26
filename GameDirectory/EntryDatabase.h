@@ -105,4 +105,4 @@ struct EntryFileHeader {
 };
 
 
-//TODO: Add an 'add entry interface'
+//TODO: Add an 'add entry to database interface'

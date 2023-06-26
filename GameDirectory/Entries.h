@@ -9,6 +9,7 @@ using ENTRYID = uint16_t;
 enum EntryType : uint16_t{ ET_Base = 0, ET_Game = 1, ET_Studio = 2};
 struct EntryInfo_Short;
 
+//Base Entry class containing interface for entries and all common member data: ID, Year, Name
 class Entry {
 
 public: 
@@ -35,7 +36,9 @@ protected:
 	string mName;
 };
 
-class GameEntry : public Entry{
+
+//Video game entry: Will contain cover picture and ratings and descriptions
+class GameEntry : public Entry {
 
 private: const uint8_t BYTESIZE = 0;
 
@@ -56,18 +59,19 @@ private:
 
 	//list of studios which created this game
 	vector<ENTRYID> mStudioIds;
-	
+
 	uint8_t mOverallRating;
 
 };
 
+//Studio entry: an entry reperenting a video game studio 
 class StudioEntry : public Entry {
 
 private: const uint8_t BYTESIZE = 0;
 
 public:
 	StudioEntry();
-	StudioEntry(char* rawData);	
+	StudioEntry(char* rawData);
 
 	~StudioEntry();
 
@@ -77,6 +81,7 @@ public:
 	unique_ptr<char[]> GetRawData_Short();
 
 };
+
 
 //Contains summurised info for each entry, limited to 32 bytes
 struct EntryInfo_Short {
@@ -101,12 +106,12 @@ struct EntryInfo_Short {
 	}
 
 	//convert struct from binary storage
-	EntryInfo_Short(char * binaryData):
+	EntryInfo_Short(char* binaryData) :
 		id(), type(), name(), year()
 	{
 		if (binaryData != nullptr) {
 			//set entry info from the binary data
-			memcpy(&id, &binaryData[0],sizeof(ENTRYID));
+			memcpy(&id, &binaryData[0], sizeof(ENTRYID));
 			memcpy(&type, &binaryData[2], sizeof(EntryType));
 			memcpy(&year, &binaryData[4], sizeof(uint16_t));
 			memcpy(&name, &binaryData[6], NAMELENGTH);
@@ -114,7 +119,7 @@ struct EntryInfo_Short {
 	}
 
 	//serialize struct to char bytes
-	unique_ptr<char[]> ToBinary() const{
+	unique_ptr<char[]> ToBinary() const {
 		unique_ptr<char[]> binaryData = unique_ptr<char[]>(new char[32]);
 
 		//TODO: find out better way to do this, sstream?
@@ -132,4 +137,10 @@ struct EntryInfo_Short {
 	}
 };
 
-//TODO: Add year to entry info
+#pragma region EntryBuilder
+//builder for video game has a studio step so can setup multiple studios
+
+
+
+
+#pragma endregion
