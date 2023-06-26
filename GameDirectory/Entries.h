@@ -105,17 +105,11 @@ struct EntryInfo_Short {
 		id(), type(), name(), year()
 	{
 		if (binaryData != nullptr) {
-
-			//cast bytes to needed types
-			ENTRYID* _id = (ENTRYID*)&binaryData[0];
-			EntryType* _type = (EntryType*)&binaryData[2];
-			uint16_t* _year = (uint16_t*)&binaryData[4];
-
-			id = ENTRYID(*_id);
-			type = EntryType(*_type);
-			year = uint16_t(*_year);
-
-			for (size_t i = 0; i <= NAMELENGTH - 1; i++) { name[i] = char(binaryData[i + 6]); }
+			//set entry info from the binary data
+			memcpy(&id, &binaryData[0],sizeof(ENTRYID));
+			memcpy(&type, &binaryData[2], sizeof(EntryType));
+			memcpy(&year, &binaryData[4], sizeof(uint16_t));
+			memcpy(&name, &binaryData[6], NAMELENGTH);
 		}
 	}
 
