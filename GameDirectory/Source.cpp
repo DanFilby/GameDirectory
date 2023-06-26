@@ -34,7 +34,6 @@ int main()
 
     cout << "game entry name: " << ge->Name() << "\n";
     cout << "game entry id: " << entry->Id() << "\n";
-    cout << "game entry rating: " << ge->Rating() << "\n";
     cout << "game entry type: " << ge->Type() << "\n\n";
 
     string gameName = "Penguin village";

@@ -1,12 +1,16 @@
 #pragma once
 
+#include <iostream>
+
 #include "Common.h"
 
 using ENTRYID = uint16_t;
 
 //will have to include how each entry links to others so can easily search for related, maybe list of tags/ genre
+//stored list of tags and genres, so can add in the application.
 
 enum EntryType : uint16_t{ ET_Base = 0, ET_Game = 1, ET_Studio = 2};
+
 struct EntryInfo_Short;
 struct GameRatings;
 
@@ -54,15 +58,18 @@ public:
 	EntryInfo_Short GetInfo_Short();
 	unique_ptr<char[]> GetRawData_Short();
 
-	int Rating();
+public: 
+	//short description of the game max 64 chars
+	string mShortDescription;
 
-private:
+	//full description of the game maz 512 chars
+	string mFullDescription;
+
+	//set of ratings about various aspects of the game
+	GameRatings mRatings;
 
 	//list of studios which created this game
 	vector<ENTRYID> mStudioIds;
-
-	uint8_t mOverallRating;
-
 };
 
 //Studio entry: an entry reperenting a video game studio 
@@ -144,14 +151,17 @@ struct GameRatings {
 
 	GameRatings(uint8_t _overall, uint8_t _gameplay, uint8_t _Narrative, uint8_t _replayability) 
 		: Overall(_overall), Gameplay(_gameplay), Narrative(_Narrative), Replayability(_replayability)	{
+	}
 
+	GameRatings()
+		: Overall(), Gameplay(), Narrative(), Replayability() {
 	}
 
 	void const DisplayAllRatings() {
-		cout << "Overall rating: " << StarRating(Overall) << "\n";
-		cout << "Gameplay rating: " << StarRating(Gameplay) << "\n";
-		cout << "Narrative rating: " << StarRating(Narrative) << "\n";
-		cout << "Replayability rating: " << StarRating(Replayability) << "\n";
+		std::cout << "Overall rating: " << StarRating(Overall) << "\n";
+		std::cout << "Gameplay rating: " << StarRating(Gameplay) << "\n";
+		std::cout << "Narrative rating: " << StarRating(Narrative) << "\n";
+		std::cout << "Replayability rating: " << StarRating(Replayability) << "\n";
 	}
 	
 	inline const string StarRating(uint8_t rating) {
