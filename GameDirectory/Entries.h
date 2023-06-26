@@ -8,6 +8,7 @@ using ENTRYID = uint16_t;
 
 enum EntryType : uint16_t{ ET_Base = 0, ET_Game = 1, ET_Studio = 2};
 struct EntryInfo_Short;
+struct GameRatings;
 
 //Base Entry class containing interface for entries and all common member data: ID, Year, Name
 class Entry {
@@ -137,10 +138,41 @@ struct EntryInfo_Short {
 	}
 };
 
-#pragma region EntryBuilder
+//set of ratings for games, each rating is an 8 bit uint, with range of 0-20 to get 0-10 stars with halfs eg 7.5/10
+struct GameRatings {
+	uint8_t Overall, Gameplay, Narrative, Replayability;
+
+	GameRatings(uint8_t _overall, uint8_t _gameplay, uint8_t _Narrative, uint8_t _replayability) 
+		: Overall(_overall), Gameplay(_gameplay), Narrative(_Narrative), Replayability(_replayability)	{
+
+	}
+
+	void const DisplayAllRatings() {
+		cout << "Overall rating: " << StarRating(Overall) << "\n";
+		cout << "Gameplay rating: " << StarRating(Gameplay) << "\n";
+		cout << "Narrative rating: " << StarRating(Narrative) << "\n";
+		cout << "Replayability rating: " << StarRating(Replayability) << "\n";
+	}
+	
+	inline const string StarRating(uint8_t rating) {
+		string result;
+
+		//add stars
+		for (size_t i = 0; i < rating / 2; i++) { result += "* "; }
+
+		//fill empty stars
+		for (size_t i = 0; i < (10 - rating / 2); i++) { result += "0 "; }
+
+		return result;
+	}
+};
+
 //builder for video game has a studio step so can setup multiple studios
 
+class EntryBuilder {
 
 
 
-#pragma endregion
+
+};
+

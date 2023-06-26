@@ -18,10 +18,14 @@ using std::ofstream;
 
 /*
 * Entries.dat - holds the entries's ids, name, and their type (game, studio etc)
-*   ->starts with a header giving amount of entries to read
+*   -> starts with a header giving amount of entries to read
+*   -> each entry's summary is saved one after the other in binary format of 32 bytes
 * 
-* Entries-Data/ contains files holding entries data.
-*	-> each entries-data file will start with a header containing amount of entries
+* Entries-Data/ folder containing each entry's full data in their own file named with their unique id 
+*	-> each entry data file format will consist of blocks of data i.e rating, pictures
+* 
+* Entries-Data/Pictures/ folder containg all pictures
+*   -> optimse this as will have to loop over all pictures to find the right one
 */
 
 struct EntryFileHeader;
