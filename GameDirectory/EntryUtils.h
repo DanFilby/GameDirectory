@@ -97,21 +97,21 @@ struct GameRatings {
 
 class GenreListDataBase : Database {
 
-	const string GENRELIST_FNAME = "Genre-List.csv";
+	const string GENRELIST_FNAME = "Genre-List.dat";
 
 public:
 	GenreListDataBase();
 
 	string GetGenre(int hash);
 
-	vector<string> mGenreList;
-
-private:
-
-	void DirectoriesCheck();
-
 	void LoadGenres();
 	void UpdateGenreListFile();
+
+private:
+	void DirectoriesCheck();
+
+public:
+	vector<string> mGenreList;
 
 };
 

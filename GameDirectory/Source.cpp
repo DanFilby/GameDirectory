@@ -16,9 +16,16 @@ void DataBase() {
      EntryInfo_Short info23{ 3, ET_Studio, 2023, "Shady Seals" };
 
      //dataBase.mActiveEntries.clear();
-     //dataBase.mActiveEntries.push_back(info);
-     //dataBase.mActiveEntries.push_back(info2);
-     //dataBase.mActiveEntries.push_back(info23);
+     //dataBase.mActiveEntries.push_back(info);dataBase.mActiveEntries.push_back(info2);dataBase.mActiveEntries.push_back(info23);
+
+     gdatabase.mGenreList.push_back("Action");
+     gdatabase.mGenreList.push_back("Strategy");
+     gdatabase.mGenreList.push_back("Role Playing Game");
+     gdatabase.mGenreList.push_back("Adventure");
+     gdatabase.mGenreList.push_back("Sports");
+     gdatabase.mGenreList.push_back("First Person Shooter");
+
+     //gdatabase.UpdateGenreListFile();
 
      dataBase.UpdateEntriesFile();
      dataBase.PrintActiveEntries();

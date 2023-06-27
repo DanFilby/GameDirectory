@@ -43,7 +43,7 @@ bool Database::FileReadCheck(string filePath)
 
 		//create and check file
 		ofstream file = ofstream(filePath);
-		if (file.good()) { std::cout << filePath << " - file created\n\n"; }
+		if (file.good()) { std::cout << filePath << " - file created\n\n"; file.close(); }
 		else{ std::cout << "Failed to create: " << filePath << "\n\n"; }
 
 		return false;
@@ -54,8 +54,8 @@ bool Database::FileReadCheck(string filePath)
 		return false;
 	}
 
+	//otherwise file is fine and not empty
 	std::cout << filePath << " - file is valid\n\n";
 
-	//otherwise file is fine and not empty
 	return true;
 }
