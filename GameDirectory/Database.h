@@ -1,17 +1,19 @@
 #pragma once
 
-#pragma region filestreams
+#pragma region FileLibs
 
 #include <fstream>
 using std::fstream;
 using std::ifstream;
 using std::ofstream;
 
+#include <filesystem>
+using std::filesystem::path;
+
 #pragma endregion
 
 #include <Windows.h>
 #include <iostream>
-#include <filesystem>
 
 #include "Common.h"
 
@@ -26,6 +28,8 @@ public:
 
 	bool IsDirVaild(string dirPath);
 	void SetupDir(string dirPath);
+
+	bool FileReadCheck(string filePath);
 
 };
 

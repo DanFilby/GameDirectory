@@ -23,13 +23,39 @@ void Database::SetupDir(string dirPath)
 
 	//check directory exsits
 	if (IsDirVaild(dirPath)) {
-		std::cout << dirPath << " - Valid\n";
+		std::cout << dirPath << " - Valid\n\n";
 		return;
 	}
 	else {
 		//create directory 
-		std::filesystem::create_directory(std::filesystem::path(dirPath));
-		std::cout << "Created - " << dirPath << "\n";
+		std::filesystem::create_directory(path(dirPath));
+		std::cout << "Created - " << dirPath << "\n\n";
 	}
 
+}
+
+bool Database::FileReadCheck(string filePath)
+{
+	//check file exsists
+	if (!std::filesystem::exists(path(filePath))) {
+
+		std::cout << filePath << " - file don't exsist\n";
+
+		//create and check file
+		ofstream file = ofstream(filePath);
+		if (file.good()) { std::cout << filePath << " - file created\n\n"; }
+		else{ std::cout << "Failed to create: " << filePath << "\n\n"; }
+
+		return false;
+	}
+	//check the file isn't empty
+	else if (std::filesystem::is_empty(path(filePath))) {
+		std::cout << filePath << " - file is empty\n\n";
+		return false;
+	}
+
+	std::cout << filePath << " - file is valid\n\n";
+
+	//otherwise file is fine and not empty
+	return true;
 }

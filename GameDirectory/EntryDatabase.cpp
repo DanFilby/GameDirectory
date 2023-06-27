@@ -52,25 +52,13 @@ void EntryDatabase::DirectoriesCheck()
 	//checks the entrees data dir 
 	SetupDir(ENTRIESDATA_DIR_PATH);
 
-	std::cout << "\n";
 }
 
 void EntryDatabase::LoadEntries()
 {
-	fstream entriesFile(DIR_PATH + ENTRIESLIST_FNAME, std::ios::in | std::ios::binary);
+	FileReadCheck(DIR_PATH + ENTRIESLIST_FNAME);
 
-	//check file exsists
-	if (!entriesFile.good()) {
-		//create file
-		std::cout << "file don't exsist\n\n";
-		ofstream(DIR_PATH + ENTRIESLIST_FNAME);
-		return;
-	}
-	//check the file isn't empty
-	else if (entriesFile.peek() == std::ifstream::traits_type::eof()) {
-		std::cout << "file is empty\n\n";
-		return;
-	}
+	fstream entriesFile(DIR_PATH + ENTRIESLIST_FNAME, std::ios::in | std::ios::binary);
 
 	//read the header into buffer
 	uint16_t* fileHeaderBuf = new uint16_t[8];

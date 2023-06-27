@@ -41,9 +41,6 @@
     <ClInclude Include="EntryDatabase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EntryTypes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="EntryUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include<cassert>
 
 #include "Common.h"
 #include "Database.h"
@@ -96,6 +97,8 @@ struct GameRatings {
 
 class GenreListDataBase : Database {
 
+	const string GENRELIST_FNAME = "Genre-List.csv";
+
 public:
 	GenreListDataBase();
 
@@ -105,10 +108,10 @@ public:
 
 private:
 
-	void DirectoriesInit();
+	void DirectoriesCheck();
 
 	void LoadGenres();
-	void UpdateGenreFile();
+	void UpdateGenreListFile();
 
 };
 

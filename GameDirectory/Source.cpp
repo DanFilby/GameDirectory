@@ -9,6 +9,7 @@ using std::cout;
 
 void DataBase() {
      EntryDatabase dataBase{};
+     GenreListDataBase gdatabase{};
 
      EntryInfo_Short info{ 1, ET_Game, 2023, "Penguin Village" };
      EntryInfo_Short info2{ 2, ET_Game, 2022, "Back to hell" };
@@ -21,7 +22,6 @@ void DataBase() {
 
      dataBase.UpdateEntriesFile();
      dataBase.PrintActiveEntries();
-
 }
 
 void AppStart() {
