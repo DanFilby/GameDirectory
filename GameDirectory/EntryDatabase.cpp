@@ -1,11 +1,12 @@
 #include "EntryDatabase.h"
 
+
 EntryDatabase::EntryDatabase()
 {
 	//setup files, store in folder ids and database
 
 	//checks neccessary folders are valid, otherwise creates them
-	FolderSetup();
+	DirectoriesCheck();
 
 	//reads entries file, loads all saved entry summaries into memory
 	LoadEntries();
@@ -43,31 +44,16 @@ void EntryDatabase::PrintActiveEntries()
 	}
 }
 
-void EntryDatabase::FolderSetup()
+void EntryDatabase::DirectoriesCheck()
 {
-	//check data directory
-	CheckFolder(DIR_PATH);
-	
+	//check data directory is valid	
+	assert(IsDirVaild(DIR_PATH));
+
 	//checks the entrees data dir 
-	CheckFolder(ENTRIESDATA_DIR_PATH);
+	SetupDir(ENTRIESDATA_DIR_PATH);
 
 	std::cout << "\n";
 }
-
-void EntryDatabase::CheckFolder(string folderPath)
-{
-	//convert to windows string format
-	std::wstring temp = std::wstring(folderPath.begin(), folderPath.end());
-	LPCWSTR wideString = temp.c_str();
-
-	//folder is either created or already exsists
-	if (CreateDirectory(wideString, NULL) ||
-		ERROR_ALREADY_EXISTS == GetLastError()) {
-		std::cout << folderPath << " - Setup\n";
-	}
-	else { std::cout << "Failed to create Data Folder\n"; }
-}
-
 
 void EntryDatabase::LoadEntries()
 {

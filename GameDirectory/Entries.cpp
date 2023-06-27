@@ -66,6 +66,8 @@ unique_ptr<char[]> GameEntry::GetRawData_Short()
 	return gameDat;
 }
 
+
+
 #pragma endregion
 
 

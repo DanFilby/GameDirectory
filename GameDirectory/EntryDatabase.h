@@ -1,20 +1,11 @@
 #pragma once	
 
-#pragma region filestreams
-
-#include <fstream>
-using std::fstream;
-using std::ifstream;
-using std::ofstream;
-
-#pragma endregion
-
-#include <Windows.h>
-#include <iostream>
+#include<cassert>
 #include <map>
 
 #include "Common.h"
 #include "Entries.h"
+#include "Database.h"
 
 /*
 * Entries.dat - holds the entries's ids, name, and their type (game, studio etc)
@@ -30,11 +21,10 @@ using std::ofstream;
 
 struct EntryFileHeader;
 
-class EntryDatabase
+class EntryDatabase : Database
 {
 	//entries.dat contains each entry's name and link to its folder location. dupes?
 
-	const string DIR_PATH = "Data/";
 	const string ENTRIESDATA_DIR_PATH = DIR_PATH + "Entries-Data/";
 	const string ENTRIESLIST_FNAME = "Entries.dat";
 
@@ -58,11 +48,7 @@ private:
 	/// <summary>
 	/// Checks for the correct folders, creates them if they don't exsist
 	/// </summary>
-	void FolderSetup();
-	/// <summary>
-	/// Checks a folder exsists, creates one if not
-	/// </summary>
-	void CheckFolder(string folderPath);
+	void DirectoriesCheck();
 
 	/// <summary>
 	/// Reads entries file to find all saved entry's summary : id, name and type
@@ -110,3 +96,4 @@ struct EntryFileHeader {
 
 
 //TODO: Add an 'add entry to database interface'
+//TODO: Add duplicate check, against ids and somewhere against name + year
