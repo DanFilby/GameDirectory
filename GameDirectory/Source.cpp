@@ -5,6 +5,8 @@ using std::cout;
 #include "EntryDatabase.h"
 #include "entries.h"
 
+
+
 void DataBase() {
      EntryDatabase dataBase{};
 
@@ -22,9 +24,20 @@ void DataBase() {
 
 }
 
+void AppStart() {
+    Database database;
+    database.Init();
+}
+
+void AppClose() {
+    
+}
+
 
 int main()
 {
+    AppStart();
+
     DataBase();
 
     std::cout << "Hello World!\n";
@@ -58,5 +71,6 @@ int main()
 
     cout << "\n";
 
+    AppClose();
 }
 
