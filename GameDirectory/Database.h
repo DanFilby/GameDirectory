@@ -68,7 +68,7 @@ protected:
 	/// <summary>
 	/// Loads a string file into vector
 	/// </summary>
-	vector<string> LoadStringFile(string filePath);
+	vector<string> ReadStringFile(string filePath);
 
 	/// <summary>
 	/// Writes a string vector to file, strings are inputed line by line
@@ -78,7 +78,18 @@ protected:
 	/// <summary>
 	/// Sorts strings and removes duplicates
 	/// </summary>
-	/// <param name="strings"></param>
 	void SortAndUniqueStrings(vector<string>& strings);
+
+	/// <summary>
+	/// reads a index string map from file, format of comma sperated pairs on new lines
+	/// </summary>
+	map<uint8_t, string> ReadStringIndexFile(string filePath);
+
+	/// <summary>
+	/// Writes an index and string map to file, as comma seperated pair on seperate lines
+	/// </summary>
+	void WriteStringIndexFile(string filePath, map<uint8_t, string> contents);
+
+	uint8_t FindNewUniqueKey(string word, const map<uint8_t,string>& currentMap);
 };
 

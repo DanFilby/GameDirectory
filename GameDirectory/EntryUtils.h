@@ -6,6 +6,8 @@
 #include "Common.h"
 #include "Database.h"
 
+
+
 enum EntryType : uint16_t { ET_Base = 0, ET_Game = 1, ET_Studio = 2 };
 using ENTRYID = uint16_t;
 
@@ -97,7 +99,7 @@ struct GameRatings {
 
 class GenreListDataBase : Database, StringFileMan {
 
-	const uint8_t MAXCOUNT_GENRE = 100;
+	const uint8_t MAXCOUNT_GENRE = 255;
 	const uint8_t MAXLEN_GENRE = 32;
 
 	const string GENRELIST_FNAME = "Genre-List.dat";
@@ -124,7 +126,7 @@ public:
 	void UpdateGenreListFile();
 
 private:
-	vector<string> mGenreList;
+	map<uint8_t, string> mGenreList;
 
 };
 
@@ -133,16 +135,14 @@ private:
 //the list will be weighted, meaning a total of 100 points to be split between genres
 //hash genres which is how i will refernece them
 struct GameGenres {
-
-
-
+	uint8_t genreIds[8];
 
 
 };
 
 class TagListDataBase : Database, StringFileMan {
 
-	const uint8_t MAXCOUNT_TAGS = 200;
+	const uint8_t MAXCOUNT_TAGS = 255;
 	const uint8_t MAXLEN_TAGS = 20;
 
 	const string TAGLIST_FNAME = "Tag-List.dat";
@@ -169,5 +169,5 @@ public:
 	void UpdateTagListFile();
 
 private:
-	vector<string> mTagList;
+	map<uint8_t, string> mTagList;
 };

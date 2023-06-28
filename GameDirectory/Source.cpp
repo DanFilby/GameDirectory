@@ -18,17 +18,16 @@ void DataBase() {
      //dataBase.mActiveEntries.clear();
      //dataBase.mActiveEntries.push_back(info);dataBase.mActiveEntries.push_back(info2);dataBase.mActiveEntries.push_back(info23);
 
-     /*tagDB.AddTag("Fast Paced");
+     tagDB.AddTag("Fast Paced");
      tagDB.AddTag("Open World");
      tagDB.AddTag("Zombies");
-     tagDB.AddTag("Favourites");*/
-
+     tagDB.AddTag("Favourites");
 
      dataBase.UpdateEntriesFile();
      dataBase.PrintActiveEntries();
 
      gdatabase.PrintGenreList();
-     //gdatabase.UpdateGenreListFile();
+     gdatabase.UpdateGenreListFile();
 
      tagDB.PrintTagList();
      //tagDB.UpdateTagListFile();
@@ -41,6 +40,7 @@ void AppStart() {
 }
 
 void AppClose() {
+    cout << "\n";
     appDbManager->Close();
 }
 
@@ -77,8 +77,6 @@ int main()
     cout << "id: " << info2.id << "\n";
     cout << "type: " << info2.type << "\n";
     cout << "year: " << info.year << "\n";
-
-    cout << "\n";
 
     AppClose();
 }

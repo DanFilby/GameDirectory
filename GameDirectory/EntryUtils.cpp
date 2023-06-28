@@ -7,21 +7,6 @@ GenreListDataBase::GenreListDataBase()
 	LoadGenres();
 }
 
-void GenreListDataBase::AddGenre(string genre)
-{
-	//limit the genre's length
-	if (genre.size() > MAXLEN_GENRE) { genre.resize(MAXLEN_GENRE); }
-
-	//check within maximum size
-	if (mGenreList.size() < MAXCOUNT_GENRE) {
-		mGenreList.push_back(genre);
-		SortAndUniqueStrings(mGenreList);
-	}
-	else {
-		std::cout << "Max genre count reached";
-	}
-}
-
 
 void GenreListDataBase::DirectoriesCheck()
 {
@@ -29,12 +14,28 @@ void GenreListDataBase::DirectoriesCheck()
 	assert(IsDirVaild(DIR_PATH));
 }
 
+void GenreListDataBase::AddGenre(string genre)
+{
+	//limit the genre's length
+	if (genre.size() > MAXLEN_GENRE) { genre.resize(MAXLEN_GENRE); }
+
+	uint8_t genreKey = FindNewUniqueKey(genre, mGenreList);
+
+	//check within maximum size
+	if (mGenreList.size() < MAXCOUNT_GENRE && genreKey != 0) {
+		//add genre, with its key, to the map
+		mGenreList.emplace(std::make_pair(genreKey, genre));
+	}
+	else {
+		std::cout << "Unable to add new genre\n";
+	}
+}
 
 void GenreListDataBase::PrintGenreList()
 {
 	std::cout << "Genres: \n";
-	for (const string& genre : mGenreList) {
-		std::cout << genre << "\n";
+	for (const auto& genrePair : mGenreList) {
+		std::cout<< (int)genrePair.first << " | " << genrePair.second << "\n";
 	}
 	std::cout << "\n";
 }
@@ -48,14 +49,13 @@ void GenreListDataBase::LoadGenres()
 		return;
 	}
 
-	mGenreList = LoadStringFile(DIR_PATH + GENRELIST_FNAME);
+	mGenreList = ReadStringIndexFile(DIR_PATH + GENRELIST_FNAME);
 }
 
 
 void GenreListDataBase::UpdateGenreListFile()
 {
-	SortAndUniqueStrings(mGenreList);
-	WriteStringFile(DIR_PATH + GENRELIST_FNAME, mGenreList);
+	WriteStringIndexFile(DIR_PATH + GENRELIST_FNAME, mGenreList);
 }
 
 TagListDataBase::TagListDataBase()
@@ -76,21 +76,24 @@ void TagListDataBase::AddTag(string tag)
 	//limit tag's length
 	if (tag.size() > MAXLEN_TAGS) { tag.resize(MAXLEN_TAGS); }
 
+	uint8_t tagKey = FindNewUniqueKey(tag, mTagList);
+
+
 	//check within maximum size
 	if (mTagList.size() < MAXCOUNT_TAGS) {
-		mTagList.push_back(tag);
-		SortAndUniqueStrings(mTagList);
+		//add the tag, with its key, to the map
+		mTagList.emplace(std::make_pair(tagKey, tag));
 	}
 	else {
-		std::cout << "Max genre count reached";
+		std::cout << "Unable to add new tag\n";
 	}
 }
 
 void TagListDataBase::PrintTagList()
 {
 	std::cout << "Tags: \n";
-	for (const string& tag : mTagList) {
-		std::cout << tag << "\n";
+	for (const auto& tagPair : mTagList) {
+		std::cout << (int)tagPair.first << " | " << tagPair.second << "\n";
 	}
 	std::cout << "\n";
 }
@@ -103,11 +106,10 @@ void TagListDataBase::LoadTags()
 		return;
 	}
 
-	mTagList = LoadStringFile(DIR_PATH + TAGLIST_FNAME);
+	mTagList = ReadStringIndexFile(DIR_PATH + TAGLIST_FNAME);
 }
 
 void TagListDataBase::UpdateTagListFile()
 {
-	SortAndUniqueStrings(mTagList);
-	WriteStringFile(DIR_PATH + TAGLIST_FNAME, mTagList);
+	WriteStringIndexFile(DIR_PATH + TAGLIST_FNAME, mTagList);
 }
