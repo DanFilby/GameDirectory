@@ -38,7 +38,7 @@ bool Database::FileReadCheck(string filePath)
 	//check file exsists
 	if (!std::filesystem::exists(path(filePath))) {
 
-		std::cout << filePath << " - file don't exsist\n";
+		std::cout << filePath << " - file doesn't exsist\n";
 
 		//create and check file
 		ofstream file = ofstream(filePath);
@@ -57,6 +57,11 @@ bool Database::FileReadCheck(string filePath)
 	std::cout << filePath << " - valid\n\n";
 
 	return true;
+}
+
+void Database::DirectoriesCheck()
+{
+	SetupDir(DIR_PATH);
 }
 
 vector<string> StringFileMan::LoadStringFile(string filePath)
@@ -91,6 +96,13 @@ void StringFileMan::WriteStringFile(string filePath, vector<string> contents)
 	}
 
 	fileStream.close();
+}
+
+void StringFileMan::SortAndUniqueStrings(vector<string>& strings)
+{
+	//sort and remove any duplicate genres
+	std::sort(strings.begin(), strings.end());
+	strings.erase(unique(strings.begin(), strings.end()), strings.end());
 }
 
 

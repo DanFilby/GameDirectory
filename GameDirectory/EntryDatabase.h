@@ -43,18 +43,17 @@ public:
 	/// </summary>
 	void UpdateEntriesFile();
 
-private:
-	
 	/// <summary>
 	/// Checks for the correct folders, creates them if they don't exsist
 	/// </summary>
 	void DirectoriesCheck();
 
+private:
+
 	/// <summary>
 	/// Reads entries file to find all saved entry's summary : id, name and type
 	/// </summary>
 	void LoadEntries();
-
 
 	//all entries found on start-up or added during the session 
 public:	vector<EntryInfo_Short> mActiveEntries;

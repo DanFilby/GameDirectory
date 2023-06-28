@@ -9,6 +9,7 @@ shared_ptr<DatabaseManager> appDbManager;
 void DataBase() {
      EntryDatabase dataBase{};
      GenreListDataBase gdatabase{};
+     TagListDataBase tagDB{};
 
      EntryInfo_Short info{ 1, ET_Game, 2023, "Penguin Village" };
      EntryInfo_Short info2{ 2, ET_Game, 2022, "Back to hell" };
@@ -17,11 +18,20 @@ void DataBase() {
      //dataBase.mActiveEntries.clear();
      //dataBase.mActiveEntries.push_back(info);dataBase.mActiveEntries.push_back(info2);dataBase.mActiveEntries.push_back(info23);
 
+     /*tagDB.AddTag("Fast Paced");
+     tagDB.AddTag("Open World");
+     tagDB.AddTag("Zombies");
+     tagDB.AddTag("Favourites");*/
+
+
      dataBase.UpdateEntriesFile();
      dataBase.PrintActiveEntries();
 
      gdatabase.PrintGenreList();
      //gdatabase.UpdateGenreListFile();
+
+     tagDB.PrintTagList();
+     //tagDB.UpdateTagListFile();
 }
 
 void AppStart() {

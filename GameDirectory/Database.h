@@ -38,6 +38,11 @@ public:
 	/// Checks the file is valid, and not empty
 	/// </summary>
 	bool FileReadCheck(string filePath);
+
+	/// <summary>
+	/// Checks directories are valid
+	/// </summary>
+	virtual void DirectoriesCheck();
 };
 
 /// <summary>
@@ -52,6 +57,8 @@ public:
 
 	void Close();
 };
+//TODO: Might need to move this to new header and contain the other databases to setup genre and tag
+
 
 /// <summary>
 /// File manager for simple string files, stores strings to a given line by line and returs using vectors
@@ -67,5 +74,11 @@ protected:
 	/// Writes a string vector to file, strings are inputed line by line
 	/// </summary>
 	void WriteStringFile(string filePath, vector<string> contents);
+
+	/// <summary>
+	/// Sorts strings and removes duplicates
+	/// </summary>
+	/// <param name="strings"></param>
+	void SortAndUniqueStrings(vector<string>& strings);
 };
 

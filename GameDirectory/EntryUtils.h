@@ -97,10 +97,17 @@ struct GameRatings {
 
 class GenreListDataBase : Database, StringFileMan {
 
-	const uint16_t MAXGENRECOUNT = 100;
+	const uint8_t MAXCOUNT_GENRE = 100;
+	const uint8_t MAXLEN_GENRE = 32;
+
 	const string GENRELIST_FNAME = "Genre-List.dat";
 public:
 	GenreListDataBase();
+
+	/// <summary>
+	/// Checks any neccessary folders exsist
+	/// </summary>
+	void DirectoriesCheck();
 
 	string GetGenre(int hash);
 
@@ -117,16 +124,8 @@ public:
 	void UpdateGenreListFile();
 
 private:
-	/// <summary>
-	/// Checks any neccessary folders exsist
-	/// </summary>
-	void DirectoriesCheck();
-	/// <summary>
-	/// Sorts genres alphabetically and removes duplicates
-	/// </summary>
-	void SortGenres();
-
 	vector<string> mGenreList;
+
 };
 
 //list of genres stored locally, which can be added by users
@@ -139,4 +138,36 @@ struct GameGenres {
 
 
 
-}; 
+};
+
+class TagListDataBase : Database, StringFileMan {
+
+	const uint8_t MAXCOUNT_TAGS = 200;
+	const uint8_t MAXLEN_TAGS = 20;
+
+	const string TAGLIST_FNAME = "Tag-List.dat";
+
+public:
+	TagListDataBase();
+
+	/// <summary>
+	/// Checks any neccessary folders exsist
+	/// </summary>
+	void DirectoriesCheck();
+
+	void AddTag(string tag);
+	void PrintTagList();
+
+	/// <summary>
+	/// Loads genres from file into memory
+	/// </summary>
+	void LoadTags();
+
+	/// <summary>
+	/// Updates the genre list file with any genres added during runtime
+	/// </summary>
+	void UpdateTagListFile();
+
+private:
+	vector<string> mTagList;
+};
