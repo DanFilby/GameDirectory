@@ -7,48 +7,56 @@ GenreListDataBase::GenreListDataBase()
 	LoadGenres();
 }
 
+void GenreListDataBase::AddGenre(string genre)
+{
+	//check within maximum size
+	if (mGenreList.size() < MAXGENRECOUNT) {
+		mGenreList.push_back(genre);
+		SortGenres();
+	}
+	else {
+		std::cout << "Max genre count reached";
+	}
+
+}
+
+
 void GenreListDataBase::DirectoriesCheck()
 {
 	//check data directory is valid	
 	assert(IsDirVaild(DIR_PATH));
 }
 
+void GenreListDataBase::SortGenres()
+{
+	//sort and remove any duplicate genres
+	std::sort(mGenreList.begin(), mGenreList.end());
+	mGenreList.erase(unique(mGenreList.begin(), mGenreList.end()), mGenreList.end());
+}
+
+void GenreListDataBase::PrintGenreList()
+{
+	std::cout << "Genres: \n";
+	for (const string& genre : mGenreList) {
+		std::cout << genre << "\n";
+	}
+	std::cout << "\n";
+}
+
+//Loads genres from file
 void GenreListDataBase::LoadGenres()
 {
+	//check file's valid
 	if (!FileReadCheck(DIR_PATH + GENRELIST_FNAME)) {
 		std::cout << "Error - " << GENRELIST_FNAME << " file not valid\n";
 		return;
 	}
 
-	ifstream genreListFile = ifstream(DIR_PATH + GENRELIST_FNAME, std::ios::in);
-
-	mGenreList.clear();
-	string genreBuf;
-
-	if (genreListFile.is_open()) {
-		while (genreListFile.good()) {
-
-			//read genre and add to list
-			genreListFile >> genreBuf;
-			mGenreList.push_back(string(genreBuf));
-		}
-	}
-
-	genreListFile.close();
+	mGenreList = LoadStringFile(DIR_PATH + GENRELIST_FNAME);
 }
 
 
 void GenreListDataBase::UpdateGenreListFile()
 {
-	//open files output stream, deletes old files contents
-	ofstream genreListFile = ofstream(DIR_PATH + GENRELIST_FNAME, std::ios::out, std::ios::trunc);
-
-	//loop over genres and add each as its own line 
-	for (const string& genre : mGenreList) {
-		genreListFile << genre << "\n";
-	}
-
-	genreListFile.close();
+	WriteStringFile(DIR_PATH + GENRELIST_FNAME, mGenreList);
 }
-
-//TODO: create duplicate check function, sort as well

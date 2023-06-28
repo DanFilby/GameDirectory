@@ -1,13 +1,12 @@
 #include "Database.h"
 
-void Database::Init()
+void DatabaseManager::AppInit()
 {
 	SetupDir(DIR_PATH);
 }
 
-void Database::Close()
+void DatabaseManager::Close()
 {
-
 }
 
 bool Database::IsDirVaild(string dirPath)
@@ -55,7 +54,43 @@ bool Database::FileReadCheck(string filePath)
 	}
 
 	//otherwise file is fine and not empty
-	std::cout << filePath << " - file is valid\n\n";
+	std::cout << filePath << " - valid\n\n";
 
 	return true;
 }
+
+vector<string> StringFileMan::LoadStringFile(string filePath)
+{
+	ifstream fileStream = ifstream(filePath, std::ios::in);
+
+	vector<string> fileContents;
+	string stringBuf;
+
+	//loop over file and insert each line into the genre list
+	if (fileStream.is_open()) {
+		while (fileStream.good()) {
+
+			//read genre and add to list
+			std::getline(fileStream, stringBuf);
+			fileContents.push_back(string(stringBuf));
+		}
+	}
+	
+	fileStream.close();
+	return fileContents;
+}
+
+void StringFileMan::WriteStringFile(string filePath, vector<string> contents)
+{
+	//open files output stream, deletes old files contents
+	ofstream fileStream = ofstream(filePath, std::ios::out, std::ios::trunc);
+
+	//loop over genres and add each as its own line 
+	for (const string& line : contents) {
+		fileStream << line << "\n";
+	}
+
+	fileStream.close();
+}
+
+

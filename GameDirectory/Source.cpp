@@ -3,9 +3,8 @@ using std::cout;
 
 #include "Common.h"
 #include "EntryDatabase.h"
-#include "entries.h"
 
-
+shared_ptr<DatabaseManager> appDbManager;
 
 void DataBase() {
      EntryDatabase dataBase{};
@@ -18,26 +17,21 @@ void DataBase() {
      //dataBase.mActiveEntries.clear();
      //dataBase.mActiveEntries.push_back(info);dataBase.mActiveEntries.push_back(info2);dataBase.mActiveEntries.push_back(info23);
 
-     gdatabase.mGenreList.push_back("Action");
-     gdatabase.mGenreList.push_back("Strategy");
-     gdatabase.mGenreList.push_back("Role Playing Game");
-     gdatabase.mGenreList.push_back("Adventure");
-     gdatabase.mGenreList.push_back("Sports");
-     gdatabase.mGenreList.push_back("First Person Shooter");
-
-     //gdatabase.UpdateGenreListFile();
-
      dataBase.UpdateEntriesFile();
      dataBase.PrintActiveEntries();
+
+     gdatabase.PrintGenreList();
+     //gdatabase.UpdateGenreListFile();
 }
 
 void AppStart() {
-    Database database;
-    database.Init();
+    //inits directories for entire app
+    appDbManager = shared_ptr<DatabaseManager>();
+    appDbManager->AppInit();
 }
 
 void AppClose() {
-    
+    appDbManager->Close();
 }
 
 
@@ -46,8 +40,6 @@ int main()
     AppStart();
 
     DataBase();
-
-    std::cout << "Hello World!\n";
 
     auto ge = make_shared<GameEntry>();
     auto entry = dynamic_pointer_cast<Entry>(ge);

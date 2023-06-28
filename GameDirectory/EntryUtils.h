@@ -95,24 +95,38 @@ struct GameRatings {
 	}
 };
 
-class GenreListDataBase : Database {
+class GenreListDataBase : Database, StringFileMan {
 
+	const uint16_t MAXGENRECOUNT = 100;
 	const string GENRELIST_FNAME = "Genre-List.dat";
-
 public:
 	GenreListDataBase();
 
 	string GetGenre(int hash);
 
+	void AddGenre(string genre);
+	void PrintGenreList();
+
+	/// <summary>
+	/// Loads genres from file into memory
+	/// </summary>
 	void LoadGenres();
+	/// <summary>
+	/// Updates the genre list file with any genres added during runtime
+	/// </summary>
 	void UpdateGenreListFile();
 
 private:
+	/// <summary>
+	/// Checks any neccessary folders exsist
+	/// </summary>
 	void DirectoriesCheck();
+	/// <summary>
+	/// Sorts genres alphabetically and removes duplicates
+	/// </summary>
+	void SortGenres();
 
-public:
 	vector<string> mGenreList;
-
 };
 
 //list of genres stored locally, which can be added by users
