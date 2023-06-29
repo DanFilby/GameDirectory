@@ -111,7 +111,8 @@ public:
 	/// </summary>
 	void DirectoriesCheck();
 
-	string GetGenre(int hash);
+	string GetGenre(uint8_t key);
+	uint8_t GetKey(string genre);
 
 	void AddGenre(string genre);
 	void PrintGenreList();
@@ -135,8 +136,41 @@ private:
 //the list will be weighted, meaning a total of 100 points to be split between genres
 //hash genres which is how i will refernece them
 struct GameGenres {
-	uint8_t genreIds[8];
+	static const uint16_t NUM_GENRES = 8;
 
+	uint8_t genreIds[NUM_GENRES];
+
+	GenreListDataBase* genreDatabase;
+
+	GameGenres(GenreListDataBase* _genreDatabase) {
+
+	}
+
+	GameGenres(GenreListDataBase* _genreDatabase, unique_ptr<char[]> binaryData) {
+		genreDatabase = _genreDatabase;
+		memcpy(&genreIds[0], &binaryData.get()[0], sizeof(uint8_t) * NUM_GENRES);
+	}
+	
+	vector<string> GetGenres() {
+		if (!genreDatabase) { return; }
+
+		vector<string> output;
+
+		for (const uint8_t& genreKey : genreIds) {
+			output.push_back(genreDatabase->GetGenre(genreKey));
+		}
+
+		return output;
+	}
+
+	unique_ptr<char[]> ToBinary() const {
+		unique_ptr<char[]> binaryData = unique_ptr<char[]>(new char[NUM_GENRES]);
+
+		std::memcpy(&binaryData.get()[0], &genreIds[0], sizeof(uint8_t) * NUM_GENRES);
+
+		return binaryData;
+	}
+	
 
 };
 

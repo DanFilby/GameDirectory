@@ -14,6 +14,22 @@ void GenreListDataBase::DirectoriesCheck()
 	assert(IsDirVaild(DIR_PATH));
 }
 
+string GenreListDataBase::GetGenre(uint8_t key)
+{
+	return string(mGenreList[key]);
+}
+
+uint8_t GenreListDataBase::GetKey(string genre)
+{
+	uint8_t keyFound = 0;
+	for (const auto& genrePair : mGenreList) {
+		if (genrePair.second.compare(genre)) {
+			keyFound = genrePair.first;
+		}
+	}
+	return keyFound;
+}
+
 void GenreListDataBase::AddGenre(string genre)
 {
 	//limit the genre's length
