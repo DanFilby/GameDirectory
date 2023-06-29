@@ -93,7 +93,13 @@ int main()
     cout << "type: " << info2.type << "\n";
     cout << "year: " << info.year << "\n";
 
+    GameRatings ratings(8.0f,9.0f,5.5f,3.1f);
 
+    unique_ptr<char[]> ratingsBinDat = ratings.ToBinary();
+
+    GameRatings ratings2(ratingsBinDat.get());
+
+    ratings2.DisplayAllRatings();
 
 
     AppClose();

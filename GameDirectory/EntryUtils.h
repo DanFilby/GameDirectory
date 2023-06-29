@@ -69,8 +69,27 @@ struct EntryInfo_Short {
 struct GameRatings {
 	uint8_t Overall, Gameplay, Narrative, Replayability;
 
+	/// <summary>
+	/// Initalise game ratings usings 8 bytes each, ranging from 0-20, actual rating is halved to allow for 7.5 etc.
+	/// </summary>
 	GameRatings(uint8_t _overall, uint8_t _gameplay, uint8_t _Narrative, uint8_t _replayability)
 		: Overall(_overall), Gameplay(_gameplay), Narrative(_Narrative), Replayability(_replayability) {
+	}
+
+	GameRatings(float _overall, float _gameplay, float _Narrative, float _replayability) {
+		Overall = uint8_t(std::clamp(_overall, 0.0f, 10.0f) * 2);
+		Gameplay = uint8_t(std::clamp(_gameplay, 0.0f, 10.0f) * 2);
+		Narrative = uint8_t(std::clamp(_Narrative, 0.0f, 10.0f) * 2);
+		Replayability = uint8_t(std::clamp(_replayability, 0.0f, 10.0f) * 2);
+		//TODO: Extract into inline float to uint func
+	}
+
+	GameRatings(char* binaryData)
+		:Overall(), Gameplay(), Narrative(), Replayability(){
+		memcpy(&Overall, &binaryData[0], sizeof(uint8_t));
+		memcpy(&Gameplay, &binaryData[1], sizeof(uint8_t));
+		memcpy(&Narrative, &binaryData[2], sizeof(uint8_t));
+		memcpy(&Replayability, &binaryData[3], sizeof(uint8_t));
 	}
 
 	GameRatings()
@@ -91,10 +110,19 @@ struct GameRatings {
 		for (size_t i = 0; i < rating / 2; i++) { result += "* "; }
 
 		//fill empty stars
-		for (size_t i = 0; i < (10 - rating / 2); i++) { result += "0 "; }
+		for (size_t i = 0; i < (10 - rating / 2); i++) { result += "O "; }
 
 		return result;
 	}
+
+	unique_ptr<char[]> ToBinary() {
+		unique_ptr<char[]> binaryData = unique_ptr<char[]>(new char[4]);
+		binaryData[0] = char(Overall);binaryData[1] = char(Gameplay);
+		binaryData[2] = char(Narrative);binaryData[3] = char(Replayability);
+
+		return binaryData;
+	}
+
 };
 
 class GenreListDataBase : Database, StringFileMan {

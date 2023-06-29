@@ -34,9 +34,15 @@ public:
 	EntryDatabase();
 	~EntryDatabase();
 
+	EntryInfo_Short GetEntry(ENTRYID id);
+	EntryInfo_Short GetEntry(ENTRYID id, bool& found);
+
 	int GetEntryCount();
 	std::map<EntryType, int> GetEntryTypeCount();
 	void PrintActiveEntries();
+
+	bool IsDuplicate(const EntryInfo_Short entrySum);
+	bool SetUniqueId(EntryInfo_Short& entrySum);
 
 	/// <summary>
 	/// writes all the current entries' summary to the entries file

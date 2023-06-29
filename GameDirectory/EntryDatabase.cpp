@@ -17,6 +17,24 @@ EntryDatabase::~EntryDatabase()
 {
 }
 
+EntryInfo_Short EntryDatabase::GetEntry(ENTRYID id)
+{
+	bool discard;
+	return GetEntry(id, discard);
+}
+
+EntryInfo_Short EntryDatabase::GetEntry(ENTRYID id, bool& found)
+{
+	for (const auto& entry : mActiveEntries) {
+		if (entry.id == id) {
+			found = true;
+			return entry;
+		}
+	}
+	found = false;
+	return NULL;
+}
+
 int EntryDatabase::GetEntryCount()
 {
 	return mActiveEntries.size();
@@ -42,6 +60,42 @@ void EntryDatabase::PrintActiveEntries()
 		std::cout << "info type: " << entry.type << "\n";
 		std::cout << "info year: " << entry.year << "\n\n";
 	}
+}
+
+bool EntryDatabase::IsDuplicate(const EntryInfo_Short entrySum)
+{
+	for (const auto& curEntry : mActiveEntries) {
+		//only duplicate if an entry with the same name and year exsits 
+		if (entrySum.name == curEntry.name && entrySum.year == curEntry.year) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool EntryDatabase::SetUniqueId(EntryInfo_Short& entrySum)
+{
+	if (IsDuplicate(entrySum)) { return false; }
+
+	ENTRYID entryNewId = rand();
+	bool idExsits;
+
+	for (size_t i = 0; i < 20; i++)
+	{
+		GetEntry(entryNewId, idExsits);
+
+		if (entryNewId != 0 || !idExsits) {
+			continue;
+		}
+		entryNewId = rand();
+	}
+
+	//successfully found a unique id
+	if (entryNewId != 0 || !idExsits) {
+		entrySum.id = entryNewId;
+		return true;
+	}
+	else { return false; }
 }
 
 void EntryDatabase::DirectoriesCheck()

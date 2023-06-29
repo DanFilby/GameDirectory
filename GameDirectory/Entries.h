@@ -88,12 +88,5 @@ public:
 
 };
 
-//builder for video game has a studio step so can setup multiple studios
 
-class EntryBuilder {
-
-
-
-
-};
 
