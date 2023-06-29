@@ -143,16 +143,36 @@ struct GameGenres {
 	GenreListDataBase* genreDatabase;
 
 	GameGenres(GenreListDataBase* _genreDatabase) {
-
+		//set up empty ids and genre database
+		memset(&genreIds, 0, NUM_GENRES);
+		genreDatabase = _genreDatabase;
 	}
 
-	GameGenres(GenreListDataBase* _genreDatabase, unique_ptr<char[]> binaryData) {
+	GameGenres(GenreListDataBase* _genreDatabase, char* binaryData) {
+		//set up empty ids and genre database
 		genreDatabase = _genreDatabase;
-		memcpy(&genreIds[0], &binaryData.get()[0], sizeof(uint8_t) * NUM_GENRES);
+		memcpy(&genreIds[0], binaryData, sizeof(uint8_t) * NUM_GENRES);
 	}
 	
+	void AddGenre(uint8_t genreKey) {
+		for (auto& curId : genreIds) {
+			if (curId == 0) {
+				//found empty genre slot, update with new genre and return
+				curId = genreKey;
+				return;
+			}
+		}
+		//if ids list is full replace last genre
+		genreIds[NUM_GENRES - 1] = genreKey;
+	}
+
+	void AddGenre(uint8_t genreKey, int index) {
+		index = std::clamp(index, 0, NUM_GENRES - 1);
+		genreIds[index] = genreKey;
+	}
+
 	vector<string> GetGenres() {
-		if (!genreDatabase) { return; }
+		if (!genreDatabase) { return vector<string>(); }
 
 		vector<string> output;
 
@@ -170,8 +190,6 @@ struct GameGenres {
 
 		return binaryData;
 	}
-	
-
 };
 
 class TagListDataBase : Database, StringFileMan {

@@ -23,7 +23,7 @@ uint8_t GenreListDataBase::GetKey(string genre)
 {
 	uint8_t keyFound = 0;
 	for (const auto& genrePair : mGenreList) {
-		if (genrePair.second.compare(genre)) {
+		if (genrePair.second == genre) {
 			keyFound = genrePair.first;
 		}
 	}

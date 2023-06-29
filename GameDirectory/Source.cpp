@@ -27,10 +27,25 @@ void DataBase() {
      dataBase.PrintActiveEntries();
 
      gdatabase.PrintGenreList();
-     gdatabase.UpdateGenreListFile();
+     //gdatabase.UpdateGenreListFile();
 
      tagDB.PrintTagList();
      //tagDB.UpdateTagListFile();
+
+     GameGenres genres(&gdatabase);
+     genres.AddGenre(gdatabase.GetKey("Strategy"));
+     genres.AddGenre(gdatabase.GetKey("Racing"));
+     genres.AddGenre(gdatabase.GetKey("Casual"));
+
+     unique_ptr<char[]> binGenre = genres.ToBinary();
+
+     GameGenres genresRe = GameGenres(&gdatabase, binGenre.get());
+
+     cout << "Genre 1: " << genresRe.GetGenres()[0] << "\n";
+     cout << "Genre 2: " << genresRe.GetGenres()[1] << "\n";
+     cout << "Genre 3: " << genresRe.GetGenres()[2] << "\n\n";
+
+
 }
 
 void AppStart() {
@@ -78,6 +93,10 @@ int main()
     cout << "type: " << info2.type << "\n";
     cout << "year: " << info.year << "\n";
 
+
+
+
     AppClose();
 }
 
+//TODO: Move all testing to an actual unit test set up
