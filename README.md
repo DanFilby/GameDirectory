@@ -7,5 +7,5 @@ Things learnt:
 - Deeper understanding of memory, use of memcpy and binary serializing
 - C++ Filesystem library
 - Builder design pattern (in progress)
-
+- CSV files in C++
 
