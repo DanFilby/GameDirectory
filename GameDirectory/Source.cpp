@@ -75,7 +75,7 @@ int main()
 
     string gameName = "Penguin village";
 
-    EntryInfo_Short info = ge.get()->GetInfo_Short();
+    EntryInfo_Short info = ge.get()->GetSummary();
 
     //EntryInfo_Short info{ 662, T_Game, gameName };
 

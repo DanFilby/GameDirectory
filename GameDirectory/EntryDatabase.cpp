@@ -17,6 +17,19 @@ EntryDatabase::~EntryDatabase()
 {
 }
 
+void EntryDatabase::AddEntry(Entry& entry)
+{
+	EntryInfo_Short entrySum = entry.GetSummary();
+
+	//check it's not a duplicate
+	if (IsDuplicate(entrySum)) {return;}
+
+	RemoveTempId(entrySum.id);
+
+	mActiveEntries.push_back(entrySum);
+	UpdateEntriesFile();
+}
+
 EntryInfo_Short EntryDatabase::GetEntry(ENTRYID id)
 {
 	bool discard;
@@ -75,16 +88,29 @@ bool EntryDatabase::IsDuplicate(const EntryInfo_Short entrySum)
 
 bool EntryDatabase::SetUniqueId(EntryInfo_Short& entrySum)
 {
+	int uniqueId{};
+	bool success = GetUniqueId(entrySum, uniqueId);
+
+	if (success) {
+		//set the new id
+		entrySum.id = uniqueId;
+		return true;
+	}
+	else { return false; }
+}
+
+bool EntryDatabase::GetUniqueId(EntryInfo_Short entrySum, int outId)
+{
 	if (IsDuplicate(entrySum)) { return false; }
 
 	ENTRYID entryNewId = rand();
 	bool idExsits;
 
-	for (size_t i = 0; i < 20; i++)
+	for (size_t i = 0; i < 50; i++)
 	{
 		GetEntry(entryNewId, idExsits);
 
-		if (entryNewId != 0 || !idExsits) {
+		if (entryNewId != 0 || !idExsits || !TempIdCheck(entryNewId)) {
 			continue;
 		}
 		entryNewId = rand();
@@ -92,7 +118,12 @@ bool EntryDatabase::SetUniqueId(EntryInfo_Short& entrySum)
 
 	//successfully found a unique id
 	if (entryNewId != 0 || !idExsits) {
-		entrySum.id = entryNewId;
+		//set the new id
+		outId = entryNewId;
+
+		//store the id temporary while, so the id doesn't get given while this one is out and not stored  
+		tempIds.push_back(entryNewId);
+
 		return true;
 	}
 	else { return false; }
@@ -133,6 +164,33 @@ void EntryDatabase::LoadEntries()
 
 		mActiveEntries.push_back(entrySummary);
 	}
+}
+
+bool EntryDatabase::TempIdCheck(ENTRYID id)
+{
+	for (auto& tempId : tempIds) {
+		if (tempId == id) {
+			return true;
+		}
+	}
+	return false;
+}
+
+
+void EntryDatabase::RemoveTempId(ENTRYID id)
+{
+	int index = -1, counter = 0;
+	for (auto& tempId : tempIds) {
+		if (tempId == id) {
+			index = counter;
+		}
+		counter++;
+	}
+	//if found, remove
+	if (index != -1) {
+		tempIds.erase(tempIds.begin() + index);
+	}
+
 }
 
 void EntryDatabase::UpdateEntriesFile()

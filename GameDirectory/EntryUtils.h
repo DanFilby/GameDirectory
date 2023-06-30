@@ -7,7 +7,6 @@
 #include "Database.h"
 
 
-
 enum EntryType : uint16_t { ET_Base = 0, ET_Game = 1, ET_Studio = 2 };
 using ENTRYID = uint16_t;
 
@@ -22,8 +21,20 @@ struct EntryInfo_Short {
 	char name[NAMELENGTH];	//Entry's name (26 bytes)
 
 	EntryInfo_Short(ENTRYID _id, EntryType _type, uint16_t _year, string _name) :
-		id(_id), type(_type), year(_year)
-	{
+		id(_id), type(_type), year(_year) {
+
+		//set-up name, restricting to max char count and filling with blank if less than
+		for (size_t i = 0; i < NAMELENGTH - 1; i++)
+		{
+			if (_name.length() > i) { name[i] = _name[i]; }
+			else { name[i] = '\0'; }
+		}
+		name[NAMELENGTH - 1] = '\0';
+	}
+
+	EntryInfo_Short(EntryType _type, uint16_t _year, string _name)
+		:type(_type), year(_year), id(0) {
+
 		//set-up name, restricting to max char count and filling with blank if less than
 		for (size_t i = 0; i < NAMELENGTH - 1; i++)
 		{

@@ -8,22 +8,30 @@ class EntryBuilder {
 public:
 	EntryBuilder(EntryDatabase* _entryDatabase);
 
-	virtual void SetInfo(EntryInfo_Short info);
+	virtual shared_ptr<Entry> BuildEntry();
+	virtual void ClearBuild();
 
-	virtual Entry BuildEntry();
-	virtual void SaveEntry();
+	virtual void SetInfo(EntryInfo_Short info);
+	void SetNameYear(string _name, uint16_t year);
+	void SetName(string _name);
+	void SetYear(uint16_t _year);
+
 
 protected:
 	EntryDatabase* mEntryDatabase;
+
+private:
+	//temp entry which is built through wrapper functions
+	Entry* mCurrentEntry;
 
 };
 
 class GameEntryBuilder : EntryBuilder {
 
 public:
-	GameEntryBuilder();
+	GameEntryBuilder(EntryDatabase* _entryDatabase);
 
-	Entry BuildEntry();
+	shared_ptr<Entry> BuildEntry();
 
 
 };

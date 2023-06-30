@@ -34,6 +34,7 @@ public:
 	EntryDatabase();
 	~EntryDatabase();
 
+	void AddEntry(Entry& entry);
 	EntryInfo_Short GetEntry(ENTRYID id);
 	EntryInfo_Short GetEntry(ENTRYID id, bool& found);
 
@@ -43,6 +44,7 @@ public:
 
 	bool IsDuplicate(const EntryInfo_Short entrySum);
 	bool SetUniqueId(EntryInfo_Short& entrySum);
+	bool GetUniqueId(EntryInfo_Short entrySum, int outId);
 
 	/// <summary>
 	/// writes all the current entries' summary to the entries file
@@ -61,8 +63,16 @@ private:
 	/// </summary>
 	void LoadEntries();
 
+	/// <summary>
+	/// checks the temp ids for a match, returns true if a matching temp id exsists
+	/// </summary>
+	bool TempIdCheck(ENTRYID id);
+	void RemoveTempId(ENTRYID id);
+
 	//all entries found on start-up or added during the session 
-public:	vector<EntryInfo_Short> mActiveEntries;
+	vector<EntryInfo_Short> mActiveEntries;
+
+	vector<ENTRYID> tempIds;
 
 };
 
@@ -99,6 +109,4 @@ struct EntryFileHeader {
 	uint16_t totalEntries, baseEntries, gameEntries, studioEntries;
 };
 
-
-//TODO: Add an 'add entry to database interface'
-//TODO: Add duplicate check, against ids and somewhere against name + year
+//TODO: Add remove entry interface, by id

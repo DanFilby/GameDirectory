@@ -10,9 +10,11 @@
 
 //Base Entry class containing interface for entries and all common member data: ID, Year, Name
 class Entry {
+	friend class EntryBuilder;
 
 public: 
 	Entry();
+	Entry(ENTRYID _id, EntryType _type, uint16_t _year, string _name);
 	virtual ~Entry();
 
 	ENTRYID Id();
@@ -22,7 +24,7 @@ public:
 	/// <summary>
 	/// returns a struct summarizing the entry: id, name and type
 	/// </summary>
-	virtual EntryInfo_Short GetInfo_Short();
+	virtual EntryInfo_Short GetSummary();
 	/// <summary>
 	/// returns a pointer to the summary in raw data format: byte array 
 	/// </summary>
@@ -31,6 +33,7 @@ public:
 
 protected:
 	ENTRYID mId;
+	EntryType mType;
 	uint16_t mYear;
 	string mName;
 };
@@ -50,7 +53,7 @@ public:
 
 	const EntryType Type() { return ET_Game; };
 
-	EntryInfo_Short GetInfo_Short();
+	EntryInfo_Short GetSummary();
 	unique_ptr<char[]> GetRawData_Short();
 
 public:
@@ -83,7 +86,7 @@ public:
 
 	const EntryType Type() { return ET_Studio; };
 
-	EntryInfo_Short GetInfo_Short();
+	EntryInfo_Short GetSummary();
 	unique_ptr<char[]> GetRawData_Short();
 
 };
