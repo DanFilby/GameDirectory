@@ -79,7 +79,7 @@ bool EntryDatabase::IsDuplicate(const EntryInfo_Short entrySum)
 {
 	for (const auto& curEntry : mActiveEntries) {
 		//only duplicate if an entry with the same name and year exsits 
-		if (entrySum.name == curEntry.name && entrySum.year == curEntry.year) {
+		if (strcmp(entrySum.name, curEntry.name) == 0 && entrySum.year == curEntry.year) {
 			return true;
 		}
 	}
@@ -164,6 +164,10 @@ void EntryDatabase::LoadEntries()
 
 		mActiveEntries.push_back(entrySummary);
 	}
+}
+
+void EntryDatabase::RemoveDuplicates()
+{
 }
 
 bool EntryDatabase::TempIdCheck(ENTRYID id)

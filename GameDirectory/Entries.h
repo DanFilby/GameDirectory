@@ -18,10 +18,10 @@ public:
 	Entry(ENTRYID _id, EntryType _type, uint16_t _year, string _name);
 	virtual ~Entry();
 
-	ENTRYID Id();
-	string Name();
-	uint16_t Year();
-	virtual const EntryType Type() { return ET_Base; };
+	ENTRYID Id() { return mId; }
+	string Name() { return mName; }
+	uint16_t Year() { return mYear; }
+	virtual const EntryType Type() { return mType; }
 
 	/// <summary>
 	/// returns a struct summarizing the entry: id, name and type

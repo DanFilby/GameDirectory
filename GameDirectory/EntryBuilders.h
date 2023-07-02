@@ -18,6 +18,10 @@ public:
 
 
 protected:
+	/// <summary>
+	/// checks all required fields for an entry
+	/// </summary>
+	/// <returns> true if rfequired fields are valid </returns>
 	virtual bool RequiredFieldsCheck();
 
 	EntryDatabase* mEntryDatabase;
@@ -25,7 +29,6 @@ protected:
 private:
 	//temp entry which is built through wrapper functions
 	Entry* mCurrentEntry;
-
 };
 
 class GameEntryBuilder : EntryBuilder {

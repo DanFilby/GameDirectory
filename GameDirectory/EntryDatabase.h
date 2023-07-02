@@ -63,6 +63,8 @@ private:
 	/// </summary>
 	void LoadEntries();
 
+	void RemoveDuplicates();
+
 	/// <summary>
 	/// checks the temp ids for a match, returns true if a matching temp id exsists
 	/// </summary>

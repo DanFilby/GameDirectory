@@ -8,19 +8,26 @@ EntryBuilder::EntryBuilder(EntryDatabase* _entryDatabase)
 
 bool EntryBuilder::BuildEntry(shared_ptr<Entry>& entry)
 {
-	//check everything has been built, name etc then assign id
+	//check all required entry fields are filled
+	if (!RequiredFieldsCheck()) {
+		std::cout << "Required entry are fields incomplete\n";
+		return false;
+	}
 
 	//create a copy of the temp entry
 	Entry outputEntry = Entry(*mCurrentEntry);
 	
-	//get a unique id for this entry and set it
-	mEntryDatabase->SetUniqueId(outputEntry);
+	//get and set a unique id for this entry
+	bool databaseCheck = mEntryDatabase->SetUniqueId(outputEntry);
 
-	//set output entry 
+	//return if failed database checks
+	if (!databaseCheck) { std::cout << "Entry failed database checks\n"; return false; }
+
+	//set the returned out entry 
 	entry = make_shared<Entry>(outputEntry);
 
 	//add entry to database
-	//mEntryDatabase->AddEntry(outputEntry);
+	mEntryDatabase->AddEntry(outputEntry);
 
 	return true;
 }
@@ -30,6 +37,8 @@ void EntryBuilder::ClearBuild()
 	if (mCurrentEntry) { delete(mCurrentEntry); }
 	mCurrentEntry = new Entry;
 	mCurrentEntry->mType = ET_Base;
+	mCurrentEntry->mYear = 0;
+	mCurrentEntry->mName.clear();
 }
 
 void EntryBuilder::SetInfo(EntryInfo_Short info)
@@ -57,15 +66,24 @@ void EntryBuilder::SetYear(uint16_t _year)
 
 bool EntryBuilder::RequiredFieldsCheck()
 {
-
-
-
-	return false;
+	//check if year and name have been assigned
+	if (mCurrentEntry->mYear == 0) {
+		std::cout << "Entry missing required field: " << "Year\n";
+		return false;
+	}
+	if (mCurrentEntry->mName.empty()) {
+		std::cout << "Entry missing required field: " << "Name\n";
+		return false;
+	}
+	return true;
 }
 
 bool GameEntryBuilder::RequiredFieldsCheck()
 {
-	bool failed = EntryBuilder::RequiredFieldsCheck();
+	if (!EntryBuilder::RequiredFieldsCheck()) {
+		std::cout << "Base requirements check failed\n";
+		return false;
+	}
 
 
 	return false;

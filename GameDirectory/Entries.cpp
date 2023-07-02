@@ -14,15 +14,6 @@ Entry::~Entry()
 {
 }
 
-ENTRYID Entry::Id() { return mId; }
-
-string Entry::Name() { return mName; }
-
-uint16_t Entry::Year()
-{
-	return mYear;
-}
-
 EntryInfo_Short Entry::GetSummary()
 {
 	//pass game's id, name and the game type into the struct
