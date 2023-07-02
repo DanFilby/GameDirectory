@@ -3,6 +3,7 @@
 EntryBuilder::EntryBuilder(EntryDatabase* _entryDatabase)
 	:mEntryDatabase(_entryDatabase) {
 	ClearBuild();
+	srand(time(NULL));
 }
 
 bool EntryBuilder::BuildEntry(shared_ptr<Entry>& entry)

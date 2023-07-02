@@ -56,7 +56,7 @@ void DataBase() {
          cout << "Successfully built entry:\n"
              << "Id: " << entry1.get()->Id() << "\n"
              << "Name: " << entry1.get()->Name() << "\n"
-             << "Year: " << entry1.get()->Year() << "\n";
+             << "Year: " << entry1.get()->Year() << "\n\n";
      }
 }
 
