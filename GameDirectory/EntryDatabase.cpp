@@ -22,7 +22,7 @@ void EntryDatabase::AddEntry(Entry& entry)
 	EntryInfo_Short entrySum = entry.GetSummary();
 
 	//check it's not a duplicate
-	if (IsDuplicate(entrySum)) {return;}
+	if (IsDuplicateEntry(entrySum)) {return;}
 
 	RemoveTempId(entrySum.id);
 
@@ -75,11 +75,11 @@ void EntryDatabase::PrintActiveEntries()
 	}
 }
 
-bool EntryDatabase::IsDuplicate(const EntryInfo_Short entrySum)
+bool EntryDatabase::IsDuplicateEntry(const EntryInfo_Short entrySum)
 {
 	for (const auto& curEntry : mActiveEntries) {
-		//only duplicate if an entry with the same name and year exsits 
-		if (strcmp(entrySum.name, curEntry.name) == 0 && entrySum.year == curEntry.year) {
+		//entry is a duplicate if another entry with the same name and year exsits, checks using custom == operator
+		if (entrySum == curEntry) {
 			return true;
 		}
 	}
@@ -101,7 +101,7 @@ bool EntryDatabase::SetUniqueId(Entry& entry)
 
 bool EntryDatabase::GetUniqueId(EntryInfo_Short entrySum, int& outId)
 {
-	if (IsDuplicate(entrySum)) { return false; }
+	if (IsDuplicateEntry(entrySum)) { return false; }
 
 	ENTRYID entryNewId = rand();
 	bool idExsits;
@@ -168,6 +168,24 @@ void EntryDatabase::LoadEntries()
 
 void EntryDatabase::RemoveDuplicates()
 {
+	vector<EntryInfo_Short> filteredEntries{};
+	bool duplicate;
+
+	for (const auto & curEntry : mActiveEntries)
+	{
+		duplicate = false;
+		for (const auto& addedEntry : filteredEntries)
+		{
+			if (curEntry == addedEntry) {
+				duplicate = true;
+				break;
+			}
+		}
+		if (!duplicate) {
+			filteredEntries.push_back(curEntry);
+		}
+	}
+	mActiveEntries = filteredEntries;
 }
 
 bool EntryDatabase::TempIdCheck(ENTRYID id)

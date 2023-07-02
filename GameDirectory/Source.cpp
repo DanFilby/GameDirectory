@@ -24,7 +24,7 @@ void DataBase() {
      tagDB.AddTag("Zombies");
      tagDB.AddTag("Favourites");
 
-     dataBase.UpdateEntriesFile();
+     dataBase.RemoveDuplicates();
      dataBase.PrintActiveEntries();
 
      gdatabase.PrintGenreList();
@@ -48,7 +48,7 @@ void DataBase() {
 
      EntryBuilder entryBuilder(&dataBase);
 
-     entryBuilder.SetNameYear("Civ Six", 2015);
+     entryBuilder.SetNameYear("Shady Seals", 2023);
      
      shared_ptr<Entry> entry1;
 
@@ -59,6 +59,9 @@ void DataBase() {
              << "Type: " << entry1.get()->Type() << "\n"
              << "Year: " << entry1.get()->Year() << "\n\n";
      }
+
+     dataBase.UpdateEntriesFile();
+
 }
 
 void AppStart() {

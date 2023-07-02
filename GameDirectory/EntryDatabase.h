@@ -38,13 +38,37 @@ public:
 	EntryInfo_Short GetEntry(ENTRYID id);
 	EntryInfo_Short GetEntry(ENTRYID id, bool& found);
 
-	int GetEntryCount();
+	/// <summary>
+	/// returns a count of each type of entry currently stored
+	/// </summary>
 	std::map<EntryType, int> GetEntryTypeCount();
+	/// <summary>
+	/// returns count of current entries stored
+	/// </summary>
+	int GetEntryCount();
+
 	void PrintActiveEntries();
 
-	bool IsDuplicate(const EntryInfo_Short entrySum);
+	/// <summary>
+	/// checks whether a matching entry is already stored
+	/// </summary>
+	/// <returns> true if found another matching entry </returns>
+	bool IsDuplicateEntry(const EntryInfo_Short entrySum);
+	/// <summary>
+	/// sets a new unique id for the given entry, if valid
+	/// </summary>
+	/// <returns> true is successful </returns>
 	bool SetUniqueId(Entry& entry);
+	/// <summary>
+	/// gets a unique id for the given entry, returned through out param
+	/// </summary>
+	/// <returns> true if successful </returns>
 	bool GetUniqueId(EntryInfo_Short entrySum, int& outId);
+
+	/// <summary>
+	/// removes duplicate entries in mActiveEntries
+	/// </summary>
+	void RemoveDuplicates();
 
 	/// <summary>
 	/// writes all the current entries' summary to the entries file
@@ -62,8 +86,6 @@ private:
 	/// Reads entries file to find all saved entry's summary : id, name and type
 	/// </summary>
 	void LoadEntries();
-
-	void RemoveDuplicates();
 
 	/// <summary>
 	/// checks the temp ids for a match, returns true if a matching temp id exsists

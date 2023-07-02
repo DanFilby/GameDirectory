@@ -74,6 +74,16 @@ struct EntryInfo_Short {
 
 		return binaryData;
 	}
+
+	//overload == for custom comparison
+	bool operator==(const EntryInfo_Short& compareEntry) const{
+		//equal if name and year match
+		if (strcmp(this->name, compareEntry.name) == 0 && this->year == compareEntry.year) {
+			return true;
+		}
+		return false;
+	}
+
 };
 
 //set of ratings for games, each rating is an 8 bit uint, with range of 0-20 to get 0-10 stars with halfs eg 7.5/10
