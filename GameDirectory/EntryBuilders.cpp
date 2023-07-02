@@ -1,20 +1,27 @@
 #include "EntryBuilders.h"
 
 EntryBuilder::EntryBuilder(EntryDatabase* _entryDatabase)
-	:mEntryDatabase() {
+	:mEntryDatabase(_entryDatabase) {
 	ClearBuild();
 }
 
-shared_ptr<Entry> EntryBuilder::BuildEntry()
+bool EntryBuilder::BuildEntry(shared_ptr<Entry>& entry)
 {
 	//check everything has been built, name etc then assign id
 
 	//create a copy of the temp entry
 	Entry outputEntry = Entry(*mCurrentEntry);
+	
+	//get a unique id for this entry and set it
+	mEntryDatabase->SetUniqueId(outputEntry);
 
-	mEntryDatabase->AddEntry(outputEntry);
+	//set output entry 
+	entry = make_shared<Entry>(outputEntry);
 
-	return shared_ptr<Entry>();
+	//add entry to database
+	//mEntryDatabase->AddEntry(outputEntry);
+
+	return true;
 }
 
 void EntryBuilder::ClearBuild()
@@ -47,4 +54,18 @@ void EntryBuilder::SetYear(uint16_t _year)
 	mCurrentEntry->mYear = _year;
 }
 
+bool EntryBuilder::RequiredFieldsCheck()
+{
 
+
+
+	return false;
+}
+
+bool GameEntryBuilder::RequiredFieldsCheck()
+{
+	bool failed = EntryBuilder::RequiredFieldsCheck();
+
+
+	return false;
+}

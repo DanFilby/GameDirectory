@@ -11,6 +11,7 @@
 //Base Entry class containing interface for entries and all common member data: ID, Year, Name
 class Entry {
 	friend class EntryBuilder;
+	friend class EntryDatabase;
 
 public: 
 	Entry();
@@ -19,6 +20,7 @@ public:
 
 	ENTRYID Id();
 	string Name();
+	uint16_t Year();
 	virtual const EntryType Type() { return ET_Base; };
 
 	/// <summary>

@@ -3,6 +3,7 @@ using std::cout;
 
 #include "Common.h"
 #include "EntryDatabase.h"
+#include "EntryBuilders.h"
 
 shared_ptr<DatabaseManager> appDbManager;
 
@@ -45,7 +46,18 @@ void DataBase() {
      cout << "Genre 2: " << genresRe.GetGenres()[1] << "\n";
      cout << "Genre 3: " << genresRe.GetGenres()[2] << "\n\n";
 
+     EntryBuilder entryBuilder(&dataBase);
 
+     entryBuilder.SetNameYear("Civ Six", 2015);
+     
+     shared_ptr<Entry> entry1;
+
+     if (entryBuilder.BuildEntry(entry1)) {
+         cout << "Successfully built entry:\n"
+             << "Id: " << entry1.get()->Id() << "\n"
+             << "Name: " << entry1.get()->Name() << "\n"
+             << "Year: " << entry1.get()->Year() << "\n";
+     }
 }
 
 void AppStart() {
@@ -100,6 +112,8 @@ int main()
     GameRatings ratings2(ratingsBinDat.get());
 
     ratings2.DisplayAllRatings();
+
+
 
 
     AppClose();

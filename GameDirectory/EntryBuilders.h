@@ -8,7 +8,7 @@ class EntryBuilder {
 public:
 	EntryBuilder(EntryDatabase* _entryDatabase);
 
-	virtual shared_ptr<Entry> BuildEntry();
+	virtual bool BuildEntry(shared_ptr<Entry> & entry);
 	virtual void ClearBuild();
 
 	virtual void SetInfo(EntryInfo_Short info);
@@ -18,6 +18,8 @@ public:
 
 
 protected:
+	virtual bool RequiredFieldsCheck();
+
 	EntryDatabase* mEntryDatabase;
 
 private:
@@ -31,7 +33,13 @@ class GameEntryBuilder : EntryBuilder {
 public:
 	GameEntryBuilder(EntryDatabase* _entryDatabase);
 
-	shared_ptr<Entry> BuildEntry();
+	bool BuildEntry(shared_ptr<Entry>& entry);
+	bool BuildGameEntry(shared_ptr<GameEntry>& gameEntry);
 
+private:
+	bool RequiredFieldsCheck();
 
 };
+
+
+//TODO: edit exsisting entry

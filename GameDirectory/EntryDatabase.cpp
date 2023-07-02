@@ -86,20 +86,20 @@ bool EntryDatabase::IsDuplicate(const EntryInfo_Short entrySum)
 	return false;
 }
 
-bool EntryDatabase::SetUniqueId(EntryInfo_Short& entrySum)
+bool EntryDatabase::SetUniqueId(Entry& entry)
 {
 	int uniqueId{};
-	bool success = GetUniqueId(entrySum, uniqueId);
+	bool success = GetUniqueId(entry.GetSummary(), uniqueId);
 
 	if (success) {
 		//set the new id
-		entrySum.id = uniqueId;
+		entry.mId = uniqueId;
 		return true;
 	}
 	else { return false; }
 }
 
-bool EntryDatabase::GetUniqueId(EntryInfo_Short entrySum, int outId)
+bool EntryDatabase::GetUniqueId(EntryInfo_Short entrySum, int& outId)
 {
 	if (IsDuplicate(entrySum)) { return false; }
 
@@ -111,7 +111,7 @@ bool EntryDatabase::GetUniqueId(EntryInfo_Short entrySum, int outId)
 		GetEntry(entryNewId, idExsits);
 
 		if (entryNewId != 0 || !idExsits || !TempIdCheck(entryNewId)) {
-			continue;
+			break;
 		}
 		entryNewId = rand();
 	}
