@@ -18,11 +18,8 @@ bool EntryBuilder::BuildEntry(shared_ptr<Entry>& entry)
 	//create a copy of the temp entry
 	Entry outputEntry = Entry(*mCurrentEntry);
 	
-	//get and set a unique id for this entry
-	bool databaseCheck = mEntryDatabase->SetUniqueId(outputEntry);
-
-	//return if failed database checks
-	if (!databaseCheck) { std::cout << "Entry failed database checks\n"; return false; }
+	//set id to 0, as it's not being added to the database right away 
+	outputEntry.mId = 0;
 
 	//set the returned out entry 
 	entry = make_shared<Entry>(outputEntry);
@@ -32,29 +29,21 @@ bool EntryBuilder::BuildEntry(shared_ptr<Entry>& entry)
 
 bool EntryBuilder::BuildAndSaveEntry(shared_ptr<Entry>& entry)
 {
-	//check all required entry fields are filled
-	if (!RequiredFieldsCheck()) {
-		std::cout << "Required entry are fields incomplete\n";
-		return false;
+	//build the entry normally, if valid set id and save to database
+	if (BuildEntry(entry)) {
+		//get and set a unique id for this entry
+		bool databaseCheck = mEntryDatabase->SetUniqueId(*entry.get());
+
+		//return if failed database checks
+		if (!databaseCheck) { std::cout << "Entry failed database checks\n"; return false; }
+
+		//add entry to database, and save to file
+		mEntryDatabase->AddEntry(*entry.get());
+		mEntryDatabase->UpdateEntriesFile();
+
+		return true;
 	}
-
-	//create a copy of the temp entry
-	Entry outputEntry = Entry(*mCurrentEntry);
-
-	//get and set a unique id for this entry
-	bool databaseCheck = mEntryDatabase->SetUniqueId(outputEntry);
-
-	//return if failed database checks
-	if (!databaseCheck) { std::cout << "Entry failed database checks\n"; return false; }
-
-	//set the returned out entry 
-	entry = make_shared<Entry>(outputEntry);
-
-	//add entry to database
-	mEntryDatabase->AddEntry(outputEntry);
-	mEntryDatabase->UpdateEntriesFile();
-
-	return true;
+	return false;
 }
 
 void EntryBuilder::ClearBuild()

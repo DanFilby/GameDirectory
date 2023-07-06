@@ -34,9 +34,15 @@ public:
 	EntryDatabase();
 	~EntryDatabase();
 
+	/// <summary>
+	/// Add entry to the database, checks for validity but doesn't save to file
+	/// </summary>
 	void AddEntry(Entry& entry);
-	EntryInfo_Short GetEntry(ENTRYID id);
-	EntryInfo_Short GetEntry(ENTRYID id, bool& found);
+
+	EntryInfo_Short GetEntrySum(ENTRYID _id);
+	EntryInfo_Short GetEntrySum(ENTRYID _id, bool& found);
+	ENTRYID GetEntryId(EntryType _type, string _name, uint16_t _year);
+
 
 	/// <summary>
 	/// returns a count of each type of entry currently stored
@@ -50,10 +56,15 @@ public:
 	void PrintActiveEntries();
 
 	/// <summary>
+	/// Check entry is valid to add to the database
+	/// </summary>
+	bool IsValidEntry(const EntryInfo_Short entrySum);
+	/// <summary>
 	/// checks whether a matching entry is already stored
 	/// </summary>
 	/// <returns> true if found another matching entry </returns>
 	bool IsDuplicateEntry(const EntryInfo_Short entrySum);
+
 	/// <summary>
 	/// sets a new unique id for the given entry, if valid
 	/// </summary>

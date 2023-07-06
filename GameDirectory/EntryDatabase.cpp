@@ -21,8 +21,8 @@ void EntryDatabase::AddEntry(Entry& entry)
 {
 	EntryInfo_Short entrySum = entry.GetSummary();
 
-	//check it's not a duplicate
-	if (IsDuplicateEntry(entrySum)) {return;}
+	//if not valid fail
+	if (!IsValidEntry(entry.GetSummary())) { std::cout << "Failed to add entry to database\n"; return; }
 
 	RemoveTempId(entrySum.id);
 
@@ -30,22 +30,32 @@ void EntryDatabase::AddEntry(Entry& entry)
 	UpdateEntriesFile();
 }
 
-EntryInfo_Short EntryDatabase::GetEntry(ENTRYID id)
+EntryInfo_Short EntryDatabase::GetEntrySum(ENTRYID _id)
 {
 	bool discard;
-	return GetEntry(id, discard);
+	return GetEntrySum(_id, discard);
 }
 
-EntryInfo_Short EntryDatabase::GetEntry(ENTRYID id, bool& found)
+EntryInfo_Short EntryDatabase::GetEntrySum(ENTRYID _id, bool& found)
 {
 	for (const auto& entry : mActiveEntries) {
-		if (entry.id == id) {
+		if (entry.id == _id) {
 			found = true;
 			return entry;
 		}
 	}
 	found = false;
 	return NULL;
+}
+
+ENTRYID EntryDatabase::GetEntryId(EntryType _type, string _name, uint16_t _year)
+{
+	for (const auto& entry : mActiveEntries) {
+		if (entry.type == _type && entry.name == _name && entry.year == _year) {
+			return entry.id;
+		}
+	}
+	return 0;
 }
 
 int EntryDatabase::GetEntryCount()
@@ -73,6 +83,11 @@ void EntryDatabase::PrintActiveEntries()
 		std::cout << "info type: " << entry.type << "\n";
 		std::cout << "info year: " << entry.year << "\n\n";
 	}
+}
+
+bool EntryDatabase::IsValidEntry(const EntryInfo_Short entrySum)
+{
+	return (!IsDuplicateEntry(entrySum) && entrySum.id != 0);
 }
 
 bool EntryDatabase::IsDuplicateEntry(const EntryInfo_Short entrySum)
@@ -108,7 +123,7 @@ bool EntryDatabase::GetUniqueId(EntryInfo_Short entrySum, int& outId)
 
 	for (size_t i = 0; i < 50; i++)
 	{
-		GetEntry(entryNewId, idExsits);
+		GetEntrySum(entryNewId, idExsits);
 
 		if (entryNewId != 0 || !idExsits || !TempIdCheck(entryNewId)) {
 			break;

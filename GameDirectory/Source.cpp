@@ -50,11 +50,11 @@ void DataBase() {
 
      EntryBuilder entryBuilder( dataBase);
 
-     entryBuilder.SetNameYear("Fifa23", 2022);
+     entryBuilder.SetNameYear("Fifa22", 2021);
      
      shared_ptr<Entry> entry1;
 
-     if (entryBuilder.BuildEntry(entry1)) {
+     if (entryBuilder.BuildAndSaveEntry(entry1)) {
          cout << "Successfully built entry:\n"
              << "Id: " << entry1.get()->Id() << "\n"
              << "Name: " << entry1.get()->Name() << "\n"
