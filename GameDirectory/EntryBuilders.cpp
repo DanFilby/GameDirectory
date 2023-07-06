@@ -1,7 +1,8 @@
 #include "EntryBuilders.h"
 
-EntryBuilder::EntryBuilder(EntryDatabase* _entryDatabase)
+EntryBuilder::EntryBuilder(shared_ptr<EntryDatabase> _entryDatabase)
 	:mEntryDatabase(_entryDatabase) {
+	//'mEntryDatabase = shared_ptr<EntryDatabase>(_entryDatabase);
 	ClearBuild();
 	srand(time(NULL));
 }
@@ -26,8 +27,32 @@ bool EntryBuilder::BuildEntry(shared_ptr<Entry>& entry)
 	//set the returned out entry 
 	entry = make_shared<Entry>(outputEntry);
 
+	return true;
+}
+
+bool EntryBuilder::BuildAndSaveEntry(shared_ptr<Entry>& entry)
+{
+	//check all required entry fields are filled
+	if (!RequiredFieldsCheck()) {
+		std::cout << "Required entry are fields incomplete\n";
+		return false;
+	}
+
+	//create a copy of the temp entry
+	Entry outputEntry = Entry(*mCurrentEntry);
+
+	//get and set a unique id for this entry
+	bool databaseCheck = mEntryDatabase->SetUniqueId(outputEntry);
+
+	//return if failed database checks
+	if (!databaseCheck) { std::cout << "Entry failed database checks\n"; return false; }
+
+	//set the returned out entry 
+	entry = make_shared<Entry>(outputEntry);
+
 	//add entry to database
 	mEntryDatabase->AddEntry(outputEntry);
+	mEntryDatabase->UpdateEntriesFile();
 
 	return true;
 }

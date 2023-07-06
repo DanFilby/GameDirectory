@@ -8,7 +8,9 @@ using std::cout;
 shared_ptr<DatabaseManager> appDbManager;
 
 void DataBase() {
-     EntryDatabase dataBase{};
+     shared_ptr<EntryDatabase>dataBase = make_shared<EntryDatabase>();
+     //shared_ptr<EntryDatabase>dataBase = shared_ptr<EntryDatabase>(new EntryDatabase());
+
      GenreListDataBase gdatabase{};
      TagListDataBase tagDB{};
 
@@ -24,8 +26,8 @@ void DataBase() {
      tagDB.AddTag("Zombies");
      tagDB.AddTag("Favourites");
 
-     dataBase.RemoveDuplicates();
-     dataBase.PrintActiveEntries();
+     dataBase->RemoveDuplicates();
+     dataBase->PrintActiveEntries();
 
      gdatabase.PrintGenreList();
      //gdatabase.UpdateGenreListFile();
@@ -46,9 +48,9 @@ void DataBase() {
      cout << "Genre 2: " << genresRe.GetGenres()[1] << "\n";
      cout << "Genre 3: " << genresRe.GetGenres()[2] << "\n\n";
 
-     EntryBuilder entryBuilder(&dataBase);
+     EntryBuilder entryBuilder( dataBase);
 
-     entryBuilder.SetNameYear("Shady Seals", 2023);
+     entryBuilder.SetNameYear("Fifa23", 2022);
      
      shared_ptr<Entry> entry1;
 
@@ -59,8 +61,6 @@ void DataBase() {
              << "Type: " << entry1.get()->Type() << "\n"
              << "Year: " << entry1.get()->Year() << "\n\n";
      }
-
-     dataBase.UpdateEntriesFile();
 
 }
 

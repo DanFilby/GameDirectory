@@ -101,7 +101,7 @@ bool EntryDatabase::SetUniqueId(Entry& entry)
 
 bool EntryDatabase::GetUniqueId(EntryInfo_Short entrySum, int& outId)
 {
-	if (IsDuplicateEntry(entrySum)) { return false; }
+	if (IsDuplicateEntry(entrySum)) { std::cout << "Entry is duplicate\n"; return false; }
 
 	ENTRYID entryNewId = rand();
 	bool idExsits;

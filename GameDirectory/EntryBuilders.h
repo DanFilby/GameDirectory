@@ -6,9 +6,10 @@
 class EntryBuilder {
 
 public:
-	EntryBuilder(EntryDatabase* _entryDatabase);
+	EntryBuilder(shared_ptr<EntryDatabase> _entryDatabase);
 
 	virtual bool BuildEntry(shared_ptr<Entry> & entry);
+	virtual bool BuildAndSaveEntry(shared_ptr<Entry>& entry);
 	virtual void ClearBuild();
 
 	virtual void SetInfo(EntryInfo_Short info);
@@ -24,7 +25,7 @@ protected:
 	/// <returns> true if rfequired fields are valid </returns>
 	virtual bool RequiredFieldsCheck();
 
-	EntryDatabase* mEntryDatabase;
+	shared_ptr<EntryDatabase> mEntryDatabase;
 
 private:
 	//temp entry which is built through wrapper functions
