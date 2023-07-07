@@ -6,14 +6,13 @@ using std::cout;
 #include "EntryBuilders.h"
 #include "DatabaseMaster.h"
 
-shared_ptr<DatabaseManager> appDbManager;
+shared_ptr<DatabaseMaster> appDbManager;
 
 void DataBase() {
-     shared_ptr<EntryDatabase>dataBase = make_shared<EntryDatabase>();
-     //shared_ptr<EntryDatabase>dataBase = shared_ptr<EntryDatabase>(new EntryDatabase());
+     shared_ptr<EntryDatabase>dataBase = appDbManager->GetEntryDatabase();
+     shared_ptr<GenreListDataBase> gdatabase = appDbManager->GetGenreDatabase();
+     shared_ptr<TagListDataBase> tagDB = appDbManager->GetTagDatabase();
 
-     GenreListDataBase gdatabase{};
-     TagListDataBase tagDB{};
 
      EntryInfo_Short info{ 1, ET_Game, 2023, "Penguin Village" };
      EntryInfo_Short info2{ 2, ET_Game, 2022, "Back to hell" };
@@ -22,28 +21,28 @@ void DataBase() {
      //dataBase.mActiveEntries.clear();
      //dataBase.mActiveEntries.push_back(info);dataBase.mActiveEntries.push_back(info2);dataBase.mActiveEntries.push_back(info23);
 
-     tagDB.AddTag("Fast Paced");
-     tagDB.AddTag("Open World");
-     tagDB.AddTag("Zombies");
-     tagDB.AddTag("Favourites");
+     tagDB->AddTag("Fast Paced");
+     tagDB->AddTag("Open World");
+     tagDB->AddTag("Zombies");
+     tagDB->AddTag("Favourites");
 
      dataBase->RemoveDuplicates();
      dataBase->PrintActiveEntries();
 
-     gdatabase.PrintGenreList();
+     gdatabase->PrintGenreList();
      //gdatabase.UpdateGenreListFile();
 
-     tagDB.PrintTagList();
+     tagDB->PrintTagList();
      //tagDB.UpdateTagListFile();
 
-     GameGenres genres(&gdatabase);
-     genres.AddGenre(gdatabase.GetKey("Strategy"));
-     genres.AddGenre(gdatabase.GetKey("Racing"));
-     genres.AddGenre(gdatabase.GetKey("Casual"));
+     GameGenres genres(gdatabase.get());
+     genres.AddGenre(gdatabase->GetKey("Strategy"));
+     genres.AddGenre(gdatabase->GetKey("Racing"));
+     genres.AddGenre(gdatabase->GetKey("Casual"));
 
      unique_ptr<char[]> binGenre = genres.ToBinary();
 
-     GameGenres genresRe = GameGenres(&gdatabase, binGenre.get());
+     GameGenres genresRe = GameGenres(gdatabase.get(), binGenre.get());
 
      cout << "Genre 1: " << genresRe.GetGenres()[0] << "\n";
      cout << "Genre 2: " << genresRe.GetGenres()[1] << "\n";
@@ -67,7 +66,7 @@ void DataBase() {
 
 void AppStart() {
     //inits directories for entire app
-    appDbManager = shared_ptr<DatabaseManager>();
+    appDbManager = make_shared<DatabaseMaster>();
     appDbManager->AppInit();
 }
 

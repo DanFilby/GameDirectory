@@ -87,7 +87,7 @@ protected:
 class GenreListDataBase : Database, StringFileMan {
 
 	const uint8_t MAXCOUNT_GENRE = 255;
-	const uint8_t MAXLEN_GENRE = 32;
+	const uint8_t MAXLEN_GENRENAME = 32;
 
 	const string GENRELIST_FNAME = "Genre-List.dat";
 public:

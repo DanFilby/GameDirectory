@@ -27,6 +27,22 @@ unique_ptr<char[]> Entry::GetRawData_Short()
 	return nullptr;
 }
 
+bool Entry::IsValid_Name(const string& _name)
+{
+	if (_name.length() >= MINLEN_ENTRYNAME && _name.length() <= MAXLEN_ENTRYNAME) {
+		return true;
+	}
+	return false;
+}
+
+bool Entry::IsValid_Year(const uint16_t _year)
+{
+	if (_year >= 1950 && _year <= 2030) {
+		return true;
+	}
+	return false;
+}
+
 #pragma endregion
 
 

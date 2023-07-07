@@ -68,14 +68,20 @@ void EntryBuilder::SetNameYear(string _name, uint16_t _year)
 
 void EntryBuilder::SetName(string _name)
 {
-	//TODO: verification check
-	mCurrentEntry->mName = _name;
+	//check valid name
+	if (mCurrentEntry->IsValid_Name(_name)) {
+		mCurrentEntry->mName = _name;
+	}
+	else { std::cout << "Invalid name given to entry\n"; }
 }
 
 void EntryBuilder::SetYear(uint16_t _year)
 {
-	//TODO: verification check
-	mCurrentEntry->mYear = _year;
+	//check valid year
+	if (mCurrentEntry->IsValid_Year(_year)) {
+		mCurrentEntry->mYear = _year;
+	}
+	else { std::cout << "Invalid year given to entry\n"; }
 }
 
 bool EntryBuilder::RequiredFieldsCheck()

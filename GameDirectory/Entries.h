@@ -5,15 +5,18 @@
 #include "Common.h"
 #include "EntryUtils.h"
 
-//will have to include how each entry links to others so can easily search for related, maybe list of tags/ genre
-//stored list of tags and genres, so can add in the application.
 
 //Base Entry class containing interface for entries and all common member data: ID, Year, Name
 class Entry {
 	friend class EntryBuilder;
 	friend class EntryDatabase;
 
-public: 
+public:
+	static const uint8_t MINLEN_ENTRYNAME = 2;
+	static const uint8_t MAXLEN_ENTRYNAME = 32;
+
+
+public:
 	Entry();
 	Entry(ENTRYID _id, EntryType _type, uint16_t _year, string _name);
 	virtual ~Entry();
@@ -38,6 +41,10 @@ protected:
 	EntryType mType;
 	uint16_t mYear;
 	string mName;
+
+
+	virtual bool IsValid_Name(const string& _name);
+	virtual bool IsValid_Year(const uint16_t _year);
 };
 
 #pragma region GameEntry

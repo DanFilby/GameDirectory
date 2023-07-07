@@ -83,6 +83,7 @@ void StringFileMan::WriteStringFile(string filePath, vector<string> contents)
 {
 	//open files output stream, deletes old files contents
 	ofstream fileStream = ofstream(filePath, std::ios::out, std::ios::trunc);
+	if (!fileStream.good()) { std::cout << "Failed to write to file: " << filePath << "\n"; return; }
 
 	//loop over given contents and add each string as its own line 
 	for (const string& line : contents) {
@@ -137,6 +138,7 @@ void StringFileMan::WriteStringIndexFile(string filePath, map<uint8_t, string> c
 {
 	//open files output stream, deletes old files contents
 	ofstream fileStream = ofstream(filePath, std::ios::out, std::ios::trunc);
+	if (!fileStream.good()) { std::cout << "Failed to write to file: " << filePath << "\n"; return; }
 
 	//loop over genres and add each as its own line 
 	for (const auto& contentPair : contents) {
@@ -209,7 +211,7 @@ uint8_t GenreListDataBase::GetKey(string genre)
 void GenreListDataBase::AddGenre(string genre)
 {
 	//limit the genre's length
-	if (genre.size() > MAXLEN_GENRE) { genre.resize(MAXLEN_GENRE); }
+	if (genre.size() > MAXLEN_GENRENAME) { genre.resize(MAXLEN_GENRENAME); }
 
 	uint8_t genreKey = FindNewUniqueKey(genre, mGenreList);
 

@@ -49,3 +49,4 @@ private:
 
 
 //TODO: edit exsisting entry
+//TODO: maybe change to error handling like open-gl instead of returning bool on every funtion

@@ -233,6 +233,7 @@ void EntryDatabase::RemoveTempId(ENTRYID id)
 void EntryDatabase::UpdateEntriesFile()
 {
 	ofstream entriesFile = std::ofstream(DIR_PATH + ENTRIESLIST_FNAME, std::ios::out | std::ios::binary);
+	if (!entriesFile.good()) { std::cout << "Failed to write to file: " << DIR_PATH + ENTRIESLIST_FNAME << "\n"; return; }
 
 	//generate the file's header, containing number of each entry stored
 	EntryFileHeader entriesHeader = EntryFileHeader(GetEntryTypeCount());

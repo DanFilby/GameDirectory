@@ -133,7 +133,6 @@
     <ClCompile Include="Entries.cpp" />
     <ClCompile Include="EntryBuilders.cpp" />
     <ClCompile Include="EntryDatabase.cpp" />
-    <ClCompile Include="EntryUtils.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
