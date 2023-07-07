@@ -57,7 +57,8 @@ void EntryBuilder::ClearBuild()
 
 void EntryBuilder::SetInfo(EntryInfo_Short info)
 {
-
+	SetNameYear(info.name, info.year);
+	mCurrentEntry->mId = info.id;
 }
 
 void EntryBuilder::SetNameYear(string _name, uint16_t _year)

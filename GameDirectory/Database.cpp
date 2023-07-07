@@ -178,6 +178,22 @@ uint8_t StringFileMan::FindNewUniqueKey(string word, const map<uint8_t, string>&
 	else { std::cout << "Unable to find unique genre key\n"; return 0; }
 }
 
+uint8_t StringFileMan::GetKey(const map<uint8_t, string>& currentMap, string value)
+{
+	uint8_t keyFound = 0;
+	for (const auto& stringIndexPair : currentMap) {
+		if (stringIndexPair.second == value) {
+			keyFound = stringIndexPair.first;
+		}
+	}
+	return keyFound;
+}
+
+uint8_t StringFileMan::GetKey(string value)
+{
+	return 0;
+}
+
 GenreListDataBase::GenreListDataBase()
 {
 	DirectoriesCheck();
@@ -199,14 +215,9 @@ string GenreListDataBase::GetGenre(uint8_t key)
 
 uint8_t GenreListDataBase::GetKey(string genre)
 {
-	uint8_t keyFound = 0;
-	for (const auto& genrePair : mGenreList) {
-		if (genrePair.second == genre) {
-			keyFound = genrePair.first;
-		}
-	}
-	return keyFound;
+	return StringFileMan::GetKey(mGenreList, genre);
 }
+
 
 void GenreListDataBase::AddGenre(string genre)
 {
@@ -263,6 +274,16 @@ void TagListDataBase::DirectoriesCheck()
 {
 	//check data directory is valid	
 	assert(IsDirVaild(DIR_PATH));
+}
+
+string TagListDataBase::GetTag(uint8_t key)
+{
+	return string(mTagList[key]);
+}
+
+uint8_t TagListDataBase::GetKey(string tag)
+{
+	return StringFileMan::GetKey(mTagList, tag);
 }
 
 void TagListDataBase::AddTag(string tag)

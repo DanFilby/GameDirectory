@@ -147,8 +147,7 @@ struct GameRatings {
 
 //list of genres stored locally, which can be added by users
 //each object will be attached to a game entry and holds a list of genres
-//the list will be weighted, meaning a total of 100 points to be split between genres
-//hash genres which is how i will refernece them
+//TODO: list will be weighted, meaning a total of 100 points to be split between genres
 struct GameGenres {
 	static const uint16_t NUM_GENRES = 8;
 
@@ -197,6 +196,13 @@ struct GameGenres {
 		return output;
 	}
 
+	void PrintGenres() {
+		for (uint8_t genreKey : genreIds) {
+			std::cout << "Genre: " << (int)genreKey << " | " << genreDatabase->GetGenre(genreKey) << "\n";
+		}
+		std::cout << "\n";
+	}
+
 	unique_ptr<char[]> ToBinary() const {
 		unique_ptr<char[]> binaryData = unique_ptr<char[]>(new char[NUM_GENRES]);
 
@@ -206,5 +212,66 @@ struct GameGenres {
 	}
 };
 
+struct GameTags {
+	static const uint16_t NUM_TAGS = 16;
 
-//TODO: Add tags class for game entries
+	uint8_t tagIds[NUM_TAGS];
+
+	TagListDataBase* tagDatabase;
+
+	GameTags(TagListDataBase* _tagDatabase) {
+		//set up empty ids and database
+		memset(&tagIds, 0, NUM_TAGS);
+		tagDatabase = _tagDatabase;
+	}
+
+	GameTags(TagListDataBase* _tagDatabase, char* binaryData) {
+		//set up empty ids and database
+		tagDatabase = _tagDatabase;
+		memcpy(&tagIds[0], binaryData, sizeof(uint8_t) * NUM_TAGS);
+	}
+
+	void AddTag(uint8_t tagKey) {
+		for (auto& curId : tagIds) {
+			if (curId == 0) {
+				//found empty tag slot, update with new tag and return
+				curId = tagKey;
+				return;
+			}
+		}
+		//if ids list is full replace last tag
+		tagIds[NUM_TAGS - 1] = tagKey;
+	}
+
+	void AddTag(uint8_t tagKey, int index) {
+		index = std::clamp(index, 0, NUM_TAGS - 1);
+		tagIds[index] = tagKey;
+	}
+
+	vector<string> GetTags() {
+		if (!tagDatabase) { return vector<string>(); }
+
+		vector<string> output;
+
+		for (const uint8_t& tagKey : tagIds) {
+			output.push_back(tagDatabase->GetTag(tagKey));
+		}
+
+		return output;
+	}
+
+	void PrintTags() {
+		for (uint8_t tagKey : tagIds) {
+			std::cout << "Tag: " << (int)tagKey << " | " << tagDatabase->GetTag(tagKey) << "\n";
+		}
+		std::cout << "\n";
+	}
+
+	unique_ptr<char[]> ToBinary() const {
+		unique_ptr<char[]> binaryData = unique_ptr<char[]>(new char[NUM_TAGS]);
+
+		std::memcpy(&binaryData.get()[0], &tagIds[0], sizeof(uint8_t) * NUM_TAGS);
+
+		return binaryData;
+	}
+};

@@ -15,7 +15,10 @@ public:
 	void AppInit();
 	void Close();
 
-	bool CheckDatabases();
+	/// <summary>
+	/// checks all file directories are valid
+	/// </summary>
+	void CheckDatabases();
 
 	shared_ptr<EntryDatabase> GetEntryDatabase() { return mEntryDatabase; }
 	shared_ptr<GenreListDataBase> GetGenreDatabase() { return mGame_GenreDatabase; }

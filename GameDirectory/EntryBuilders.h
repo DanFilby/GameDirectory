@@ -17,7 +17,6 @@ public:
 	void SetName(string _name);
 	void SetYear(uint16_t _year);
 
-
 protected:
 	/// <summary>
 	/// checks all required fields for an entry

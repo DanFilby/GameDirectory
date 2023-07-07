@@ -48,6 +48,11 @@ void DataBase() {
      cout << "Genre 2: " << genresRe.GetGenres()[1] << "\n";
      cout << "Genre 3: " << genresRe.GetGenres()[2] << "\n\n";
 
+     GameTags tags(tagDB.get());
+     tags.AddTag(tagDB->GetKey("Zombies"));
+     tags.AddTag(tagDB->GetKey("Favourites"));
+     tags.PrintTags();
+
      EntryBuilder entryBuilder( dataBase);
 
      entryBuilder.SetNameYear("Fifa22", 2021);

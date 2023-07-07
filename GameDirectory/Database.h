@@ -81,6 +81,12 @@ protected:
 	void WriteStringIndexFile(string filePath, map<uint8_t, string> contents);
 
 	uint8_t FindNewUniqueKey(string word, const map<uint8_t,string>& currentMap);
+
+	uint8_t GetKey(const map<uint8_t, string>& currentMap, string value);
+
+public:
+	virtual uint8_t GetKey(string value);
+
 };
 
 
@@ -132,6 +138,9 @@ public:
 	/// Checks any neccessary folders exsist
 	/// </summary>
 	void DirectoriesCheck();
+
+	string GetTag(uint8_t key);
+	uint8_t GetKey(string tag);
 
 	void AddTag(string tag);
 	void PrintTagList();

@@ -16,3 +16,10 @@ void DatabaseMaster::AppInit()
 void DatabaseMaster::Close()
 {
 }
+
+void DatabaseMaster::CheckDatabases()
+{
+	mEntryDatabase->DirectoriesCheck();
+	mGame_GenreDatabase->DirectoriesCheck();
+	mGame_TagDatabase->DirectoriesCheck();
+}
