@@ -21,7 +21,7 @@ void EntryDatabase::AddEntry(Entry& entry)
 {
 	EntryInfo_Short entrySum = entry.GetSummary();
 
-	//if not valid fail
+	//fail if entry isn't valid
 	if (!IsValidEntry(entry.GetSummary())) { std::cout << "Failed to add entry to database\n"; return; }
 
 	RemoveTempId(entrySum.id);

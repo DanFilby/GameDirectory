@@ -4,6 +4,7 @@ using std::cout;
 #include "Common.h"
 #include "EntryDatabase.h"
 #include "EntryBuilders.h"
+#include "DatabaseMaster.h"
 
 shared_ptr<DatabaseManager> appDbManager;
 
@@ -51,7 +52,7 @@ void DataBase() {
      EntryBuilder entryBuilder( dataBase);
 
      entryBuilder.SetNameYear("Fifa22", 2021);
-     
+
      shared_ptr<Entry> entry1;
 
      if (entryBuilder.BuildAndSaveEntry(entry1)) {

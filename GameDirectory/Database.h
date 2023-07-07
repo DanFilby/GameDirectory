@@ -13,6 +13,7 @@ using std::filesystem::path;
 #pragma endregion
 
 #include <Windows.h>
+#include<cassert>
 #include <iostream>
 
 #include "Common.h"
@@ -45,18 +46,7 @@ public:
 	virtual void DirectoriesCheck();
 };
 
-/// <summary>
-/// Database manager for the whole application, checks any neccessary directories on start-up
-/// </summary>
-class DatabaseManager : Database {
-public:
-	/// <summary>
-	/// Inits databases for the entire application, validation checks
-	/// </summary>
-	void AppInit();
 
-	void Close();
-};
 //TODO: Might need to move this to new header and contain the other databases to setup genre and tag
 
 
@@ -93,3 +83,69 @@ protected:
 	uint8_t FindNewUniqueKey(string word, const map<uint8_t,string>& currentMap);
 };
 
+
+class GenreListDataBase : Database, StringFileMan {
+
+	const uint8_t MAXCOUNT_GENRE = 255;
+	const uint8_t MAXLEN_GENRE = 32;
+
+	const string GENRELIST_FNAME = "Genre-List.dat";
+public:
+	GenreListDataBase();
+
+	/// <summary>
+	/// Checks any neccessary folders exsist
+	/// </summary>
+	void DirectoriesCheck();
+
+	string GetGenre(uint8_t key);
+	uint8_t GetKey(string genre);
+
+	void AddGenre(string genre);
+	void PrintGenreList();
+
+	/// <summary>
+	/// Loads genres from file into memory
+	/// </summary>
+	void LoadGenres();
+	/// <summary>
+	/// Updates the genre list file with any genres added during runtime
+	/// </summary>
+	void UpdateGenreListFile();
+
+private:
+	map<uint8_t, string> mGenreList;
+
+};
+
+class TagListDataBase : Database, StringFileMan {
+
+	const uint8_t MAXCOUNT_TAGS = 255;
+	const uint8_t MAXLEN_TAGS = 20;
+
+	const string TAGLIST_FNAME = "Tag-List.dat";
+
+public:
+	TagListDataBase();
+
+	/// <summary>
+	/// Checks any neccessary folders exsist
+	/// </summary>
+	void DirectoriesCheck();
+
+	void AddTag(string tag);
+	void PrintTagList();
+
+	/// <summary>
+	/// Loads genres from file into memory
+	/// </summary>
+	void LoadTags();
+
+	/// <summary>
+	/// Updates the genre list file with any genres added during runtime
+	/// </summary>
+	void UpdateTagListFile();
+
+private:
+	map<uint8_t, string> mTagList;
+};

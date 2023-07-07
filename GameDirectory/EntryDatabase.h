@@ -144,4 +144,4 @@ struct EntryFileHeader {
 	uint16_t totalEntries, baseEntries, gameEntries, studioEntries;
 };
 
-//TODO: Add remove entry interface, by id
+//TODO: Add, remove, and edit entry interface, by id

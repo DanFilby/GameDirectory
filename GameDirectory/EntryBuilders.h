@@ -35,13 +35,15 @@ private:
 class GameEntryBuilder : EntryBuilder {
 
 public:
-	GameEntryBuilder(EntryDatabase* _entryDatabase);
+	GameEntryBuilder(shared_ptr<EntryDatabase> _entryDatabase);
 
 	bool BuildEntry(shared_ptr<Entry>& entry);
 	bool BuildGameEntry(shared_ptr<GameEntry>& gameEntry);
 
 private:
 	bool RequiredFieldsCheck();
+
+	shared_ptr<GenreListDataBase> mGenreDatabase;
 
 };
 

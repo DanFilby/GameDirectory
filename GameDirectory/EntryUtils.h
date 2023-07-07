@@ -1,7 +1,6 @@
 #pragma once
 
 #include <iostream>
-#include<cassert>
 
 #include "Common.h"
 #include "Database.h"
@@ -118,10 +117,10 @@ struct GameRatings {
 	}
 
 	void const DisplayAllRatings() {
-		std::cout << "Overall rating: " << StarRating(Overall) << "\n";
-		std::cout << "Gameplay rating: " << StarRating(Gameplay) << "\n";
-		std::cout << "Narrative rating: " << StarRating(Narrative) << "\n";
-		std::cout << "Replayability rating: " << StarRating(Replayability) << "\n";
+		std::cout << "Overall rating: " << Overall / 2.0f << "/ 10  " << StarRating(Overall) << "\n";
+		std::cout << "Gameplay rating: " << Gameplay / 2.0f << "/ 10  " << StarRating(Gameplay) << "\n";
+		std::cout << "Narrative rating: " << Narrative / 2.0f << "/ 10  " << StarRating(Narrative) << "\n";
+		std::cout << "Replayability rating: " << Replayability / 2.0f << "/ 10  " << StarRating(Replayability) << "\n";
 	}
 
 	inline const string StarRating(uint8_t rating) {
@@ -143,40 +142,6 @@ struct GameRatings {
 
 		return binaryData;
 	}
-
-};
-
-class GenreListDataBase : Database, StringFileMan {
-
-	const uint8_t MAXCOUNT_GENRE = 255;
-	const uint8_t MAXLEN_GENRE = 32;
-
-	const string GENRELIST_FNAME = "Genre-List.dat";
-public:
-	GenreListDataBase();
-
-	/// <summary>
-	/// Checks any neccessary folders exsist
-	/// </summary>
-	void DirectoriesCheck();
-
-	string GetGenre(uint8_t key);
-	uint8_t GetKey(string genre);
-
-	void AddGenre(string genre);
-	void PrintGenreList();
-
-	/// <summary>
-	/// Loads genres from file into memory
-	/// </summary>
-	void LoadGenres();
-	/// <summary>
-	/// Updates the genre list file with any genres added during runtime
-	/// </summary>
-	void UpdateGenreListFile();
-
-private:
-	map<uint8_t, string> mGenreList;
 
 };
 
@@ -241,34 +206,5 @@ struct GameGenres {
 	}
 };
 
-class TagListDataBase : Database, StringFileMan {
 
-	const uint8_t MAXCOUNT_TAGS = 255;
-	const uint8_t MAXLEN_TAGS = 20;
-
-	const string TAGLIST_FNAME = "Tag-List.dat";
-
-public:
-	TagListDataBase();
-
-	/// <summary>
-	/// Checks any neccessary folders exsist
-	/// </summary>
-	void DirectoriesCheck();
-
-	void AddTag(string tag);
-	void PrintTagList();
-
-	/// <summary>
-	/// Loads genres from file into memory
-	/// </summary>
-	void LoadTags();
-
-	/// <summary>
-	/// Updates the genre list file with any genres added during runtime
-	/// </summary>
-	void UpdateTagListFile();
-
-private:
-	map<uint8_t, string> mTagList;
-};
+//TODO: Add tags class for game entries

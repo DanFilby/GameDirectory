@@ -129,6 +129,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Database.cpp" />
+    <ClCompile Include="DatabaseMaster.cpp" />
     <ClCompile Include="Entries.cpp" />
     <ClCompile Include="EntryBuilders.cpp" />
     <ClCompile Include="EntryDatabase.cpp" />
@@ -138,6 +139,7 @@
   <ItemGroup>
     <ClInclude Include="Common.h" />
     <ClInclude Include="Database.h" />
+    <ClInclude Include="DatabaseMaster.h" />
     <ClInclude Include="Entries.h" />
     <ClInclude Include="EntryBuilders.h" />
     <ClInclude Include="EntryDatabase.h" />
