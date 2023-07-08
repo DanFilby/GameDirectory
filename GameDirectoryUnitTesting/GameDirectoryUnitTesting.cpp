@@ -1,18 +1,22 @@
 #include "pch.h"
 #include "CppUnitTest.h"
+
 #include "../GameDirectory/Entries.h"
+
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-namespace GameDirectoryUnitTesting
+namespace EntryTesting
 {
-	TEST_CLASS(GameDirectoryUnitTesting)
+	TEST_CLASS(EntryTests)
 	{
 	public:
 		
 		TEST_METHOD(TestMethod1)
 		{
-			Entry e();
+			Entry entry{};
+			int t = entry.Id();
+				
 
 		}
 	};

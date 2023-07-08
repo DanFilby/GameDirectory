@@ -15,7 +15,6 @@ public:
 	static const uint8_t MINLEN_ENTRYNAME = 2;
 	static const uint8_t MAXLEN_ENTRYNAME = 32;
 
-
 public:
 	Entry();
 	Entry(ENTRYID _id, EntryType _type, uint16_t _year, string _name);
