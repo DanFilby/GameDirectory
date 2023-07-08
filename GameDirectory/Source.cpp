@@ -6,6 +6,8 @@ using std::cout;
 #include "EntryBuilders.h"
 #include "DatabaseMaster.h"
 
+//TODO: finish game entry and then builder, description 
+
 shared_ptr<DatabaseMaster> appDbManager;
 
 void DataBase() {
@@ -43,15 +45,16 @@ void DataBase() {
      unique_ptr<char[]> binGenre = genres.ToBinary();
 
      GameGenres genresRe = GameGenres(gdatabase.get(), binGenre.get());
-
-     cout << "Genre 1: " << genresRe.GetGenres()[0] << "\n";
-     cout << "Genre 2: " << genresRe.GetGenres()[1] << "\n";
-     cout << "Genre 3: " << genresRe.GetGenres()[2] << "\n\n";
+     genresRe.PrintGenres();
 
      GameTags tags(tagDB.get());
      tags.AddTag(tagDB->GetKey("Zombies"));
      tags.AddTag(tagDB->GetKey("Favourites"));
-     tags.PrintTags();
+
+     unique_ptr<char[]> binTags = tags.ToBinary();
+
+     GameTags tagsRe = GameTags(tagDB.get(), binTags.get());
+     tagsRe.PrintTags();
 
      EntryBuilder entryBuilder( dataBase);
 

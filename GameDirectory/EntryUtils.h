@@ -198,6 +198,7 @@ struct GameGenres {
 
 	void PrintGenres() {
 		for (uint8_t genreKey : genreIds) {
+			if (genreKey == 0) { break; }
 			std::cout << "Genre: " << (int)genreKey << " | " << genreDatabase->GetGenre(genreKey) << "\n";
 		}
 		std::cout << "\n";
@@ -212,6 +213,9 @@ struct GameGenres {
 	}
 };
 
+/// <summary>
+/// list of tags atached to game entries, using an array of ids and the tag database
+/// </summary>
 struct GameTags {
 	static const uint16_t NUM_TAGS = 16;
 
@@ -252,16 +256,17 @@ struct GameTags {
 		if (!tagDatabase) { return vector<string>(); }
 
 		vector<string> output;
-
 		for (const uint8_t& tagKey : tagIds) {
 			output.push_back(tagDatabase->GetTag(tagKey));
 		}
-
 		return output;
 	}
 
 	void PrintTags() {
+		if (!tagDatabase) { return; }
+
 		for (uint8_t tagKey : tagIds) {
+			if (tagKey == 0) { break; }
 			std::cout << "Tag: " << (int)tagKey << " | " << tagDatabase->GetTag(tagKey) << "\n";
 		}
 		std::cout << "\n";
