@@ -23,10 +23,10 @@ void DataBase() {
      //dataBase.mActiveEntries.clear();
      //dataBase.mActiveEntries.push_back(info);dataBase.mActiveEntries.push_back(info2);dataBase.mActiveEntries.push_back(info23);
 
-     tagDB->AddTag("Fast Paced");
+     /*tagDB->AddTag("Fast Paced");
      tagDB->AddTag("Open World");
      tagDB->AddTag("Zombies");
-     tagDB->AddTag("Favourites");
+     tagDB->AddTag("Favourites");*/
 
      dataBase->RemoveDuplicates();
      dataBase->PrintActiveEntries();
@@ -87,15 +87,8 @@ void AppClose() {
 int main()
 {
     AppStart();
-
     DataBase();
 
-    auto ge = make_shared<GameEntry>();
-    auto entry = dynamic_pointer_cast<Entry>(ge);
-
-    cout << "game entry name: " << ge->Name() << "\n";
-    cout << "game entry id: " << entry->Id() << "\n";
-    cout << "game entry type: " << ge->Type() << "\n\n";
 
     GameRatings ratings(8.0f,9.0f,5.5f,3.1f);
 
