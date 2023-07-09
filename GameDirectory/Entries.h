@@ -20,6 +20,11 @@ public:
 	Entry(ENTRYID _id, EntryType _type, uint16_t _year, string _name);
 	virtual ~Entry();
 
+	/// <summary>
+	/// comparison of: name, year, type, or id 
+	/// </summary>
+	bool operator==(const Entry& compareEntry);
+
 	ENTRYID Id() { return mId; }
 	string Name() { return mName; }
 	uint16_t Year() { return mYear; }
@@ -30,17 +35,17 @@ public:
 	/// </summary>
 	virtual EntryInfo_Short GetSummary();
 	/// <summary>
-	/// returns a pointer to the summary in raw data format: byte array 
+	/// returns a summary of the entry in byte format 
 	/// </summary>
 	virtual unique_ptr<char[]> GetRawData_Short();
 
+	
 
 protected:
 	ENTRYID mId;
 	EntryType mType;
 	uint16_t mYear;
 	string mName;
-
 
 	virtual bool IsValid_Name(const string& _name);
 	virtual bool IsValid_Year(const uint16_t _year);

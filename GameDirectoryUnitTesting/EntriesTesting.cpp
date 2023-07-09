@@ -1,0 +1,109 @@
+#include "pch.h"
+#include "CppUnitTest.h"
+
+#include "TestingCommon.h"
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+namespace EntryTesting
+{
+	TEST_CLASS(BaseEntry_Tests)
+	{
+	private:
+		/// <summary>
+		/// Checks entry's properites against params
+		/// </summary>
+		inline void CheckEntryProperties(Entry& entry, ENTRYID id, EntryType type, uint16_t year, string name) {
+			Assert::AreEqual((ENTRYID)id, entry.Id());
+			Assert::AreEqual((uint16_t)year, entry.Year());
+			Assert::AreEqual((string)name, entry.Name());
+			Assert::IsTrue(type == entry.Type());
+		}
+		//using entry summary
+		inline void CheckEntrySummaryProperties(EntryInfo_Short& entrySum, ENTRYID id, EntryType type, uint16_t year, string name) {
+			Assert::AreEqual((ENTRYID)id, entrySum.id);
+			Assert::AreEqual((uint16_t)year, entrySum.year);
+			Assert::AreEqual((string)name, (string)entrySum.name);
+			Assert::IsTrue(type == entrySum.type);
+		}
+
+	public:		
+		TEST_METHOD(Properties_Base)
+		{
+			Entry entry = Entry(25, ET_Base, 2020, "Dan Filby");
+			CheckEntryProperties(entry, 25, ET_Base, 2020, "Dan Filby");		
+		}
+		TEST_METHOD(Properties_Game)
+		{
+			Entry entry = Entry(50, ET_Game, 2023, "Penguin Village");
+			CheckEntryProperties(entry, 50, ET_Game, 2023, "Penguin Village");
+		}
+		TEST_METHOD(Properties_Studio)
+		{
+			Entry entry = Entry(256, ET_Studio, 1996, "Valve");
+			CheckEntryProperties(entry, 256, ET_Studio, 1996, "Valve");
+		}
+		TEST_METHOD(Comparison_DifferentGames)
+		{
+			Entry penguinVillageEntry = Entry(50, ET_Game, 2023, "Penguin Village");
+			Entry clubPenguinEntry = Entry(51, ET_Game, 2005, "Club Penguin");
+
+			//should evalulate as false as no properties match
+			Assert::IsFalse(penguinVillageEntry == clubPenguinEntry);
+		}
+		TEST_METHOD(Comparison_MatchingIds)
+		{
+			Entry penguinVillageEntry = Entry(50, ET_Game, 2023, "Penguin Village");
+			Entry clubPenguinEntry = Entry(50, ET_Game, 2005, "Club Penguin");
+			
+			//should evalulate as true because id's match
+			Assert::IsTrue(penguinVillageEntry == clubPenguinEntry);
+		}
+		TEST_METHOD(Comparison_MatchingGames)
+		{
+			Entry penguinVillageEntry = Entry(50, ET_Game, 2023, "Penguin Village");
+			Entry penguinVillageDuplicateEntry = Entry(60, ET_Game, 2023, "Penguin Village");
+
+			//should evalulate as true because properties match
+			Assert::IsTrue(penguinVillageEntry == penguinVillageDuplicateEntry);
+		}
+		TEST_METHOD(Comparison_MatchingEntries)
+		{
+			Entry penguinVillageEntry = Entry(50, ET_Game, 2023, "Penguin Village");
+			Entry duplicateEntry = Entry(50, ET_Game, 2023, "Penguin Village");
+
+			//should evalulate as true because id's and properties match
+			Assert::IsTrue(penguinVillageEntry == duplicateEntry);
+		}
+		TEST_METHOD(Copy)
+		{
+			Entry penguinVillageEntry = Entry(50, ET_Game, 2023, "Penguin Village");
+			Entry duplicateEntry = penguinVillageEntry;
+			Entry duplicateEntry2 = Entry(penguinVillageEntry);
+
+			CheckEntryProperties(duplicateEntry, 50, ET_Game, 2023, "Penguin Village");
+			CheckEntryProperties(duplicateEntry2, 50, ET_Game, 2023, "Penguin Village");
+		}
+		TEST_METHOD(Summary_Base)
+		{
+			Entry entry = Entry(25, ET_Base, 2020, "Dan Filby");
+			EntryInfo_Short summary = entry.GetSummary();
+
+			CheckEntrySummaryProperties(summary, 25, ET_Base, 2020, "Dan Filby");
+		}
+		TEST_METHOD(Summary_Game)
+		{
+			Entry entry = Entry(50, ET_Game, 2023, "Penguin Village");
+			EntryInfo_Short summary = entry.GetSummary();
+
+			CheckEntrySummaryProperties(summary, 50, ET_Game, 2023, "Penguin Village");
+		}
+		TEST_METHOD(Summary_Studio)
+		{
+			Entry entry = Entry(256, ET_Studio, 1996, "Valve");
+			EntryInfo_Short summary = entry.GetSummary();
+
+			CheckEntrySummaryProperties(summary, 256, ET_Studio, 1996, "Valve");
+		}
+	};
+}

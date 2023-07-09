@@ -17,7 +17,7 @@ Entry::~Entry()
 EntryInfo_Short Entry::GetSummary()
 {
 	//pass game's id, name and the game type into the struct
-	EntryInfo_Short info{ mId, ET_Game, mYear, mName };
+	EntryInfo_Short info{ mId, mType, mYear, mName };
 
 	return info;
 }
@@ -25,6 +25,15 @@ EntryInfo_Short Entry::GetSummary()
 unique_ptr<char[]> Entry::GetRawData_Short()
 {
 	return nullptr;
+}
+
+bool Entry::operator==(const Entry& compareEntry)
+{
+	if ((strcmp(this->mName.c_str(), compareEntry.mName.c_str()) == 0 && this->mYear == compareEntry.mYear
+		&& this->mType == compareEntry.mType )|| this->mId == compareEntry.mId) {
+		return true;
+	}
+	return false;
 }
 
 bool Entry::IsValid_Name(const string& _name)
