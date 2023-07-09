@@ -97,26 +97,6 @@ int main()
     cout << "game entry id: " << entry->Id() << "\n";
     cout << "game entry type: " << ge->Type() << "\n\n";
 
-    string gameName = "Penguin village";
-
-    EntryInfo_Short info = ge.get()->GetSummary();
-
-    //EntryInfo_Short info{ 662, T_Game, gameName };
-
-    cout << "info name: " << info.name << "\n";
-    cout << "info id: " << info.id << "\n";
-    cout << "info type: " << info.type << "\n";
-    cout << "info year: " << info.year << "\n\n";
-
-    unique_ptr<char[]> binDat = ge.get()->GetRawData_Short();
-
-    EntryInfo_Short info2(binDat.get());
-
-    cout << "name: " << info2.name << "\n";
-    cout << "id: " << info2.id << "\n";
-    cout << "type: " << info2.type << "\n";
-    cout << "year: " << info.year << "\n";
-
     GameRatings ratings(8.0f,9.0f,5.5f,3.1f);
 
     unique_ptr<char[]> ratingsBinDat = ratings.ToBinary();
@@ -124,9 +104,6 @@ int main()
     GameRatings ratings2(ratingsBinDat.get());
 
     ratings2.DisplayAllRatings();
-
-
-
 
     AppClose();
 }

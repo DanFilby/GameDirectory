@@ -7,26 +7,29 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace EntryTesting
 {
-	TEST_CLASS(BaseEntry_Tests)
-	{
-	private:
-		/// <summary>
-		/// Checks entry's properites against params
-		/// </summary>
-		inline void CheckEntryProperties(Entry& entry, ENTRYID id, EntryType type, uint16_t year, string name) {
-			Assert::AreEqual((ENTRYID)id, entry.Id());
-			Assert::AreEqual((uint16_t)year, entry.Year());
-			Assert::AreEqual((string)name, entry.Name());
-			Assert::IsTrue(type == entry.Type());
-		}
-		//using entry summary
-		inline void CheckEntrySummaryProperties(EntryInfo_Short& entrySum, ENTRYID id, EntryType type, uint16_t year, string name) {
-			Assert::AreEqual((ENTRYID)id, entrySum.id);
-			Assert::AreEqual((uint16_t)year, entrySum.year);
-			Assert::AreEqual((string)name, (string)entrySum.name);
-			Assert::IsTrue(type == entrySum.type);
-		}
+	/// <summary>
+	/// Checks entry's properites against params
+	/// </summary>
+	static inline void CheckEntryProperties(Entry& entry, ENTRYID id, EntryType type, uint16_t year, string name) {
+		Assert::AreEqual((ENTRYID)id, entry.Id());
+		Assert::AreEqual((uint16_t)year, entry.Year());
+		Assert::AreEqual((string)name, entry.Name());
+		Assert::IsTrue(type == entry.Type());
+	}
 
+	/// <summary>
+	/// check entry summary against params
+	/// </summary>
+	static inline void CheckEntrySummaryProperties(EntryInfo_Short& entrySum, ENTRYID id, EntryType type, uint16_t year, string name) {
+		Assert::AreEqual((ENTRYID)id, entrySum.id);
+		Assert::AreEqual((uint16_t)year, entrySum.year);
+		Assert::AreEqual((string)name, (string)entrySum.name);
+		Assert::IsTrue(type == entrySum.type);
+	}
+
+
+	TEST_CLASS(BaseEntry_Tests)
+	{	
 	public:		
 		TEST_METHOD(Properties_Base)
 		{
@@ -106,4 +109,64 @@ namespace EntryTesting
 			CheckEntrySummaryProperties(summary, 256, ET_Studio, 1996, "Valve");
 		}
 	};
+
+	TEST_CLASS(EntrySummary_Tests) {
+		TEST_METHOD(Init) {
+
+		}
+
+
+
+		TEST_METHOD(Comaprison) {
+
+		}
+
+	};
+
+	TEST_CLASS(EntriesSerialization_Tests)
+	{
+	public:
+		TEST_METHOD(EntrySummary_Serialization) {
+			//get entry summary two ways
+			auto entry = make_shared<Entry>(21, ET_Base, 2002, "Daniel");
+			EntryInfo_Short summary = entry->GetSummary();
+
+			//serialize into binary data
+			unique_ptr<char[]> binDat1 = entry->GetRawData_Short();
+			unique_ptr<char[]> binDat2 = summary.ToBinary();
+
+			//reserialize into summaries
+			EntryInfo_Short summaryRe1(binDat1.get());
+			EntryInfo_Short summaryRe2(binDat2.get());
+
+			//check resiralized summaries against original data
+			CheckEntrySummaryProperties(summaryRe1, 21, ET_Base, 2002, "Daniel");
+			CheckEntrySummaryProperties(summaryRe2, 21, ET_Base, 2002, "Daniel");
+			Assert::IsTrue(summaryRe1 == summaryRe2);
+		}
+		TEST_METHOD(GameEntrySummary_Serialization) {
+			//check differnt methods of getting a summary
+			auto gameEntry = make_shared<GameEntry>(50, 2023, "Penguin Village");
+			auto entry = dynamic_pointer_cast<Entry>(gameEntry);
+			EntryInfo_Short summary = gameEntry->GetSummary();
+
+			//turn summaries into binary data
+			unique_ptr<char[]> binDat1 = gameEntry->GetRawData_Short();
+			unique_ptr<char[]> binDat2 = entry->GetRawData_Short();
+			unique_ptr<char[]> binDat3 = summary.ToBinary();
+
+			//reserialise into summary struct
+			EntryInfo_Short summaryRe1(binDat1.get());
+			EntryInfo_Short summaryRe2(binDat2.get());
+			EntryInfo_Short summaryRe3(binDat3.get());
+
+			//check resiralised data against original input
+			CheckEntrySummaryProperties(summaryRe1, 50, ET_Game, 2023, "Penguin Village");
+			CheckEntrySummaryProperties(summaryRe2, 50, ET_Game, 2023, "Penguin Village");
+			CheckEntrySummaryProperties(summaryRe3, 50, ET_Game, 2023, "Penguin Village");
+			Assert::IsTrue(summaryRe3 == summaryRe1 && summaryRe3 == summaryRe2);
+		}
+
+	};
+
 }

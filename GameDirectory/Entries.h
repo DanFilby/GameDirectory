@@ -60,6 +60,7 @@ private: const uint8_t BYTESIZE = 0;
 
 public:
 	GameEntry();
+	GameEntry(ENTRYID _id, uint16_t _year, string _name);
 	GameEntry(char* rawData);
 
 	~GameEntry();

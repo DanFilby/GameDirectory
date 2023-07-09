@@ -24,7 +24,7 @@ EntryInfo_Short Entry::GetSummary()
 
 unique_ptr<char[]> Entry::GetRawData_Short()
 {
-	return nullptr;
+	return GetSummary().ToBinary();
 }
 
 bool Entry::operator==(const Entry& compareEntry)
@@ -62,6 +62,15 @@ GameEntry::GameEntry()
 	mId = 37;
 	mYear = 2023;
 	mName = "Penguin Village";
+}
+
+GameEntry::GameEntry(ENTRYID _id, uint16_t _year, string _name)
+{
+	mId = _id;
+	mType = ET_Game;
+	mYear = _year;
+	mName = _name;
+
 }
 
 GameEntry::GameEntry(char* rawData)
