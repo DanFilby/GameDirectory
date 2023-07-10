@@ -37,12 +37,15 @@ public:
 	/// <summary>
 	/// Add entry to the database, checks for validity but doesn't save to file
 	/// </summary>
-	void AddEntry(Entry& entry);
+	void AddEntry(Entry entry);
 
-	EntryInfo_Short GetEntrySum(ENTRYID _id);
-	EntryInfo_Short GetEntrySum(ENTRYID _id, bool& found);
+	void RemoveEntry(const Entry& _entry);
+	void RemoveEntry(ENTRYID _entryId);
+
+	EntryInfo_Short GetEntrySummary(ENTRYID _id);
 	ENTRYID GetEntryId(EntryType _type, string _name, uint16_t _year);
 
+	bool EntryExsists(ENTRYID _id);
 
 	/// <summary>
 	/// returns a count of each type of entry currently stored

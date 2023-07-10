@@ -17,7 +17,7 @@ EntryDatabase::~EntryDatabase()
 {
 }
 
-void EntryDatabase::AddEntry(Entry& entry)
+void EntryDatabase::AddEntry(Entry entry)
 {
 	EntryInfo_Short entrySum = entry.GetSummary();
 
@@ -30,21 +30,35 @@ void EntryDatabase::AddEntry(Entry& entry)
 	UpdateEntriesFile();
 }
 
-EntryInfo_Short EntryDatabase::GetEntrySum(ENTRYID _id)
+void EntryDatabase::RemoveEntry(const Entry& _entry)
 {
-	bool discard;
-	return GetEntrySum(_id, discard);
+	RemoveEntry(_entry.mId);
+	UpdateEntriesFile();
 }
 
-EntryInfo_Short EntryDatabase::GetEntrySum(ENTRYID _id, bool& found)
+void EntryDatabase::RemoveEntry(ENTRYID entryId)
+{
+	int entryIndex = -1;
+	for (size_t i = 0; i < mActiveEntries.size(); i++)
+	{
+		if (mActiveEntries[i].id == entryId) {
+			entryIndex = i;
+			break;
+		}
+	}
+
+	if (entryIndex != -1) {
+		mActiveEntries.erase(mActiveEntries.begin() + entryIndex);
+	}
+}
+
+EntryInfo_Short EntryDatabase::GetEntrySummary(ENTRYID _id)
 {
 	for (const auto& entry : mActiveEntries) {
 		if (entry.id == _id) {
-			found = true;
 			return entry;
 		}
 	}
-	found = false;
 	return NULL;
 }
 
@@ -56,6 +70,16 @@ ENTRYID EntryDatabase::GetEntryId(EntryType _type, string _name, uint16_t _year)
 		}
 	}
 	return 0;
+}
+
+bool EntryDatabase::EntryExsists(ENTRYID _id)
+{
+	for (const auto& entry : mActiveEntries) {
+		if (entry.id == _id) {
+			return true;
+		}
+	}
+	return NULL;
 }
 
 int EntryDatabase::GetEntryCount()
@@ -119,20 +143,19 @@ bool EntryDatabase::GetUniqueId(EntryInfo_Short entrySum, int& outId)
 	if (IsDuplicateEntry(entrySum)) { std::cout << "Entry is duplicate\n"; return false; }
 
 	ENTRYID entryNewId = rand();
-	bool idExsits;
 
 	for (size_t i = 0; i < 50; i++)
 	{
-		GetEntrySum(entryNewId, idExsits);
+		GetEntrySummary(entryNewId);
 
-		if (entryNewId != 0 || !idExsits || !TempIdCheck(entryNewId)) {
+		if (entryNewId != 0 || !EntryExsists(entryNewId) || !TempIdCheck(entryNewId)) {
 			break;
 		}
 		entryNewId = rand();
 	}
 
 	//successfully found a unique id
-	if (entryNewId != 0 || !idExsits) {
+	if (entryNewId != 0 || !EntryExsists(entryNewId)) {
 		//set the new id
 		outId = entryNewId;
 

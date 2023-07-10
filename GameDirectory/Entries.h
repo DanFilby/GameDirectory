@@ -25,9 +25,9 @@ public:
 	/// </summary>
 	bool operator==(const Entry& compareEntry);
 
-	ENTRYID Id() { return mId; }
-	string Name() { return mName; }
-	uint16_t Year() { return mYear; }
+	ENTRYID const Id() { return mId; }
+	string const Name() { return mName; }
+	uint16_t const Year() { return mYear; }
 	virtual const EntryType Type() { return mType; }
 
 	/// <summary>
