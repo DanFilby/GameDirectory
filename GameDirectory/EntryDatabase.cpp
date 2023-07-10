@@ -63,9 +63,9 @@ int EntryDatabase::GetEntryCount()
 	return mActiveEntries.size();
 }
 
-std::map<EntryType, int> EntryDatabase::GetEntryTypeCount()
+std::map<EntryType, uint16_t> EntryDatabase::GetEntryTypeCount()
 {
-	std::map<EntryType, int> entryTypeMap{ {ET_Base, 0},{ET_Game, 0}, {ET_Studio, 0 } };
+	std::map<EntryType, uint16_t> entryTypeMap{ {ET_Base, 0},{ET_Game, 0}, {ET_Studio, 0 } };
 	
 	for (auto& entry : mActiveEntries) {
 		entryTypeMap[entry.type]++;

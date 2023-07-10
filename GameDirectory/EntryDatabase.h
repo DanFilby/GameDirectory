@@ -47,7 +47,7 @@ public:
 	/// <summary>
 	/// returns a count of each type of entry currently stored
 	/// </summary>
-	std::map<EntryType, int> GetEntryTypeCount();
+	std::map<EntryType, uint16_t> GetEntryTypeCount();
 	/// <summary>
 	/// returns count of current entries stored
 	/// </summary>
@@ -116,29 +116,36 @@ private:
 struct EntryFileHeader {
 
 	//load the header from current entries dict
-	EntryFileHeader(std::map<EntryType, int> entries) {
-		baseEntries = (uint16_t)entries[ET_Base]; 
-		gameEntries = (uint16_t)entries[ET_Game];
-		studioEntries = (uint16_t)entries[ET_Studio];
+	EntryFileHeader(std::map<EntryType, uint16_t> entries) {
+		baseEntries = entries[ET_Base]; 
+		gameEntries = entries[ET_Game];
+		studioEntries = entries[ET_Studio];
 		totalEntries = baseEntries + gameEntries + studioEntries;
 	}
 
 	//load the header back from binary format
-	EntryFileHeader(uint16_t* binHeader) {
-		totalEntries = binHeader[0]; baseEntries = binHeader[1];
-		gameEntries = binHeader[2]; studioEntries = binHeader[3];
+	EntryFileHeader(char* binHeader) {
+		totalEntries = binHeader[0]; baseEntries = binHeader[2];
+		gameEntries = binHeader[4]; studioEntries = binHeader[6];
+	}
+
+	//load the header back from uint16_t array format
+	EntryFileHeader(uint16_t* header) {
+		totalEntries = header[0]; baseEntries = header[1];
+		gameEntries = header[2]; studioEntries = header[3];
 	}
 
 	/// <summary>
 	/// convert the header into binary: (8 bytes - four 2 byte uints)
 	/// </summary>
-	unique_ptr<uint16_t[]> ToBinary() {
-
+	shared_ptr<char[]> ToBinary() {
 		//init an 8 byte header: **| num of entries | num of base entries | num of game entries | num of studio entries |**
-		unique_ptr<uint16_t[]> bin = unique_ptr<uint16_t[]>(
-			new uint16_t[4]{ totalEntries, baseEntries, gameEntries, studioEntries });
+		uint16_t* binDat = new uint16_t[4]{ totalEntries, baseEntries, gameEntries, studioEntries };
 
-		return bin;
+		//cast to byte array
+		shared_ptr<char[]> binary = shared_ptr<char[]>((char*) & binDat[0]);
+
+		return binary;
 	}
 
 	uint16_t totalEntries, baseEntries, gameEntries, studioEntries;

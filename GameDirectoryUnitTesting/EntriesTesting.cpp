@@ -119,14 +119,12 @@ namespace EntryTesting
 			EntryInfo_Short penguinVillageSum{ 50, ET_Game, 2023, "Penguin Village" };
 			CheckEntrySummaryProperties(penguinVillageSum, 50, ET_Game, 2023, "Penguin Village");
 		}
-
 		TEST_METHOD(Comaprison_Fail) {
 			EntryInfo_Short penguinVillageSum{ 50, ET_Game, 2023, "Penguin Village" };
 			EntryInfo_Short codSum{ 75, ET_Game, 2018, "Call of Duty" };
 
 			Assert::IsFalse(penguinVillageSum == codSum);
 		}
-
 		TEST_METHOD(ComaprisonIds_Fail) {
 			EntryInfo_Short penguinVillageSum{ 50, ET_Game, 2023, "Penguin Village" };
 			EntryInfo_Short codSum{ 50, ET_Game, 2018, "Call of Duty" };
@@ -134,14 +132,12 @@ namespace EntryTesting
 			//matching ids should equate to false 
 			Assert::IsFalse(penguinVillageSum == codSum);
 		}
-
 		TEST_METHOD(Comaprison_MatchingGames) {
 			EntryInfo_Short penguinVillageSum{ 50, ET_Game, 2023, "Penguin Village" };
 			EntryInfo_Short penguinVillageSum2{ 50, ET_Game, 2023, "Penguin Village" };
 
 			Assert::IsTrue(penguinVillageSum == penguinVillageSum2);
 		}
-
 		TEST_METHOD(Comaprison_MatchingGamesDifIDs) {
 			EntryInfo_Short penguinVillageSum{ 50, ET_Game, 2023, "Penguin Village" };
 			EntryInfo_Short penguinVillageSum2{ 75, ET_Game, 2023, "Penguin Village" };
@@ -161,7 +157,6 @@ namespace EntryTesting
 			Assert::AreEqual((unsigned long long)EntryInfo_Short::BYTESIZE, sizeof(EntryInfo_Short));
 			Assert::AreEqual((unsigned long long)EntryInfo_Short::BYTESIZE, sizeof(penguinVillageSum));
 		}
-
 		TEST_METHOD(EntrySummary_Serialization) {
 			//get entry summary two ways
 			auto entry = make_shared<Entry>(21, ET_Base, 2002, "Daniel");

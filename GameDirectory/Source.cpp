@@ -15,13 +15,7 @@ void DataBase() {
      shared_ptr<GenreListDataBase> gdatabase = appDbManager->GetGenreDatabase();
      shared_ptr<TagListDataBase> tagDB = appDbManager->GetTagDatabase();
 
-
-     EntryInfo_Short info{ 1, ET_Game, 2023, "Penguin Village" };
-     EntryInfo_Short info2{ 2, ET_Game, 2022, "Back to hell" };
-     EntryInfo_Short info23{ 3, ET_Studio, 2023, "Shady Seals" };
-
-     //dataBase.mActiveEntries.clear();
-     //dataBase.mActiveEntries.push_back(info);dataBase.mActiveEntries.push_back(info2);dataBase.mActiveEntries.push_back(info23);
+     dataBase->UpdateEntriesFile();
 
      /*tagDB->AddTag("Fast Paced");
      tagDB->AddTag("Open World");
