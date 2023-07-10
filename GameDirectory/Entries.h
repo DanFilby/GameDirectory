@@ -25,11 +25,6 @@ public:
 	/// </summary>
 	bool operator==(const Entry& compareEntry);
 
-	ENTRYID const Id() { return mId; }
-	string const Name() { return mName; }
-	uint16_t const Year() { return mYear; }
-	virtual const EntryType Type() { return mType; }
-
 	/// <summary>
 	/// returns a struct summarizing the entry: id, name and type
 	/// </summary>
@@ -39,7 +34,10 @@ public:
 	/// </summary>
 	virtual unique_ptr<char[]> GetRawData_Short();
 
-	
+	ENTRYID const Id() { return mId; }
+	string const Name() { return mName; }
+	uint16_t const Year() { return mYear; }
+	virtual const EntryType Type() { return mType; }
 
 protected:
 	ENTRYID mId;
@@ -56,7 +54,11 @@ protected:
 //Video game entry: Will contain cover picture and ratings and descriptions
 class GameEntry : public Entry {
 
-private: const uint8_t BYTESIZE = 0;
+public:
+	static const uint8_t BYTESIZE = 0;
+	static const uint8_t FULLDESCRIPTION_MAXLEN = 255;
+	static const uint8_t SHORTDESCRIPTION_MAXLEN = 63;
+
 
 public:
 	GameEntry();
@@ -65,23 +67,36 @@ public:
 
 	~GameEntry();
 
-	const EntryType Type() { return ET_Game; };
-
 	EntryInfo_Short GetSummary();
 	unique_ptr<char[]> GetRawData_Short();
 
-public:
-	//short description of the game max 64 chars
-	string mShortDescription;
+	EntryType const Type() { return ET_Game; };
 
-	//full description of the game maz 512 chars
-	string mFullDescription;
+	//getters and setters for descriptions as they're length restricted
+	string const ShortDescription() { return mShortDescription; }
+	void SetShortDescription(string _shortDescription);
+	string const FullDescription() { return mFullDescription; }
+	void SetFullDescription(string _fullDescription);
+
+
+public:
+	//list of studios which created this game
+	vector<ENTRYID> mStudioIds;
+
+	//genres and tags related to the game entry
+	GameGenres mGenres;
+	GameTags mTags;
 
 	//set of ratings about various aspects of the game
 	GameRatings mRatings;
 
-	//list of studios which created this game
-	vector<ENTRYID> mStudioIds;
+private:
+	//short description of the game, max length specified
+	string mShortDescription;
+
+	//full description of the game, max length specified
+	string mFullDescription;
+
 };
 
 

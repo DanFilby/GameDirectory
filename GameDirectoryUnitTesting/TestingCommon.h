@@ -21,3 +21,6 @@ void CheckEntryProperties(Entry& entry, ENTRYID id, EntryType type, uint16_t yea
 /// check entry summary against params
 /// </summary>
 void CheckEntrySummaryProperties(EntryInfo_Short& entrySum, ENTRYID id, EntryType type, uint16_t year, string name);
+
+
+//TODO: Testing for entry builder, game entry structs, game entries

@@ -102,6 +102,18 @@ unique_ptr<char[]> GameEntry::GetRawData_Short()
 	return gameDat;
 }
 
+void GameEntry::SetShortDescription(string _shortDescription)
+{
+	_shortDescription.resize(SHORTDESCRIPTION_MAXLEN);
+	mShortDescription = _shortDescription;
+}
+
+void GameEntry::SetFullDescription(string _fullDescription)
+{
+	_fullDescription.resize(FULLDESCRIPTION_MAXLEN);
+	mShortDescription = _fullDescription;
+}
+
 
 
 #pragma endregion
