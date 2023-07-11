@@ -80,9 +80,11 @@ protected:
 	/// </summary>
 	void WriteStringIndexFile(string filePath, map<uint8_t, string> contents);
 
-	uint8_t FindNewUniqueKey(string word, const map<uint8_t,string>& currentMap);
+	inline uint8_t FindNewUniqueKey(string word, const map<uint8_t,string>& currentMap);
 
-	uint8_t GetKey(const map<uint8_t, string>& currentMap, string value);
+	inline uint8_t GetKey(const map<uint8_t, string>& currentMap, string value);
+
+	inline vector<string> GetValues(const map<uint8_t, string>& currentMap);
 
 public:
 	virtual uint8_t GetKey(string value);
@@ -92,10 +94,12 @@ public:
 
 class GenreListDataBase : Database, StringFileMan {
 
-	const uint8_t MAXCOUNT_GENRE = 255;
-	const uint8_t MAXLEN_GENRENAME = 32;
-
 	const string GENRELIST_FNAME = "Genre-List.dat";
+
+public:
+	static const uint8_t MAXCOUNT_GENRE = 255;
+	static const uint8_t MAXLEN_GENRENAME = 32;
+
 public:
 	GenreListDataBase();
 
@@ -107,7 +111,13 @@ public:
 	string GetGenre(uint8_t key);
 	uint8_t GetKey(string genre);
 
+	bool GenreExsists(uint8_t genreKey);
+	bool GenreExsists(string genre);
+
 	void AddGenre(string genre);
+	void RemoveGenre(string genre);
+
+	vector<string> GetAllGenres();
 	void PrintGenreList();
 
 	/// <summary>
@@ -126,10 +136,11 @@ private:
 
 class TagListDataBase : Database, StringFileMan {
 
-	const uint8_t MAXCOUNT_TAGS = 255;
-	const uint8_t MAXLEN_TAGS = 20;
-
 	const string TAGLIST_FNAME = "Tag-List.dat";
+
+public:
+	static const uint8_t MAXCOUNT_TAGS = 255;
+	static const uint8_t MAXLEN_TAGS = 20;
 
 public:
 	TagListDataBase();
@@ -142,7 +153,13 @@ public:
 	string GetTag(uint8_t key);
 	uint8_t GetKey(string tag);
 
+	bool TagExsists(uint8_t tagKey);
+	bool TagExsists(string tag);
+
 	void AddTag(string tag);
+	void RemoveTag(string tag);
+
+	vector<string> GetAllTags();
 	void PrintTagList();
 
 	/// <summary>

@@ -78,14 +78,13 @@ public:
 	string const FullDescription() { return mFullDescription; }
 	void SetFullDescription(string _fullDescription);
 
-
 public:
 	//list of studios which created this game
 	vector<ENTRYID> mStudioIds;
 
 	//genres and tags related to the game entry
-	GameGenres mGenres;
-	GameTags mTags;
+	//GameGenres mGenres;
+	//GameTags mTags;
 
 	//set of ratings about various aspects of the game
 	GameRatings mRatings;

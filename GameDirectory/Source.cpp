@@ -6,7 +6,7 @@ using std::cout;
 #include "EntryBuilders.h"
 #include "DatabaseMaster.h"
 
-//TODO: finish game entry and then builder, description 
+//TODO: finish game entry and then builder
 
 shared_ptr<DatabaseMaster> appDbManager;
 
@@ -93,6 +93,19 @@ int main()
     ratings2.DisplayAllRatings();
 
     AppClose();
+
+    DatabaseMaster dbmaster{}; dbmaster.AppInit();
+    shared_ptr<EntryDatabase> originalDatabase = dbmaster.GetEntryDatabase();
+
+    EntryDatabase testDatabase = EntryDatabase(*originalDatabase.get());
+    Entry testEntry = Entry(234, ET_Game, 2004, "Mario");
+    Entry testEntry2 = Entry(254, ET_Game, 2005, "Super-Mario");
+
+    //try to add and remove entries
+    testDatabase.AddEntry(testEntry);
+    testDatabase.AddEntry(testEntry2);
+    testDatabase.RemoveEntry(testEntry);
+    testDatabase.RemoveEntry(testEntry2);
 }
 
 //TODO: Move all testing to an actual unit test set up

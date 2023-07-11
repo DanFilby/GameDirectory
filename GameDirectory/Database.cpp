@@ -189,6 +189,14 @@ uint8_t StringFileMan::GetKey(const map<uint8_t, string>& currentMap, string val
 	return keyFound;
 }
 
+vector<string> StringFileMan::GetValues(const map<uint8_t, string>& currentMap)
+{
+	vector<string> values;
+	std::transform(currentMap.begin(), currentMap.end(), std::back_inserter(values), [](const std::pair<uint8_t, string>& val) {return val.second; });
+	return values;
+}
+
+//abstract function
 uint8_t StringFileMan::GetKey(string value)
 {
 	return 0;
@@ -210,7 +218,10 @@ void GenreListDataBase::DirectoriesCheck()
 
 string GenreListDataBase::GetGenre(uint8_t key)
 {
-	return string(mGenreList[key]);
+	if (GenreExsists(key)) {
+		return string(mGenreList[key]);
+	}
+	return string();
 }
 
 uint8_t GenreListDataBase::GetKey(string genre)
@@ -218,9 +229,21 @@ uint8_t GenreListDataBase::GetKey(string genre)
 	return StringFileMan::GetKey(mGenreList, genre);
 }
 
+bool GenreListDataBase::GenreExsists(uint8_t genreKey)
+{
+	return mGenreList.find(genreKey) != mGenreList.end();
+}
+
+bool GenreListDataBase::GenreExsists(string genre)
+{
+	return GetKey(genre) != 0;
+}
+
 
 void GenreListDataBase::AddGenre(string genre)
 {
+	if (GenreExsists(genre)) { std::cout << "Duplicate genre\n"; return; }
+
 	//limit the genre's length
 	if (genre.size() > MAXLEN_GENRENAME) { genre.resize(MAXLEN_GENRENAME); }
 
@@ -228,12 +251,23 @@ void GenreListDataBase::AddGenre(string genre)
 
 	//check within maximum size
 	if (mGenreList.size() < MAXCOUNT_GENRE && genreKey != 0) {
-		//add genre, with its key, to the map
 		mGenreList.emplace(std::make_pair(genreKey, genre));
 	}
 	else {
 		std::cout << "Unable to add new genre\n";
 	}
+}
+
+void GenreListDataBase::RemoveGenre(string genre)
+{
+	if (GenreExsists(genre)) {
+		mGenreList.erase(GetKey(genre));
+	}
+}
+
+vector<string> GenreListDataBase::GetAllGenres()
+{
+	return GetValues(mGenreList);
 }
 
 void GenreListDataBase::PrintGenreList()
@@ -286,8 +320,20 @@ uint8_t TagListDataBase::GetKey(string tag)
 	return StringFileMan::GetKey(mTagList, tag);
 }
 
+bool TagListDataBase::TagExsists(uint8_t tagKey)
+{
+	return mTagList.find(tagKey) != mTagList.end();
+}
+
+bool TagListDataBase::TagExsists(string tag)
+{
+	return GetKey(tag) != 0;
+}
+
 void TagListDataBase::AddTag(string tag)
 {
+	if (TagExsists(tag)) { std::cout << "Duplicate tag\n"; return; }
+
 	//limit tag's length
 	if (tag.size() > MAXLEN_TAGS) { tag.resize(MAXLEN_TAGS); }
 
@@ -302,6 +348,18 @@ void TagListDataBase::AddTag(string tag)
 	else {
 		std::cout << "Unable to add new tag\n";
 	}
+}
+
+void TagListDataBase::RemoveTag(string tag)
+{
+	if (TagExsists(tag)) {
+		mTagList.erase(GetKey(tag));
+	}
+}
+
+vector<string> TagListDataBase::GetAllTags()
+{
+	return GetValues(mTagList);
 }
 
 void TagListDataBase::PrintTagList()

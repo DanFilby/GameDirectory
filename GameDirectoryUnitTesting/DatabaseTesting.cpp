@@ -52,64 +52,73 @@ namespace DatabaseTesting
 		}
 		TEST_METHOD(AddingEntries) {
 			DatabaseMaster dbmaster{}; dbmaster.AppInit();
-			shared_ptr<EntryDatabase> entryDatabase = dbmaster.GetEntryDatabase();
+			shared_ptr<EntryDatabase> originalDatabase = dbmaster.GetEntryDatabase();
+			EntryDatabase testDatabase = EntryDatabase(*originalDatabase.get());
 
-			int startCount = entryDatabase->GetEntryCount();
+			Entry testEntry = Entry(399, ET_Game, 2004, "Mario");
+			Entry testEntry2 = Entry(398, ET_Game, 2005, "Super-Mario");
+			Entry testEntry3 = Entry(397, ET_Game, 2006, "Super-MarioBros");
 
-			Entry testEntry = Entry(234, ET_Game, 2004, "Mario");
-			Entry testEntry2 = Entry(254, ET_Game, 2005, "Super-Mario");
-			Entry testEntry3 = Entry(254, ET_Game, 2006, "Super-MarioBros");
+			testDatabase.AddEntry(testEntry);
+			testDatabase.AddEntry(testEntry2);
+			testDatabase.AddEntry(testEntry3);
 
-			//try to add duplicate entries
-			entryDatabase->AddEntry(testEntry);
-			entryDatabase->AddEntry(testEntry2);
-			entryDatabase->AddEntry(testEntry3);
+			//reset changes to file
+			originalDatabase->UpdateEntriesFile();
 
-			//two entries should be added
-			Assert::AreEqual(startCount + 3, entryDatabase->GetEntryCount());
-
-			//remove test entries
-			entryDatabase->RemoveEntry(testEntry);
-			entryDatabase->RemoveEntry(testEntry2);
-			entryDatabase->RemoveEntry(testEntry3);
+			Assert::AreEqual(originalDatabase->GetEntryCount() + 3, testDatabase.GetEntryCount());
 		}
 		TEST_METHOD(RemovingEntries) {
 			DatabaseMaster dbmaster{}; dbmaster.AppInit();
-			shared_ptr<EntryDatabase> entryDatabase = dbmaster.GetEntryDatabase();
+			shared_ptr<EntryDatabase> originalDatabase = dbmaster.GetEntryDatabase();
 
-			int startCount = entryDatabase->GetEntryCount();
+			EntryDatabase testDatabase = EntryDatabase(*originalDatabase.get());
+			Entry testEntry = Entry(396, ET_Game, 2004, "Mario");
+			Entry testEntry2 = Entry(395, ET_Game, 2005, "Super-Mario");
 
-			Entry testEntry = Entry(234, ET_Game, 2004, "Mario");
-			Entry testEntry2 = Entry(254, ET_Game, 2005, "Super-Mario");
+			//try to add and remove entries
+			testDatabase.AddEntry(testEntry);
+			testDatabase.AddEntry(testEntry2);
+			testDatabase.RemoveEntry(testEntry);
+			testDatabase.RemoveEntry(testEntry2);
+			
+			//reset changes to file
+			originalDatabase->UpdateEntriesFile();
 
-			//try to add duplicate entries
-			entryDatabase->AddEntry(testEntry);
-			entryDatabase->AddEntry(testEntry2);
+			Assert::AreEqual(originalDatabase->GetEntryCount(), testDatabase.GetEntryCount());
+		}		
+		TEST_METHOD(WritingEntries) {
+			DatabaseMaster dbmaster{}; dbmaster.AppInit();
+			shared_ptr<EntryDatabase> originalDatabase = dbmaster.GetEntryDatabase();
 
-			//remove test entries
-			entryDatabase->RemoveEntry(testEntry);
-			entryDatabase->RemoveEntry(testEntry2);
-			Assert::AreEqual(startCount, entryDatabase->GetEntryCount());
+			EntryDatabase testDatabase = EntryDatabase(*originalDatabase.get());
+			Entry testEntry = Entry(394, ET_Game, 2004, "Mario");
+			testDatabase.AddEntry(testEntry);
+
+			EntryDatabase latestDatabase{};
+
+			CheckEntrySummaryProperties(latestDatabase.GetEntrySummary(394), 394, ET_Game, 2004, "Mario");
+			Assert::AreEqual(originalDatabase->GetEntryCount() + 1, testDatabase.GetEntryCount());
+
+			originalDatabase->UpdateEntriesFile();
 		}
 		TEST_METHOD(AddingDuplicates) {
 			DatabaseMaster dbmaster{}; dbmaster.AppInit();
-			shared_ptr<EntryDatabase> entryDatabase = dbmaster.GetEntryDatabase();
+			shared_ptr<EntryDatabase> originalDatabase = dbmaster.GetEntryDatabase();
 
-			int startCount = entryDatabase->GetEntryCount();
-
-			Entry testEntry = Entry(234, ET_Game, 2004, "Mario");
+			EntryDatabase testDatabase = EntryDatabase(*originalDatabase.get());
+			Entry testEntry = Entry(393, ET_Game, 2004, "Mario");
 
 			//try to add duplicate entries
-			entryDatabase->AddEntry(testEntry);
-			entryDatabase->AddEntry(testEntry);
-			entryDatabase->AddEntry(testEntry);
+			testDatabase.AddEntry(testEntry);
+			testDatabase.AddEntry(testEntry);
+			testDatabase.AddEntry(testEntry);
+
+			//reset changes to file
+			originalDatabase->UpdateEntriesFile();
 
 			//only one entry should be added
-			Assert::AreEqual(startCount + 1, entryDatabase->GetEntryCount());
-
-			//remove test entry
-			entryDatabase->RemoveEntry(testEntry);
-			Assert::AreEqual(startCount, entryDatabase->GetEntryCount());
+			Assert::AreEqual(originalDatabase->GetEntryCount() + 1, testDatabase.GetEntryCount());
 		}
 		TEST_METHOD(AddingInvalidEntries) {
 			DatabaseMaster dbmaster{}; dbmaster.AppInit();
@@ -178,4 +187,110 @@ namespace DatabaseTesting
 			Assert::IsFalse(entryDatabase->IsValidEntry(testEntryInvalid.GetSummary()));
 		}
 	};
+
+	TEST_CLASS(GenreDatabaseTests) {
+	public:
+		TEST_METHOD(Startup) 
+		{
+			DatabaseMaster dbmaster{}; dbmaster.AppInit();
+			shared_ptr<GenreListDataBase> genreDatabase = dbmaster.GetGenreDatabase();
+			Assert::IsTrue(genreDatabase->GetAllGenres().size() > 0);
+		}
+		TEST_METHOD(AddingGenres)
+		{
+			DatabaseMaster dbmaster{}; dbmaster.AppInit();
+			shared_ptr<GenreListDataBase> genreDatabase = dbmaster.GetGenreDatabase();
+
+			string testGenre = "Test-Genre";
+			genreDatabase->AddGenre(testGenre);
+
+			Assert::IsTrue(genreDatabase->GenreExsists(testGenre));
+
+			genreDatabase->RemoveGenre(testGenre);
+		}
+		TEST_METHOD(RemovingGenres)
+		{
+			DatabaseMaster dbmaster{}; dbmaster.AppInit();
+			shared_ptr<GenreListDataBase> genreDatabase = dbmaster.GetGenreDatabase();
+
+			string testGenre = "Test-Genre";
+			genreDatabase->AddGenre(testGenre);
+			Assert::IsTrue(genreDatabase->GenreExsists(testGenre));
+
+			genreDatabase->RemoveGenre(testGenre);
+			Assert::IsFalse(genreDatabase->GenreExsists(testGenre));
+		}
+		TEST_METHOD(WritingGenreFile)
+		{
+			DatabaseMaster dbmaster{}; dbmaster.AppInit();
+			shared_ptr<GenreListDataBase> genreDatabase = dbmaster.GetGenreDatabase();
+
+			string testGenre = "Test-Genre";
+			genreDatabase->AddGenre(testGenre);
+			genreDatabase->UpdateGenreListFile();
+
+			DatabaseMaster dbmaster2{}; dbmaster2.AppInit();
+			genreDatabase = dbmaster2.GetGenreDatabase();
+
+			Assert::IsTrue(genreDatabase->GenreExsists(testGenre));
+
+			genreDatabase->RemoveGenre(testGenre);
+			genreDatabase->UpdateGenreListFile();
+		}
+		TEST_METHOD(GettingGenres) {
+			DatabaseMaster dbmaster{}; dbmaster.AppInit();
+			shared_ptr<GenreListDataBase> genreDatabase = dbmaster.GetGenreDatabase();
+
+			string testGenre = "Test-Genre";
+			genreDatabase->AddGenre(testGenre);
+
+			uint8_t genreKey = genreDatabase->GetKey(testGenre);
+			Assert::AreEqual(testGenre, genreDatabase->GetGenre(genreKey));
+
+			genreDatabase->RemoveGenre(testGenre);
+		}
+		TEST_METHOD(GettingInlavidGenres) {
+			DatabaseMaster dbmaster{}; dbmaster.AppInit();
+			shared_ptr<GenreListDataBase> genreDatabase = dbmaster.GetGenreDatabase();
+
+			uint8_t genreKey = genreDatabase->GetKey("testinginvalidgenrenametoolongfordatbaseandshouldntexsist");
+			Assert::AreEqual(string(), genreDatabase->GetGenre(genreKey));
+			Assert::AreEqual((uint8_t)0, genreKey);
+		}
+		TEST_METHOD(AddingDuplicateGenres) {
+			DatabaseMaster dbmaster{}; dbmaster.AppInit();
+			shared_ptr<GenreListDataBase> genreDatabase = dbmaster.GetGenreDatabase();
+			int genreStartCount = genreDatabase->GetAllGenres().size();
+
+			string testGenre = "Test-Genre";
+			genreDatabase->AddGenre(testGenre);
+			genreDatabase->AddGenre(testGenre);
+			genreDatabase->AddGenre(testGenre);
+
+			Assert::AreEqual(genreStartCount + 1, (int)genreDatabase->GetAllGenres().size());
+
+			genreDatabase->RemoveGenre(testGenre);
+		}
+		TEST_METHOD(MaxGenreCount) {
+			DatabaseMaster dbmaster{}; dbmaster.AppInit();
+			shared_ptr<GenreListDataBase> originalGenreDatabase = dbmaster.GetGenreDatabase();
+
+			//use a test database to not make permanent changes
+			GenreListDataBase testDataBase = GenreListDataBase(*originalGenreDatabase.get());
+			int genreCount = testDataBase.GetAllGenres().size();
+
+			for (size_t i = 0; i < GenreListDataBase::MAXCOUNT_GENRE * 2; i++)
+			{
+				//generate a new string each iteration
+				char testGenre[6] = { 'a', 'a', ('a' + (i % 26)) ,('a' + ((i / 26)) % 26), ('a' + ((i / (26 * 26)) % 26)), '\0' };
+				testDataBase.AddGenre(string(testGenre));
+			}
+
+			Assert::AreEqual((int)GenreListDataBase::MAXCOUNT_GENRE, (int)testDataBase.GetAllGenres().size());
+
+			originalGenreDatabase->UpdateGenreListFile();
+		}
+		
+	};
+
 }
