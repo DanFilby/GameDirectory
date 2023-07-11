@@ -8,4 +8,4 @@ Things learnt:
 - C++ Filesystem library
 - Builder design pattern (in progress)
 - CSV files in C++
-
+- Unit testings
