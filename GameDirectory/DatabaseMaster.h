@@ -10,7 +10,7 @@
 class DatabaseMaster : Database {
 public:
 	/// <summary>
-	/// Inits databases for the entire application, validation checks
+	/// Inits databases for the entire application
 	/// </summary>
 	void AppInit();
 	void Close();

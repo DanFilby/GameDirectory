@@ -1,7 +1,7 @@
 #pragma once
 //builder for video game has a studio step so can setup multiple studios
 
-#include "EntryDatabase.h"
+#include "DatabaseMaster.h"
 
 class EntryBuilder {
 
@@ -34,15 +34,27 @@ private:
 class GameEntryBuilder : EntryBuilder {
 
 public:
-	GameEntryBuilder(shared_ptr<EntryDatabase> _entryDatabase);
+	GameEntryBuilder(shared_ptr<DatabaseMaster> databases);
 
 	bool BuildEntry(shared_ptr<Entry>& entry);
+	bool BuildAndSaveEntry(shared_ptr<Entry>& entry);
+
 	bool BuildGameEntry(shared_ptr<GameEntry>& gameEntry);
+	bool BuildAndSaveGameEntry(shared_ptr<GameEntry>& gameEntry);
+
+	void ClearBuild();
+
+	void SetShortDescription(string _shortDescription);
+	void SetFullDescription(string _fullDescription);
+	void SetTags(GameTags _tags);
+	void SetGenres(GameGenres _genres);
+	void SetRatings();
 
 private:
 	bool RequiredFieldsCheck();
 
 	shared_ptr<GenreListDataBase> mGenreDatabase;
+	shared_ptr<GenreListDataBase> mTagDatabase;
 
 };
 

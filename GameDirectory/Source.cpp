@@ -15,30 +15,17 @@ void DataBase() {
      shared_ptr<GenreListDataBase> gdatabase = appDbManager->GetGenreDatabase();
      shared_ptr<TagListDataBase> tagDB = appDbManager->GetTagDatabase();
 
-     dataBase->UpdateEntriesFile();
-
-     /*tagDB->AddTag("Fast Paced");
-     tagDB->AddTag("Open World");
-     tagDB->AddTag("Zombies");
-     tagDB->AddTag("Favourites");*/
-
-     dataBase->RemoveDuplicates();
      dataBase->PrintActiveEntries();
-
      gdatabase->PrintGenreList();
-     //gdatabase.UpdateGenreListFile();
-
      tagDB->PrintTagList();
-     //tagDB.UpdateTagListFile();
 
-     GameGenres genres(gdatabase.get());
+     GameGenres genres(gdatabase);
      genres.AddGenre(gdatabase->GetKey("Strategy"));
      genres.AddGenre(gdatabase->GetKey("Racing"));
      genres.AddGenre(gdatabase->GetKey("Casual"));
-
      unique_ptr<char[]> binGenre = genres.ToBinary();
 
-     GameGenres genresRe = GameGenres(gdatabase.get(), binGenre.get());
+     GameGenres genresRe = GameGenres(gdatabase, binGenre.get());
      genresRe.PrintGenres();
 
      GameTags tags(tagDB.get());
@@ -63,7 +50,16 @@ void DataBase() {
              << "Type: " << entry1.get()->Type() << "\n"
              << "Year: " << entry1.get()->Year() << "\n\n";
      }
+     GameRatings ratings(8.0f, 9.0f, 5.5f, 3.1f);
 
+     GameEntry gameEntry(45, 2023, "Penguin Village");
+     gameEntry.SetShortDescription("Action adventure rpg as a penguin");
+     gameEntry.SetFullDescription("Explore a quaint iceberg village, full of interesting villagers. whilst building their small town and completing their quests. ");
+     gameEntry.mGenres = genres;
+     gameEntry.mTags = tags;
+     gameEntry.mRatings = ratings;
+
+     gameEntry.PrintInfo();
 }
 
 void AppStart() {
@@ -83,29 +79,13 @@ int main()
     AppStart();
     DataBase();
 
-
     GameRatings ratings(8.0f,9.0f,5.5f,3.1f);
 
     unique_ptr<char[]> ratingsBinDat = ratings.ToBinary();
 
     GameRatings ratings2(ratingsBinDat.get());
 
-    ratings2.DisplayAllRatings();
+    //ratings2.DisplayAllRatings();
 
     AppClose();
-
-    DatabaseMaster dbmaster{}; dbmaster.AppInit();
-    shared_ptr<EntryDatabase> originalDatabase = dbmaster.GetEntryDatabase();
-
-    EntryDatabase testDatabase = EntryDatabase(*originalDatabase.get());
-    Entry testEntry = Entry(234, ET_Game, 2004, "Mario");
-    Entry testEntry2 = Entry(254, ET_Game, 2005, "Super-Mario");
-
-    //try to add and remove entries
-    testDatabase.AddEntry(testEntry);
-    testDatabase.AddEntry(testEntry2);
-    testDatabase.RemoveEntry(testEntry);
-    testDatabase.RemoveEntry(testEntry2);
 }
-
-//TODO: Move all testing to an actual unit test set up

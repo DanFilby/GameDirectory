@@ -109,3 +109,7 @@ bool GameEntryBuilder::RequiredFieldsCheck()
 
 	return false;
 }
+
+GameEntryBuilder::GameEntryBuilder(shared_ptr<DatabaseMaster> databases)
+{
+}

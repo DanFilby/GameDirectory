@@ -8,6 +8,18 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace DatabaseTesting
 {
+	TEST_CLASS(DatabaseMasterTests) {
+		TEST_METHOD(Startup)
+		{
+			DatabaseMaster dbmaster{};
+			dbmaster.AppInit();
+
+			Assert::IsNotNull(dbmaster.GetEntryDatabase().get());
+			Assert::IsNotNull(dbmaster.GetGenreDatabase().get());
+			Assert::IsNotNull(dbmaster.GetTagDatabase	().get());
+		}
+	};
+
 	TEST_CLASS(EntryDatabaseTests)
 	{
 	public:
@@ -260,7 +272,7 @@ namespace DatabaseTesting
 		TEST_METHOD(AddingDuplicateGenres) {
 			DatabaseMaster dbmaster{}; dbmaster.AppInit();
 			shared_ptr<GenreListDataBase> genreDatabase = dbmaster.GetGenreDatabase();
-			int genreStartCount = genreDatabase->GetAllGenres().size();
+			int genreStartCount = (int)genreDatabase->GetAllGenres().size();
 
 			string testGenre = "Test-Genre";
 			genreDatabase->AddGenre(testGenre);
@@ -277,12 +289,12 @@ namespace DatabaseTesting
 
 			//use a test database to not make permanent changes
 			GenreListDataBase testDataBase = GenreListDataBase(*originalGenreDatabase.get());
-			int genreCount = testDataBase.GetAllGenres().size();
+			int genreCount = (int)testDataBase.GetAllGenres().size();
 
 			for (size_t i = 0; i < GenreListDataBase::MAXCOUNT_GENRE * 2; i++)
 			{
 				//generate a new string each iteration
-				char testGenre[6] = { 'a', 'a', ('a' + (i % 26)) ,('a' + ((i / 26)) % 26), ('a' + ((i / (26 * 26)) % 26)), '\0' };
+				char testGenre[6] = { 'a', 'a', ('a' + (char)(i % 26)) ,('a' + (char)((i / 26)) % 26), ('a' + (char)((i / (26 * 26)) % 26)), '\0' };
 				testDataBase.AddGenre(string(testGenre));
 			}
 
@@ -365,7 +377,7 @@ namespace DatabaseTesting
 		TEST_METHOD(AddingDuplicateTags) {
 			DatabaseMaster dbmaster{}; dbmaster.AppInit();
 			shared_ptr<TagListDataBase> tagDatabase = dbmaster.GetTagDatabase();
-			int tagStartCount = tagDatabase->GetAllTags().size();
+			int tagStartCount = (int)tagDatabase->GetAllTags().size();
 
 			string testTag = "Test-Tag";
 			tagDatabase->AddTag(testTag);
@@ -386,7 +398,7 @@ namespace DatabaseTesting
 			for (size_t i = 0; i < TagListDataBase::MAXCOUNT_TAGS * 2; i++)
 			{
 				//generate a new string each iteration
-				char testTag[6] = { 'a', 'a', ('a' + (i % 26)) ,('a' + ((i / 26)) % 26), ('a' + ((i / (26 * 26)) % 26)), '\0' };
+				char testTag[6] = { 'a', 'a', ('a' + (char)(i % 26)) ,('a' + (char)((i / 26)) % 26), ('a' + (char)((i / (26 * 26)) % 26)), '\0' };
 				testDataBase.AddTag(string(testTag));
 			}
 

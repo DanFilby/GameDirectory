@@ -70,6 +70,8 @@ public:
 	EntryInfo_Short GetSummary();
 	unique_ptr<char[]> GetRawData_Short();
 
+	void PrintInfo();
+
 	EntryType const Type() { return ET_Game; };
 
 	//getters and setters for descriptions as they're length restricted
@@ -83,8 +85,8 @@ public:
 	vector<ENTRYID> mStudioIds;
 
 	//genres and tags related to the game entry
-	//GameGenres mGenres;
-	//GameTags mTags;
+	GameGenres mGenres;
+	GameTags mTags;
 
 	//set of ratings about various aspects of the game
 	GameRatings mRatings;

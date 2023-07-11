@@ -149,21 +149,29 @@ struct GameGenres {
 
 	uint8_t genreIds[NUM_GENRES];
 
-	GenreListDataBase* genreDatabase;
+	shared_ptr<GenreListDataBase> genreDatabase;
 
-	GameGenres(GenreListDataBase* _genreDatabase) {
+	GameGenres() {
+		//set up empty ids and genre database
+		memset(&genreIds, 0, NUM_GENRES);
+		genreDatabase = nullptr;
+	}
+
+	GameGenres(shared_ptr<GenreListDataBase> _genreDatabase) {
 		//set up empty ids and genre database
 		memset(&genreIds, 0, NUM_GENRES);
 		genreDatabase = _genreDatabase;
 	}
 
-	GameGenres(GenreListDataBase* _genreDatabase, char* binaryData) {
+	GameGenres(shared_ptr<GenreListDataBase> _genreDatabase, char* binaryData) {
 		//set up empty ids and genre database
 		genreDatabase = _genreDatabase;
 		memcpy(&genreIds[0], binaryData, sizeof(uint8_t) * NUM_GENRES);
 	}
 	
 	void AddGenre(uint8_t genreKey) {
+		if (!genreDatabase || !genreDatabase->GenreExsists(genreKey)) { std::cout << "Unable to add genre\n"; return; }
+
 		for (auto& curId : genreIds) {
 			if (curId == 0) {
 				//found empty genre slot, update with new genre and return
@@ -176,6 +184,8 @@ struct GameGenres {
 	}
 
 	void AddGenre(uint8_t genreKey, int index) {
+		if (!genreDatabase || !genreDatabase->GenreExsists(genreKey)) { std::cout << "Unable to add genre\n"; return; }
+
 		index = std::clamp(index, 0, NUM_GENRES - 1);
 		genreIds[index] = genreKey;
 	}
@@ -193,11 +203,24 @@ struct GameGenres {
 	}
 
 	void PrintGenres() {
+		if (!genreDatabase) { return ; }
+
 		for (uint8_t genreKey : genreIds) {
 			if (genreKey == 0) { break; }
 			std::cout << "Genre: " << (int)genreKey << " | " << genreDatabase->GetGenre(genreKey) << "\n";
 		}
 		std::cout << "\n";
+	}
+
+	string GetGenresOneLine() {
+		if (!genreDatabase) { return string(); }
+
+		string output;
+		for (uint8_t genreKey : genreIds) {
+			if (genreKey == 0) { break; }
+			output += genreDatabase->GetGenre(genreKey) + " | ";
+		}
+		return output;
 	}
 
 	unique_ptr<char[]> ToBinary() const {
@@ -219,6 +242,12 @@ struct GameTags {
 
 	TagListDataBase* tagDatabase;
 
+	GameTags() {
+		//set up empty ids and database
+		memset(&tagIds, 0, NUM_TAGS);
+		tagDatabase = nullptr;
+	}
+
 	GameTags(TagListDataBase* _tagDatabase) {
 		//set up empty ids and database
 		memset(&tagIds, 0, NUM_TAGS);
@@ -232,6 +261,8 @@ struct GameTags {
 	}
 
 	void AddTag(uint8_t tagKey) {
+		if (!tagDatabase || !tagDatabase->TagExsists(tagKey)) { std::cout << "Unable to add tag\n"; return; }
+
 		for (auto& curId : tagIds) {
 			if (curId == 0) {
 				//found empty tag slot, update with new tag and return
@@ -244,6 +275,8 @@ struct GameTags {
 	}
 
 	void AddTag(uint8_t tagKey, int index) {
+		if (!tagDatabase || !tagDatabase->TagExsists(tagKey)) { std::cout << "Unable to add tag\n"; return; }
+
 		index = std::clamp(index, 0, NUM_TAGS - 1);
 		tagIds[index] = tagKey;
 	}
@@ -266,6 +299,17 @@ struct GameTags {
 			std::cout << "Tag: " << (int)tagKey << " | " << tagDatabase->GetTag(tagKey) << "\n";
 		}
 		std::cout << "\n";
+	}
+
+	string GetTagsOneLine() {
+		if (!tagDatabase) { return string(); }
+
+		string output;
+		for (uint8_t tagKey : tagIds) {
+			if (tagKey == 0) { break; }
+			output += tagDatabase->GetTag(tagKey) + " | ";
+		}
+		return output;
 	}
 
 	unique_ptr<char[]> ToBinary() const {

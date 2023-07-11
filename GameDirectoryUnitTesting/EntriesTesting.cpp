@@ -129,6 +129,7 @@ namespace EntryTesting
 
 	};
 
+	//TODO: add genre, tags, rating serialization tests
 	TEST_CLASS(EntriesSerialization_Tests)
 	{
 	public:

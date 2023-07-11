@@ -58,22 +58,25 @@ bool Entry::IsValid_Year(const uint16_t _year)
 #pragma region GameEntry
 
 GameEntry::GameEntry()
+	:mGenres(), mTags(), mRatings()
 {
-	mId = 37;
-	mYear = 2023;
-	mName = "Penguin Village";
+	mId = 0;
+	mType = ET_Game;
+	mYear = 0;
+	mName = "";
 }
 
 GameEntry::GameEntry(ENTRYID _id, uint16_t _year, string _name)
+	:mGenres(), mTags(), mRatings()
 {
 	mId = _id;
 	mType = ET_Game;
 	mYear = _year;
 	mName = _name;
-
 }
 
 GameEntry::GameEntry(char* rawData)
+	:mGenres(), mTags(), mRatings()
 {
 }
 
@@ -102,6 +105,17 @@ unique_ptr<char[]> GameEntry::GetRawData_Short()
 	return gameDat;
 }
 
+void GameEntry::PrintInfo()
+{
+	std::cout << "\nGame entry: " << mName << "\n";
+	std::cout << " Id: " << mId << " Year: " << mYear << "\n";
+	std::cout << "- " << mShortDescription << "\n\n";
+	std::cout << "Tags: | " << mTags.GetTagsOneLine() << "\n";
+	std::cout << "Genres: | " << mGenres.GetGenresOneLine() << "\n\n";
+	std::cout << mFullDescription << "\n\n";
+	mRatings.DisplayAllRatings();
+}
+
 void GameEntry::SetShortDescription(string _shortDescription)
 {
 	_shortDescription.resize(SHORTDESCRIPTION_MAXLEN);
@@ -111,9 +125,8 @@ void GameEntry::SetShortDescription(string _shortDescription)
 void GameEntry::SetFullDescription(string _fullDescription)
 {
 	_fullDescription.resize(FULLDESCRIPTION_MAXLEN);
-	mShortDescription = _fullDescription;
+	mFullDescription = _fullDescription;
 }
-
 
 
 #pragma endregion
