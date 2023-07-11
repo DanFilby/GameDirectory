@@ -293,4 +293,107 @@ namespace DatabaseTesting
 		
 	};
 
+	TEST_CLASS(TagDatabaseTests) {
+	public:
+		TEST_METHOD(Startup)
+		{
+			DatabaseMaster dbmaster{}; dbmaster.AppInit();
+			shared_ptr<TagListDataBase> tagDatabase = dbmaster.GetTagDatabase();
+			Assert::IsTrue(tagDatabase->GetAllTags().size() > 0);
+		}
+		TEST_METHOD(AddingTags)
+		{
+			DatabaseMaster dbmaster{}; dbmaster.AppInit();
+			shared_ptr<TagListDataBase> tagDatabase = dbmaster.GetTagDatabase();
+
+			string testTag = "Test-Tag";
+			tagDatabase->AddTag(testTag);
+
+			Assert::IsTrue(tagDatabase->TagExsists(testTag));
+
+			tagDatabase->RemoveTag(testTag);
+		}
+		TEST_METHOD(RemovingTags)
+		{
+			DatabaseMaster dbmaster{}; dbmaster.AppInit();
+			shared_ptr<TagListDataBase> tagDatabase = dbmaster.GetTagDatabase();
+
+			string testTag = "Test-Tag";
+			tagDatabase->AddTag(testTag);
+			Assert::IsTrue(tagDatabase->TagExsists(testTag));
+
+			tagDatabase->RemoveTag(testTag);
+			Assert::IsFalse(tagDatabase->TagExsists(testTag));
+		}
+		TEST_METHOD(WritingTagFile)
+		{
+			DatabaseMaster dbmaster{}; dbmaster.AppInit();
+			shared_ptr<TagListDataBase> tagDatabase = dbmaster.GetTagDatabase();
+
+			string testTag = "Test-Tag";
+			tagDatabase->AddTag(testTag);
+			tagDatabase->UpdateTagListFile();
+
+			DatabaseMaster dbmaster2{}; dbmaster2.AppInit();
+			tagDatabase = dbmaster2.GetTagDatabase();
+
+			Assert::IsTrue(tagDatabase->TagExsists(testTag));
+
+			tagDatabase->RemoveTag(testTag);
+			tagDatabase->UpdateTagListFile();
+		}
+		TEST_METHOD(GettingTags) {
+			DatabaseMaster dbmaster{}; dbmaster.AppInit();
+			shared_ptr<TagListDataBase> tagDatabase = dbmaster.GetTagDatabase();
+
+			string testTag = "Test-Tag";
+			tagDatabase->AddTag(testTag);
+
+			uint8_t tagKey = tagDatabase->GetKey(testTag);
+			Assert::AreEqual(testTag, tagDatabase->GetTag(tagKey));
+
+			tagDatabase->RemoveTag(testTag);
+		}
+		TEST_METHOD(GettingInlavidTags) {
+			DatabaseMaster dbmaster{}; dbmaster.AppInit();
+			shared_ptr<TagListDataBase> tagDatabase = dbmaster.GetTagDatabase();
+
+			uint8_t tagKey = tagDatabase->GetKey("testinginvalidtagnametoolongfordatbaseandshouldntexsist");
+			Assert::AreEqual(string(), tagDatabase->GetTag(tagKey));
+			Assert::AreEqual((uint8_t)0, tagKey);
+		}
+		TEST_METHOD(AddingDuplicateTags) {
+			DatabaseMaster dbmaster{}; dbmaster.AppInit();
+			shared_ptr<TagListDataBase> tagDatabase = dbmaster.GetTagDatabase();
+			int tagStartCount = tagDatabase->GetAllTags().size();
+
+			string testTag = "Test-Tag";
+			tagDatabase->AddTag(testTag);
+			tagDatabase->AddTag(testTag);
+			tagDatabase->AddTag(testTag);
+
+			Assert::AreEqual(tagStartCount + 1, (int)tagDatabase->GetAllTags().size());
+
+			tagDatabase->RemoveTag(testTag);
+		}
+		TEST_METHOD(MaxTagCount) {
+			DatabaseMaster dbmaster{}; dbmaster.AppInit();
+			shared_ptr<TagListDataBase> originalTagDatabase = dbmaster.GetTagDatabase();
+
+			//use a test database to not make permanent changes
+			TagListDataBase testDataBase = TagListDataBase(*originalTagDatabase.get());
+
+			for (size_t i = 0; i < TagListDataBase::MAXCOUNT_TAGS * 2; i++)
+			{
+				//generate a new string each iteration
+				char testTag[6] = { 'a', 'a', ('a' + (i % 26)) ,('a' + ((i / 26)) % 26), ('a' + ((i / (26 * 26)) % 26)), '\0' };
+				testDataBase.AddTag(string(testTag));
+			}
+
+			Assert::AreEqual((int)TagListDataBase::MAXCOUNT_TAGS, (int)testDataBase.GetAllTags().size());
+
+			originalTagDatabase->UpdateTagListFile();
+		}
+
+	};
 }
