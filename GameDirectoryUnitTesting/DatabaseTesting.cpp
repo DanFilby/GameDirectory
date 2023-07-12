@@ -192,11 +192,11 @@ namespace DatabaseTesting
 
 			Entry testEntryValid = Entry(201, ET_Studio, 2002, "Valid");
 
-			Assert::IsTrue(entryDatabase->IsValidEntry(testEntryValid.GetSummary()));
+			Assert::IsTrue(entryDatabase->IsValidEntry(testEntryValid));
 
 			Entry testEntryInvalid = Entry(0, ET_Base, 0, "invlaid");
 
-			Assert::IsFalse(entryDatabase->IsValidEntry(testEntryInvalid.GetSummary()));
+			Assert::IsFalse(entryDatabase->IsValidEntry(testEntryInvalid));
 		}
 	};
 

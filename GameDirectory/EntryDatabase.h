@@ -43,6 +43,8 @@ public:
 	void RemoveEntry(ENTRYID _entryId);
 
 	EntryInfo_Short GetEntrySummary(ENTRYID _id);
+	Entry GetEntry(ENTRYID _id);
+
 	ENTRYID GetEntryId(EntryType _type, string _name, uint16_t _year);
 
 	bool EntryExsists(ENTRYID _id);
@@ -61,12 +63,12 @@ public:
 	/// <summary>
 	/// Check entry is valid to add to the database
 	/// </summary>
-	bool IsValidEntry(const EntryInfo_Short entrySum);
+	bool IsValidEntry(Entry& _entry);
 	/// <summary>
 	/// checks whether a matching entry is already stored
 	/// </summary>
 	/// <returns> true if found another matching entry </returns>
-	bool IsDuplicateEntry(const EntryInfo_Short entrySum);
+	bool IsDuplicateEntry(Entry& _entry);
 
 	/// <summary>
 	/// sets a new unique id for the given entry, if valid
@@ -77,7 +79,7 @@ public:
 	/// gets a unique id for the given entry, returned through out param
 	/// </summary>
 	/// <returns> true if successful </returns>
-	bool GetUniqueId(EntryInfo_Short entrySum, int& outId);
+	bool GetUniqueId(Entry& _entry, int& outId);
 
 	/// <summary>
 	/// removes duplicate entries in mActiveEntries
@@ -108,7 +110,7 @@ private:
 	void RemoveTempId(ENTRYID id);
 
 	//all entries found on start-up or added during the session 
-	vector<EntryInfo_Short> mActiveEntries;
+	vector<Entry> mActiveEntries;
 
 	vector<ENTRYID> tempIds;
 

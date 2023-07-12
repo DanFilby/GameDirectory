@@ -10,6 +10,10 @@ Entry::Entry()
 	mName.clear();
 }
 
+Entry::Entry(EntryInfo_Short _entrySummary)
+	:mId(_entrySummary.id), mType(_entrySummary.type), mYear(_entrySummary.year), mName(_entrySummary.name) {
+}
+
 Entry::Entry(ENTRYID _id, EntryType _type, uint16_t _year, string _name)
 	:mId(_id), mType(_type), mYear(_year), mName(_name){
 }
@@ -18,7 +22,16 @@ Entry::~Entry()
 {
 }
 
-EntryInfo_Short Entry::GetSummary()
+bool Entry::operator==(const Entry& compareEntry) const
+{
+	if ((strcmp(this->mName.c_str(), compareEntry.mName.c_str()) == 0 && this->mYear == compareEntry.mYear
+		&& this->mType == compareEntry.mType) || this->mId == compareEntry.mId) {
+		return true;
+	}
+	return false;
+}
+
+EntryInfo_Short Entry::GetSummary() const
 {
 	//pass game's id, name and the game type into the struct
 	EntryInfo_Short info{ mId, mType, mYear, mName };
@@ -29,15 +42,6 @@ EntryInfo_Short Entry::GetSummary()
 unique_ptr<char[]> Entry::GetRawData_Short()
 {
 	return GetSummary().ToBinary();
-}
-
-bool Entry::operator==(const Entry& compareEntry)
-{
-	if ((strcmp(this->mName.c_str(), compareEntry.mName.c_str()) == 0 && this->mYear == compareEntry.mYear
-		&& this->mType == compareEntry.mType )|| this->mId == compareEntry.mId) {
-		return true;
-	}
-	return false;
 }
 
 bool Entry::IsValid_Name(const string& _name)

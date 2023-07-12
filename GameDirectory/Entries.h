@@ -13,22 +13,23 @@ class Entry {
 
 public:
 	static const uint8_t MINLEN_ENTRYNAME = 2;
-	static const uint8_t MAXLEN_ENTRYNAME = 32;
+	static const uint8_t MAXLEN_ENTRYNAME = 26;
 
 public:
 	Entry();
+	Entry(EntryInfo_Short _entrySummary);
 	Entry(ENTRYID _id, EntryType _type, uint16_t _year, string _name);
 	virtual ~Entry();
 
 	/// <summary>
 	/// comparison of: name, year, type, or id 
 	/// </summary>
-	bool operator==(const Entry& compareEntry);
+	bool operator== (const Entry& compareEntry) const;
 
 	/// <summary>
 	/// returns a struct summarizing the entry: id, name and type
 	/// </summary>
-	virtual EntryInfo_Short GetSummary();
+	virtual EntryInfo_Short GetSummary() const;
 	/// <summary>
 	/// returns a summary of the entry in byte format 
 	/// </summary>

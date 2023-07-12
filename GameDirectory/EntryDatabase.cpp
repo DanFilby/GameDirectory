@@ -19,14 +19,11 @@ EntryDatabase::~EntryDatabase()
 
 void EntryDatabase::AddEntry(Entry entry)
 {
-	EntryInfo_Short entrySum = entry.GetSummary();
+	if (!IsValidEntry(entry)) { std::cout << "Failed to add entry to database\n"; return; }
 
-	//fail if entry isn't valid
-	if (!IsValidEntry(entry.GetSummary())) { std::cout << "Failed to add entry to database\n"; return; }
+	mActiveEntries.push_back(Entry(entry));
 
-	RemoveTempId(entrySum.id);
-
-	mActiveEntries.push_back(entrySum);
+	RemoveTempId(entry.mId);
 	UpdateEntriesFile();
 }
 
@@ -41,7 +38,7 @@ void EntryDatabase::RemoveEntry(ENTRYID entryId)
 	int entryIndex = -1;
 	for (size_t i = 0; i < mActiveEntries.size(); i++)
 	{
-		if (mActiveEntries[i].id == entryId) {
+		if (mActiveEntries[i].mId == entryId) {
 			entryIndex = i;
 			break;
 		}
@@ -54,19 +51,26 @@ void EntryDatabase::RemoveEntry(ENTRYID entryId)
 
 EntryInfo_Short EntryDatabase::GetEntrySummary(ENTRYID _id)
 {
-	for (const auto& entry : mActiveEntries) {
-		if (entry.id == _id) {
+	return GetEntry(_id).GetSummary();
+}
+
+Entry EntryDatabase::GetEntry(ENTRYID _id)
+{
+	for (auto& entry : mActiveEntries) {
+		if (entry.mId == _id) {
 			return entry;
 		}
 	}
-	return NULL;
+
+	std::cout << "Unable to find entry in database\n";
+	return Entry();
 }
 
 ENTRYID EntryDatabase::GetEntryId(EntryType _type, string _name, uint16_t _year)
 {
 	for (const auto& entry : mActiveEntries) {
-		if (entry.type == _type && entry.name == _name && entry.year == _year) {
-			return entry.id;
+		if (entry.mType == _type && entry.mName == _name && entry.mYear == _year) {
+			return entry.mId;
 		}
 	}
 	return 0;
@@ -75,7 +79,7 @@ ENTRYID EntryDatabase::GetEntryId(EntryType _type, string _name, uint16_t _year)
 bool EntryDatabase::EntryExsists(ENTRYID _id)
 {
 	for (const auto& entry : mActiveEntries) {
-		if (entry.id == _id) {
+		if (entry.mId == _id) {
 			return true;
 		}
 	}
@@ -92,7 +96,7 @@ std::map<EntryType, uint16_t> EntryDatabase::GetEntryTypeCount()
 	std::map<EntryType, uint16_t> entryTypeMap{ {ET_Base, 0},{ET_Game, 0}, {ET_Studio, 0 } };
 	
 	for (auto& entry : mActiveEntries) {
-		entryTypeMap[entry.type]++;
+		entryTypeMap[entry.mType]++;
 	}
 
 	return entryTypeMap;
@@ -102,23 +106,23 @@ void EntryDatabase::PrintActiveEntries()
 {
 	for (const auto& entry : mActiveEntries)
 	{
-		std::cout << "info name: " << entry.name << "\n";
-		std::cout << "info id: " << entry.id << "\n";
-		std::cout << "info type: " << entry.type << "\n";
-		std::cout << "info year: " << entry.year << "\n\n";
+		std::cout << "Entry " << entry.mId << " :\n";
+		std::cout << "info name: " << entry.mName << "\n";
+		std::cout << "info type: " << entry.mType << "\n";
+		std::cout << "info year: " << entry.mYear << "\n\n";
 	}
 }
 
-bool EntryDatabase::IsValidEntry(const EntryInfo_Short entrySum)
+bool EntryDatabase::IsValidEntry(Entry& _entry)
 {
-	return (!IsDuplicateEntry(entrySum) && entrySum.id != 0);
+	return (!IsDuplicateEntry(_entry) && _entry.mId != 0);
 }
 
-bool EntryDatabase::IsDuplicateEntry(const EntryInfo_Short entrySum)
+bool EntryDatabase::IsDuplicateEntry(Entry& _entry)
 {
-	for (const auto& curEntry : mActiveEntries) {
+	for (auto& curEntry : mActiveEntries) {
 		//entry is a duplicate if another entry with the same name and year exsits, checks using custom == operator
-		if (entrySum == curEntry) {
+		if (_entry == curEntry) {
 			return true;
 		}
 	}
@@ -128,7 +132,7 @@ bool EntryDatabase::IsDuplicateEntry(const EntryInfo_Short entrySum)
 bool EntryDatabase::SetUniqueId(Entry& entry)
 {
 	int uniqueId{};
-	bool success = GetUniqueId(entry.GetSummary(), uniqueId);
+	bool success = GetUniqueId(entry, uniqueId);
 
 	if (success) {
 		//set the new id
@@ -138,16 +142,14 @@ bool EntryDatabase::SetUniqueId(Entry& entry)
 	else { return false; }
 }
 
-bool EntryDatabase::GetUniqueId(EntryInfo_Short entrySum, int& outId)
+bool EntryDatabase::GetUniqueId(Entry& _entry, int& outId)
 {
-	if (IsDuplicateEntry(entrySum)) { std::cout << "Entry is duplicate\n"; return false; }
+	if (IsDuplicateEntry(_entry)) { std::cout << "Entry is duplicate\n"; return false; }
 
 	ENTRYID entryNewId = rand();
 
 	for (size_t i = 0; i < 50; i++)
 	{
-		GetEntrySummary(entryNewId);
-
 		if (entryNewId != 0 || !EntryExsists(entryNewId) || !TempIdCheck(entryNewId)) {
 			break;
 		}
@@ -156,10 +158,7 @@ bool EntryDatabase::GetUniqueId(EntryInfo_Short entrySum, int& outId)
 
 	//successfully found a unique id
 	if (entryNewId != 0 || !EntryExsists(entryNewId)) {
-		//set the new id
 		outId = entryNewId;
-
-		//store the id temporary while, so the id doesn't get given while this one is out and not stored  
 		tempIds.push_back(entryNewId);
 
 		return true;
@@ -199,14 +198,15 @@ void EntryDatabase::LoadEntries()
 		entriesFile.read((char*)entryBuffer, EntryInfo_Short::BYTESIZE);
 
 		EntryInfo_Short entrySummary = EntryInfo_Short(entryBuffer);
+		Entry entry = Entry(entrySummary);
 
-		mActiveEntries.push_back(entrySummary);
+		mActiveEntries.push_back(entry);
 	}
 }
 
 void EntryDatabase::RemoveDuplicates()
 {
-	vector<EntryInfo_Short> filteredEntries{};
+	vector<Entry> filteredEntries{};
 	bool duplicate;
 
 	for (const auto & curEntry : mActiveEntries)
@@ -269,7 +269,7 @@ void EntryDatabase::UpdateEntriesFile()
 
 	//write each entry to the file. each are 32 bytes
 	for (const auto& entry : mActiveEntries) {
-		entriesFile.write((char*)entry.ToBinary().get(), EntryInfo_Short::BYTESIZE);
+		entriesFile.write((char*)entry.GetSummary().ToBinary().get(), EntryInfo_Short::BYTESIZE);
 	}
 
 }
