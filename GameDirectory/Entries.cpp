@@ -31,14 +31,6 @@ bool Entry::operator==(const Entry& compareEntry) const
 	return false;
 }
 
-EntryInfo_Short Entry::GetSummary() const
-{
-	//pass game's id, name and the game type into the struct
-	EntryInfo_Short info{ mId, mType, mYear, mName };
-
-	return info;
-}
-
 shared_ptr<char[]> Entry::GetRawData_Short()
 {
 	return GetSummary().ToBinary();
@@ -47,6 +39,14 @@ shared_ptr<char[]> Entry::GetRawData_Short()
 shared_ptr<char[]> Entry::GetRawData()
 {
 	return GetSummary().ToBinary();
+}
+
+EntryInfo_Short Entry::GetSummary() const
+{
+	//pass game's id, name and the game type into the struct
+	EntryInfo_Short info{ mId, mType, mYear, mName };
+
+	return info;
 }
 
 bool Entry::IsValid_Name(const string& _name)

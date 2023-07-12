@@ -111,14 +111,14 @@ struct GameRatings {
 		: Overall(), Gameplay(), Narrative(), Replayability() {
 	}
 
-	void const DisplayAllRatings() {
+	void DisplayAllRatings() const {
 		std::cout << "Overall rating: " << FloatRating(Overall)<< "/ 10  " << StarRating(Overall) << "\n";
 		std::cout << "Gameplay rating: " << FloatRating(Gameplay) << "/ 10  " << StarRating(Gameplay) << "\n";
 		std::cout << "Narrative rating: " << FloatRating(Narrative) << "/ 10  " << StarRating(Narrative) << "\n";
 		std::cout << "Replayability rating: " << FloatRating(Replayability) << "/ 10  " << StarRating(Replayability) << "\n";
 	}
 
-	inline const string StarRating(uint8_t rating) {
+	inline string StarRating(uint8_t rating) const {
 		string result;
 
 		//add stars
@@ -134,7 +134,7 @@ struct GameRatings {
 		return uint8_t(std::clamp(rating, 0.0f, 10.0f) * 2);
 	}
 
-	inline float FloatRating(uint8_t rating) {
+	inline float FloatRating(uint8_t rating) const {
 		return rating / 2.0f;
 	}
 
