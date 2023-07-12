@@ -2,9 +2,14 @@
 
 EntryBuilder::EntryBuilder(shared_ptr<EntryDatabase> _entryDatabase)
 	:mEntryDatabase(_entryDatabase) {
-	//'mEntryDatabase = shared_ptr<EntryDatabase>(_entryDatabase);
 	ClearBuild();
 	srand(time(NULL));
+}
+
+void EntryBuilder::ClearBuild()
+{
+	if (mCurrentEntry) { delete(mCurrentEntry); }
+	mCurrentEntry = new Entry();
 }
 
 bool EntryBuilder::BuildEntry(shared_ptr<Entry>& entry)
@@ -29,30 +34,20 @@ bool EntryBuilder::BuildEntry(shared_ptr<Entry>& entry)
 
 bool EntryBuilder::BuildAndSaveEntry(shared_ptr<Entry>& entry)
 {
-	//build the entry normally, if valid set id and save to database
-	if (BuildEntry(entry)) {
-		//get and set a unique id for this entry
-		bool databaseCheck = mEntryDatabase->SetUniqueId(*entry.get());
+	//build the entry normally, check if valid
+	if (BuildEntry(entry)) { return false; }
 
-		//return if failed database checks
-		if (!databaseCheck) { std::cout << "Entry failed database checks\n"; return false; }
+	//get and set a unique id for this entry
+	bool databaseCheck = mEntryDatabase->SetUniqueId(*entry.get());
 
-		//add entry to database, and save to file
-		mEntryDatabase->AddEntry(*entry.get());
-		mEntryDatabase->UpdateEntriesFile();
+	//return if failed database checks
+	if (!databaseCheck) { std::cout << "Entry failed database checks\n"; return false; }
 
-		return true;
-	}
-	return false;
-}
+	//add entry to database, and save to file
+	mEntryDatabase->AddEntry(*entry.get());
+	mEntryDatabase->UpdateEntriesFile();
 
-void EntryBuilder::ClearBuild()
-{
-	if (mCurrentEntry) { delete(mCurrentEntry); }
-	mCurrentEntry = new Entry;
-	mCurrentEntry->mType = ET_Base;
-	mCurrentEntry->mYear = 0;
-	mCurrentEntry->mName.clear();
+	return true;
 }
 
 void EntryBuilder::SetInfo(EntryInfo_Short info)
@@ -111,5 +106,125 @@ bool GameEntryBuilder::RequiredFieldsCheck()
 }
 
 GameEntryBuilder::GameEntryBuilder(shared_ptr<DatabaseMaster> databases)
+	:EntryBuilder(databases->GetEntryDatabase())
 {
+	mDatabases = databases;
+	ClearBuild();
+}
+
+void GameEntryBuilder::ClearBuild()
+{
+	if (mCurrentGameEntry) { delete(mCurrentGameEntry); }
+	mCurrentGameEntry = new GameEntry();
+	mCurrentGameEntry->mGenres = GameGenres(mDatabases->GetGenreDatabase());
+	mCurrentGameEntry->mTags = GameTags(mDatabases->GetTagDatabase());
+}
+
+bool GameEntryBuilder::BuildEntry(shared_ptr<Entry>& entry)
+{
+	//check all required entry fields are filled
+	if (!RequiredFieldsCheck()) {
+		std::cout << "Required entry are fields incomplete\n";
+		return false;
+	}
+
+	//create a copy of the temp entry
+	GameEntry outputEntry = GameEntry(*mCurrentGameEntry);
+
+	//set id to 0, as it's not being added to the database right away 
+	outputEntry.mId = 0;
+
+	//set the returned out entry 
+	entry = make_shared<Entry>(outputEntry);
+
+	return true;
+}
+
+bool GameEntryBuilder::BuildAndSaveEntry(shared_ptr<Entry>& entry)
+{
+	//build the entry normally, check if valid
+	if (BuildEntry(entry)) {return false;}
+
+	//get and set a unique id for this entry
+	bool databaseCheck = mEntryDatabase->SetUniqueId(*entry.get());
+
+	//return if failed database checks
+	if (!databaseCheck) { std::cout << "Entry failed database checks\n"; return false; }
+
+	//add entry to database, and save to file
+	mEntryDatabase->AddEntry(*entry.get());
+	mEntryDatabase->UpdateEntriesFile();
+
+	return true;	
+}
+
+void GameEntryBuilder::SetShortDescription(string _shortDescription)
+{
+	if (_shortDescription.empty() || _shortDescription.size() > GameEntry::SHORTDESCRIPTION_MAXLEN) {
+		std::cout << "Invalid short description\n";
+		return;
+	}
+
+	mCurrentGameEntry->SetShortDescription(_shortDescription);
+}
+
+void GameEntryBuilder::SetFullDescription(string _fullDescription)
+{
+	if (_fullDescription.empty() || _fullDescription.size() > GameEntry::FULLDESCRIPTION_MAXLEN) {
+		std::cout << "Invalid full description\n";
+		return;
+	}
+
+	mCurrentGameEntry->SetFullDescription(_fullDescription);
+}
+
+void GameEntryBuilder::SetTags(GameTags _tags)
+{
+	if (_tags.tagDatabase == nullptr) { std::cout << "Invalid tags\n"; return; }
+
+	mCurrentGameEntry->mTags = _tags;
+}
+
+void GameEntryBuilder::SetTags(vector<string> _tags)
+{
+	if (_tags.size() == 0) { std::cout << "Invalid tags\n"; return; }
+
+	mCurrentGameEntry->mTags = GameTags(mDatabases->GetTagDatabase());
+
+	for (const string& tag : _tags) {
+		AddTag(tag);
+	}
+}
+
+void GameEntryBuilder::SetGenres(GameGenres _genres)
+{
+	if (_genres.genreDatabase == nullptr) { std::cout << "Invalid genres\n"; return; }
+
+	mCurrentGameEntry->mGenres = _genres;
+}
+
+void GameEntryBuilder::SetGenres(vector<string> _genres)
+{
+	if (_genres.size() == 0) { std::cout << "Invalid genres\n"; return; }
+
+	mCurrentGameEntry->mGenres = GameGenres(mDatabases->GetGenreDatabase());
+
+	for (const string& genre : _genres) {
+		AddGenre(genre);
+	}
+}
+
+void GameEntryBuilder::SetRatings(GameRatings _ratings)
+{
+	mCurrentGameEntry->mRatings = _ratings;
+}
+
+void GameEntryBuilder::AddGenre(string _genre)
+{
+
+}
+
+void GameEntryBuilder::AddTag(string _tag)
+{
+
 }

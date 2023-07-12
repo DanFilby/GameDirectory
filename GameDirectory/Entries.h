@@ -53,6 +53,7 @@ protected:
 
 //Video game entry: Will contain cover picture and ratings and descriptions
 class GameEntry : public Entry {
+	friend class GameEntryBuilder;
 
 public:
 	static const uint8_t BYTESIZE = 0;
@@ -76,8 +77,8 @@ public:
 
 	//getters and setters for descriptions as they're length restricted
 	string const ShortDescription() { return mShortDescription; }
-	void SetShortDescription(string _shortDescription);
 	string const FullDescription() { return mFullDescription; }
+	void SetShortDescription(string _shortDescription);
 	void SetFullDescription(string _fullDescription);
 
 public:
@@ -97,7 +98,6 @@ private:
 
 	//full description of the game, max length specified
 	string mFullDescription;
-
 };
 
 

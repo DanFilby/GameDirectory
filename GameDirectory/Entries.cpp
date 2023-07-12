@@ -4,6 +4,10 @@
 
 Entry::Entry()
 {
+	mId = 0;
+	mType = ET_Base;
+	mYear = 0;
+	mName.clear();
 }
 
 Entry::Entry(ENTRYID _id, EntryType _type, uint16_t _year, string _name)
@@ -109,7 +113,7 @@ void GameEntry::PrintInfo()
 {
 	std::cout << "\nGame entry: " << mName << "\n";
 	std::cout << " Id: " << mId << " Year: " << mYear << "\n";
-	std::cout << "- " << mShortDescription << "\n\n";
+	std::cout << "- " << mShortDescription << " -\n\n";
 	std::cout << "Tags: | " << mTags.GetTagsOneLine() << "\n";
 	std::cout << "Genres: | " << mGenres.GetGenresOneLine() << "\n\n";
 	std::cout << mFullDescription << "\n\n";

@@ -28,13 +28,13 @@ void DataBase() {
      GameGenres genresRe = GameGenres(gdatabase, binGenre.get());
      genresRe.PrintGenres();
 
-     GameTags tags(tagDB.get());
+     GameTags tags(tagDB);
      tags.AddTag(tagDB->GetKey("Zombies"));
      tags.AddTag(tagDB->GetKey("Favourites"));
 
      unique_ptr<char[]> binTags = tags.ToBinary();
 
-     GameTags tagsRe = GameTags(tagDB.get(), binTags.get());
+     GameTags tagsRe = GameTags(tagDB, binTags.get());
      tagsRe.PrintTags();
 
      EntryBuilder entryBuilder( dataBase);

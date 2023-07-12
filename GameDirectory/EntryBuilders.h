@@ -8,9 +8,11 @@ class EntryBuilder {
 public:
 	EntryBuilder(shared_ptr<EntryDatabase> _entryDatabase);
 
+	virtual void ClearBuild();
+	void EditEntry(Entry& _entry);
+
 	virtual bool BuildEntry(shared_ptr<Entry> & entry);
 	virtual bool BuildAndSaveEntry(shared_ptr<Entry>& entry);
-	virtual void ClearBuild();
 
 	virtual void SetInfo(EntryInfo_Short info);
 	void SetNameYear(string _name, uint16_t year);
@@ -36,25 +38,38 @@ class GameEntryBuilder : EntryBuilder {
 public:
 	GameEntryBuilder(shared_ptr<DatabaseMaster> databases);
 
+	void ClearBuild();
+
+	void EditGameEntry(GameEntry& gameEntry);
+	void EditGameEntry(ENTRYID _gameEntryId);
+
 	bool BuildEntry(shared_ptr<Entry>& entry);
 	bool BuildAndSaveEntry(shared_ptr<Entry>& entry);
 
 	bool BuildGameEntry(shared_ptr<GameEntry>& gameEntry);
 	bool BuildAndSaveGameEntry(shared_ptr<GameEntry>& gameEntry);
 
-	void ClearBuild();
-
 	void SetShortDescription(string _shortDescription);
 	void SetFullDescription(string _fullDescription);
+
 	void SetTags(GameTags _tags);
+	void SetTags(vector<string> _tags);
+
 	void SetGenres(GameGenres _genres);
-	void SetRatings();
+	void SetGenres(vector<string> _genres);
+
+	void SetRatings(GameRatings _ratings);
+
+	void AddGenre(string _genre);
+	void AddTag(string _tag);
 
 private:
 	bool RequiredFieldsCheck();
 
-	shared_ptr<GenreListDataBase> mGenreDatabase;
-	shared_ptr<GenreListDataBase> mTagDatabase;
+	shared_ptr<DatabaseMaster> mDatabases;
+
+	GameEntry* mCurrentGameEntry;
+
 
 };
 

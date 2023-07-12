@@ -93,11 +93,10 @@ struct GameRatings {
 	}
 
 	GameRatings(float _overall, float _gameplay, float _Narrative, float _replayability) {
-		Overall = uint8_t(std::clamp(_overall, 0.0f, 10.0f) * 2);
-		Gameplay = uint8_t(std::clamp(_gameplay, 0.0f, 10.0f) * 2);
-		Narrative = uint8_t(std::clamp(_Narrative, 0.0f, 10.0f) * 2);
-		Replayability = uint8_t(std::clamp(_replayability, 0.0f, 10.0f) * 2);
-		//TODO: Extract into inline float to uint func
+		Overall = FormatRating(_overall);
+		Gameplay = FormatRating(_gameplay);
+		Narrative = FormatRating(_Narrative);
+		Replayability = FormatRating(_replayability);
 	}
 
 	GameRatings(char* binaryData)
@@ -113,10 +112,10 @@ struct GameRatings {
 	}
 
 	void const DisplayAllRatings() {
-		std::cout << "Overall rating: " << Overall / 2.0f << "/ 10  " << StarRating(Overall) << "\n";
-		std::cout << "Gameplay rating: " << Gameplay / 2.0f << "/ 10  " << StarRating(Gameplay) << "\n";
-		std::cout << "Narrative rating: " << Narrative / 2.0f << "/ 10  " << StarRating(Narrative) << "\n";
-		std::cout << "Replayability rating: " << Replayability / 2.0f << "/ 10  " << StarRating(Replayability) << "\n";
+		std::cout << "Overall rating: " << FloatRating(Overall)<< "/ 10  " << StarRating(Overall) << "\n";
+		std::cout << "Gameplay rating: " << FloatRating(Gameplay) << "/ 10  " << StarRating(Gameplay) << "\n";
+		std::cout << "Narrative rating: " << FloatRating(Narrative) << "/ 10  " << StarRating(Narrative) << "\n";
+		std::cout << "Replayability rating: " << FloatRating(Replayability) << "/ 10  " << StarRating(Replayability) << "\n";
 	}
 
 	inline const string StarRating(uint8_t rating) {
@@ -129,6 +128,14 @@ struct GameRatings {
 		for (size_t i = 0; i < (10 - rating / 2); i++) { result += "O "; }
 
 		return result;
+	}
+
+	inline uint8_t FormatRating(float rating) {
+		return uint8_t(std::clamp(rating, 0.0f, 10.0f) * 2);
+	}
+
+	inline float FloatRating(uint8_t rating) {
+		return rating / 2.0f;
 	}
 
 	unique_ptr<char[]> ToBinary() {
@@ -240,7 +247,7 @@ struct GameTags {
 
 	uint8_t tagIds[NUM_TAGS];
 
-	TagListDataBase* tagDatabase;
+	shared_ptr<TagListDataBase> tagDatabase;
 
 	GameTags() {
 		//set up empty ids and database
@@ -248,13 +255,13 @@ struct GameTags {
 		tagDatabase = nullptr;
 	}
 
-	GameTags(TagListDataBase* _tagDatabase) {
+	GameTags(shared_ptr<TagListDataBase> _tagDatabase) {
 		//set up empty ids and database
 		memset(&tagIds, 0, NUM_TAGS);
 		tagDatabase = _tagDatabase;
 	}
 
-	GameTags(TagListDataBase* _tagDatabase, char* binaryData) {
+	GameTags(shared_ptr<TagListDataBase> _tagDatabase, char* binaryData) {
 		//set up empty ids and database
 		tagDatabase = _tagDatabase;
 		memcpy(&tagIds[0], binaryData, sizeof(uint8_t) * NUM_TAGS);
@@ -319,4 +326,9 @@ struct GameTags {
 
 		return binaryData;
 	}
+};
+
+struct GameFinances {
+
+
 };
