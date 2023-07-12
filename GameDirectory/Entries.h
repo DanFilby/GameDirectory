@@ -85,7 +85,6 @@ public:
 	//list of studios which created this game
 	vector<ENTRYID> mStudioIds;
 
-	//genres and tags related to the game entry
 	GameGenres mGenres;
 	GameTags mTags;
 
@@ -93,10 +92,7 @@ public:
 	GameRatings mRatings;
 
 private:
-	//short description of the game, max length specified
 	string mShortDescription;
-
-	//full description of the game, max length specified
 	string mFullDescription;
 };
 

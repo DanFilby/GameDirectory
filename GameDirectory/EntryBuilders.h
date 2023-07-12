@@ -9,12 +9,14 @@ public:
 	EntryBuilder(shared_ptr<EntryDatabase> _entryDatabase);
 
 	virtual void ClearBuild();
+
 	void EditEntry(Entry& _entry);
+	void EditEntry(ENTRYID _entryId);
 
 	virtual bool BuildEntry(shared_ptr<Entry> & entry);
 	virtual bool BuildAndSaveEntry(shared_ptr<Entry>& entry);
 
-	virtual void SetInfo(EntryInfo_Short info);
+	void SetInfo(EntryInfo_Short info);
 	void SetNameYear(string _name, uint16_t year);
 	void SetName(string _name);
 	void SetYear(uint16_t _year);
@@ -28,23 +30,19 @@ protected:
 
 	shared_ptr<EntryDatabase> mEntryDatabase;
 
-private:
 	//temp entry which is built through wrapper functions
 	Entry* mCurrentEntry;
 };
 
-class GameEntryBuilder : EntryBuilder {
+class GameEntryBuilder : public EntryBuilder {
 
 public:
 	GameEntryBuilder(shared_ptr<DatabaseMaster> databases);
 
 	void ClearBuild();
 
-	void EditGameEntry(GameEntry& gameEntry);
+	void EditGameEntry(GameEntry& _gameEntry);
 	void EditGameEntry(ENTRYID _gameEntryId);
-
-	bool BuildEntry(shared_ptr<Entry>& entry);
-	bool BuildAndSaveEntry(shared_ptr<Entry>& entry);
 
 	bool BuildGameEntry(shared_ptr<GameEntry>& gameEntry);
 	bool BuildAndSaveGameEntry(shared_ptr<GameEntry>& gameEntry);
@@ -60,8 +58,8 @@ public:
 
 	void SetRatings(GameRatings _ratings);
 
-	void AddGenre(string _genre);
-	void AddTag(string _tag);
+	void AddGenre(string _genre, bool addToDatabase = false);
+	void AddTag(string _tag, bool addToDatabase = false);
 
 private:
 	bool RequiredFieldsCheck();
@@ -69,7 +67,6 @@ private:
 	shared_ptr<DatabaseMaster> mDatabases;
 
 	GameEntry* mCurrentGameEntry;
-
 
 };
 

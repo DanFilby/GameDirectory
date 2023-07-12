@@ -52,14 +52,41 @@ void DataBase() {
      }
      GameRatings ratings(8.0f, 9.0f, 5.5f, 3.1f);
 
-     GameEntry gameEntry(45, 2023, "Penguin Village");
-     gameEntry.SetShortDescription("Action adventure rpg as a penguin");
-     gameEntry.SetFullDescription("Explore a quaint iceberg village, full of interesting villagers. whilst building their small town and completing their quests. ");
-     gameEntry.mGenres = genres;
-     gameEntry.mTags = tags;
-     gameEntry.mRatings = ratings;
+     GameEntryBuilder gameBuilder(appDbManager);
 
-     gameEntry.PrintInfo();
+     gameBuilder.SetNameYear("Dan's Test Game", 2023);
+
+     gameBuilder.SetShortDescription("Action adventure rpg as a penguin");
+     gameBuilder.SetFullDescription("Explore a quaint iceberg village, full of interesting villagers. whilst building their small town and completing their quests. ");
+     gameBuilder.SetRatings(ratings);
+     gameBuilder.SetTags(tags);
+     gameBuilder.SetGenres(genres);
+
+     gameBuilder.AddTag("Dan's-Game", true);
+
+     if (gameBuilder.BuildEntry(entry1)) {
+         cout << "Successfully built entry:\n"
+             << "Id: " << entry1.get()->Id() << "\n"
+             << "Name: " << entry1.get()->Name() << "\n"
+             << "Type: " << entry1.get()->Type() << "\n"
+             << "Year: " << entry1.get()->Year() << "\n\n";
+     }
+
+     shared_ptr<GameEntry> gameEntry1;
+
+     if (gameBuilder.BuildGameEntry(gameEntry1)) {
+         gameEntry1->PrintInfo();
+     }
+
+     GameEntryBuilder gameBuilder2(appDbManager);
+
+     gameBuilder2.EditGameEntry(*gameEntry1);
+
+     gameBuilder2.SetName("Dan's Changed Test Game");
+     if (gameBuilder2.BuildGameEntry(gameEntry1)) {
+         gameEntry1->PrintInfo();
+     }
+
 }
 
 void AppStart() {

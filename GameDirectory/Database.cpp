@@ -252,6 +252,7 @@ void GenreListDataBase::AddGenre(string genre)
 	//check within maximum size
 	if (mGenreList.size() < MAXCOUNT_GENRE && genreKey != 0) {
 		mGenreList.emplace(std::make_pair(genreKey, genre));
+		UpdateGenreListFile();
 	}
 	else {
 		std::cout << "Unable to add new genre\n";
@@ -262,6 +263,7 @@ void GenreListDataBase::RemoveGenre(string genre)
 {
 	if (GenreExsists(genre)) {
 		mGenreList.erase(GetKey(genre));
+		UpdateGenreListFile();
 	}
 }
 
@@ -342,8 +344,8 @@ void TagListDataBase::AddTag(string tag)
 
 	//check within maximum size
 	if (mTagList.size() < MAXCOUNT_TAGS) {
-		//add the tag, with its key, to the map
 		mTagList.emplace(std::make_pair(tagKey, tag));
+		UpdateTagListFile();
 	}
 	else {
 		std::cout << "Unable to add new tag\n";
@@ -354,6 +356,7 @@ void TagListDataBase::RemoveTag(string tag)
 {
 	if (TagExsists(tag)) {
 		mTagList.erase(GetKey(tag));
+		UpdateTagListFile();
 	}
 }
 
