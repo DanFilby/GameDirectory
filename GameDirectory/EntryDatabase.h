@@ -34,86 +34,40 @@ public:
 	EntryDatabase();
 	~EntryDatabase();
 
-	/// <summary>
-	/// Add entry to the database, checks for validity but doesn't save to file
-	/// </summary>
+	void FileDirectoriesCheck();
+	void LoadEntriesFile();
+	void UpdateEntriesFile();
+
 	void AddEntry(Entry entry);
 
 	void RemoveEntry(const Entry& _entry);
 	void RemoveEntry(ENTRYID _entryId);
 
-	EntryInfo_Short GetEntrySummary(ENTRYID _id);
-	Entry GetEntry(ENTRYID _id);
+	bool EntryExsists(ENTRYID _id);
+	bool IsValidEntry(Entry& _entry);
+	bool IsDuplicateEntry(Entry& _entry);
+	void RemoveDuplicates();
 
+	bool GetUniqueId(Entry& _entry, int& outId);
+	bool SetUniqueId(Entry& entry);
+
+	Entry GetEntry(ENTRYID _id);
+	EntryInfo_Short GetEntrySummary(ENTRYID _id);
 	ENTRYID GetEntryId(EntryType _type, string _name, uint16_t _year);
 
-	bool EntryExsists(ENTRYID _id);
-
-	/// <summary>
-	/// returns a count of each type of entry currently stored
-	/// </summary>
 	std::map<EntryType, uint16_t> GetEntryTypeCount();
-	/// <summary>
-	/// returns count of current entries stored
-	/// </summary>
 	int GetEntryCount();
 
 	void PrintActiveEntries();
 
-	/// <summary>
-	/// Check entry is valid to add to the database
-	/// </summary>
-	bool IsValidEntry(Entry& _entry);
-	/// <summary>
-	/// checks whether a matching entry is already stored
-	/// </summary>
-	/// <returns> true if found another matching entry </returns>
-	bool IsDuplicateEntry(Entry& _entry);
-
-	/// <summary>
-	/// sets a new unique id for the given entry, if valid
-	/// </summary>
-	/// <returns> true is successful </returns>
-	bool SetUniqueId(Entry& entry);
-	/// <summary>
-	/// gets a unique id for the given entry, returned through out param
-	/// </summary>
-	/// <returns> true if successful </returns>
-	bool GetUniqueId(Entry& _entry, int& outId);
-
-	/// <summary>
-	/// removes duplicate entries in mActiveEntries
-	/// </summary>
-	void RemoveDuplicates();
-
-	/// <summary>
-	/// writes all the current entries' summary to the entries file
-	/// </summary>
-	void UpdateEntriesFile();
-
-	/// <summary>
-	/// Checks for the correct folders, creates them if they don't exsist
-	/// </summary>
-	void DirectoriesCheck();
-
 private:
-
-	/// <summary>
-	/// Reads entries file to find all saved entry's summary : id, name and type
-	/// </summary>
-	void LoadEntries();
-
-	/// <summary>
-	/// checks the temp ids for a match, returns true if a matching temp id exsists
-	/// </summary>
-	bool TempIdCheck(ENTRYID id);
+	bool IsDuplicateTempId(ENTRYID id);
 	void RemoveTempId(ENTRYID id);
 
 	//all entries found on start-up or added during the session 
 	vector<Entry> mActiveEntries;
 
 	vector<ENTRYID> tempIds;
-
 };
 
 

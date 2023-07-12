@@ -43,7 +43,7 @@ public:
 	/// <summary>
 	/// Checks directories are valid
 	/// </summary>
-	virtual void DirectoriesCheck();
+	virtual void FileDirectoriesCheck();
 };
 
 
@@ -106,7 +106,7 @@ public:
 	/// <summary>
 	/// Checks any neccessary folders exsist
 	/// </summary>
-	void DirectoriesCheck();
+	void FileDirectoriesCheck();
 
 	string GetGenre(uint8_t key);
 	uint8_t GetKey(string genre);
@@ -148,7 +148,7 @@ public:
 	/// <summary>
 	/// Checks any neccessary folders exsist
 	/// </summary>
-	void DirectoriesCheck();
+	void FileDirectoriesCheck();
 
 	string GetTag(uint8_t key);
 	uint8_t GetKey(string tag);

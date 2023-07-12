@@ -6,7 +6,8 @@ using std::cout;
 #include "EntryBuilders.h"
 #include "DatabaseMaster.h"
 
-//TODO: finish game entry and then builder
+//TODO: studios
+//TODO: Storing game entries
 
 shared_ptr<DatabaseMaster> appDbManager;
 

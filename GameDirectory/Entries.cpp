@@ -39,7 +39,12 @@ EntryInfo_Short Entry::GetSummary() const
 	return info;
 }
 
-unique_ptr<char[]> Entry::GetRawData_Short()
+shared_ptr<char[]> Entry::GetRawData_Short()
+{
+	return GetSummary().ToBinary();
+}
+
+shared_ptr<char[]> Entry::GetRawData()
 {
 	return GetSummary().ToBinary();
 }
@@ -83,7 +88,7 @@ GameEntry::GameEntry(ENTRYID _id, uint16_t _year, string _name)
 	mName = _name;
 }
 
-GameEntry::GameEntry(char* rawData)
+GameEntry::GameEntry(shared_ptr<char[]> rawData)
 	:mGenres(), mTags(), mRatings()
 {
 }
@@ -99,19 +104,13 @@ EntryInfo_Short GameEntry::GetSummary()
 	return info;
 }
 
-unique_ptr<char[]> GameEntry::GetRawData_Short()
+shared_ptr<char[]> GameEntry::GetRawData()
 {
-	//init memory to store the raw data - 32 Bytes
-	unique_ptr<char[]> gameDat = unique_ptr<char[]>(new char[EntryInfo_Short::BYTESIZE]);
+	shared_ptr<char[]> data;
 
-	//get game entry's info
-	EntryInfo_Short info = GetSummary();
-
-	//copy the game info's data into the gameDat pointer
-	std::memcpy(gameDat.get(), info.ToBinary().get(), EntryInfo_Short::BYTESIZE);
-
-	return gameDat;
+	return shared_ptr<char[]>();
 }
+
 
 void GameEntry::PrintInfo()
 {

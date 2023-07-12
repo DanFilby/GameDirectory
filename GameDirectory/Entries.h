@@ -33,7 +33,8 @@ public:
 	/// <summary>
 	/// returns a summary of the entry in byte format 
 	/// </summary>
-	virtual unique_ptr<char[]> GetRawData_Short();
+	shared_ptr<char[]> GetRawData_Short();
+	virtual shared_ptr<char[]> GetRawData();
 
 	ENTRYID const Id() { return mId; }
 	string const Name() { return mName; }
@@ -65,12 +66,12 @@ public:
 public:
 	GameEntry();
 	GameEntry(ENTRYID _id, uint16_t _year, string _name);
-	GameEntry(char* rawData);
+	GameEntry(shared_ptr<char[]> rawData);
 
 	~GameEntry();
 
 	EntryInfo_Short GetSummary();
-	unique_ptr<char[]> GetRawData_Short();
+	shared_ptr<char[]> GetRawData();
 
 	void PrintInfo();
 

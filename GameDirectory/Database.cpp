@@ -51,7 +51,7 @@ bool Database::FileReadCheck(string filePath)
 	return true;
 }
 
-void Database::DirectoriesCheck()
+void Database::FileDirectoriesCheck()
 {
 	SetupDir(DIR_PATH);
 }
@@ -204,13 +204,13 @@ uint8_t StringFileMan::GetKey(string value)
 
 GenreListDataBase::GenreListDataBase()
 {
-	DirectoriesCheck();
+	FileDirectoriesCheck();
 
 	LoadGenres();
 }
 
 
-void GenreListDataBase::DirectoriesCheck()
+void GenreListDataBase::FileDirectoriesCheck()
 {
 	//check data directory is valid	
 	assert(IsDirVaild(DIR_PATH));
@@ -301,12 +301,12 @@ void GenreListDataBase::UpdateGenreListFile()
 
 TagListDataBase::TagListDataBase()
 {
-	DirectoriesCheck();
+	FileDirectoriesCheck();
 
 	LoadTags();
 }
 
-void TagListDataBase::DirectoriesCheck()
+void TagListDataBase::FileDirectoriesCheck()
 {
 	//check data directory is valid	
 	assert(IsDirVaild(DIR_PATH));

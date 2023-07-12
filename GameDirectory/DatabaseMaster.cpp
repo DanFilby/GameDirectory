@@ -19,7 +19,7 @@ void DatabaseMaster::Close()
 
 void DatabaseMaster::CheckDatabases()
 {
-	mEntryDatabase->DirectoriesCheck();
-	mGame_GenreDatabase->DirectoriesCheck();
-	mGame_TagDatabase->DirectoriesCheck();
+	mEntryDatabase->FileDirectoriesCheck();
+	mGame_GenreDatabase->FileDirectoriesCheck();
+	mGame_TagDatabase->FileDirectoriesCheck();
 }
