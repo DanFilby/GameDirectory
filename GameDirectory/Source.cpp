@@ -8,6 +8,10 @@ using std::cout;
 
 //TODO: studios
 //TODO: Storing game entries
+//each entry get it's own file, need store path with entry database, use folder tree
+//1st: folders games, studios etc
+//2nd: folders Dir00000-Dir65536, Dir00001, Dir00002, Dir00003, etc
+//3rd: 255 entries in each folder Game001, Studio245, in their own folder
 
 shared_ptr<DatabaseMaster> appDbManager;
 
@@ -15,6 +19,7 @@ void DataBase() {
      shared_ptr<EntryDatabase>dataBase = appDbManager->GetEntryDatabase();
      shared_ptr<GenreListDataBase> gdatabase = appDbManager->GetGenreDatabase();
      shared_ptr<TagListDataBase> tagDB = appDbManager->GetTagDatabase();
+     dataBase->UpdateEntriesFile();
 
      dataBase->PrintActiveEntries();
      gdatabase->PrintGenreList();

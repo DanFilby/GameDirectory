@@ -22,34 +22,37 @@ void EntryDatabase::FileDirectoriesCheck()
 	//check data directory is valid	
 	assert(IsDirVaild(DIR_PATH));
 
-	//checks the entrees data dir 
 	SetupDir(ENTRIESDATA_DIR_PATH);
-
+	SetupDir(ENTRIESDATA_DIR_PATH + ENTRIESDATA_GAME_DIRNAME);
 }
 
 void EntryDatabase::LoadEntriesFile()
 {
 	FileReadCheck(DIR_PATH + ENTRIESLIST_FNAME);
 
-	fstream entriesFile(DIR_PATH + ENTRIESLIST_FNAME, std::ios::in | std::ios::binary);
+	fstream entriesFile(DIR_PATH + "TEST_" + ENTRIESLIST_FNAME, std::ios::in | std::ios::binary);
 
 	//read the header into buffer
 	uint16_t* fileHeaderBuf = new uint16_t[8];
-	entriesFile.read((char*)fileHeaderBuf, ENTRIESHEADER_BYTESIZE * 2);
+	entriesFile.read((char*)fileHeaderBuf, EntryFileHeader::BYTESIZE * 2);
 
 	//get info from header. (total entries, num of each type)
 	EntryFileHeader entriesHeader = EntryFileHeader(fileHeaderBuf);
 
 	//read each entry from the file into this buffer
-	char* entryBuffer = new char[32];
+	char* entryBuffer = new char[ENTRYSTORAGESIZE];
 
 	//loop over file reading each entree and add to active entries
 	for (size_t i = 0; i < entriesHeader.totalEntries; i++)
 	{
-		entriesFile.read((char*)entryBuffer, EntryInfo_Short::BYTESIZE);
+		entriesFile.read((char*)entryBuffer, ENTRYSTORAGESIZE);
 
-		EntryInfo_Short entrySummary = EntryInfo_Short(entryBuffer);
+		EntryInfo_Short entrySummary = EntryInfo_Short(&entryBuffer[0]);
+		EntryDataPath dataPath = EntryDataPath(&entryBuffer[EntryInfo_Short::BYTESIZE]);
+
 		Entry entry = Entry(entrySummary);
+
+		std::cout << "DataPath: " << dataPath.EntryHasData << "  " << dataPath.ParentDirIndex << "  " << dataPath.DirIndex << "\n";
 
 		mActiveEntries.push_back(entry);
 	}
@@ -57,23 +60,35 @@ void EntryDatabase::LoadEntriesFile()
 
 void EntryDatabase::UpdateEntriesFile()
 {
-	ofstream entriesFile = std::ofstream(DIR_PATH + ENTRIESLIST_FNAME, std::ios::out | std::ios::binary);
+	ofstream entriesFile = std::ofstream(DIR_PATH + "TEST_" + ENTRIESLIST_FNAME, std::ios::out | std::ios::binary);
 	if (!entriesFile.good()) { std::cout << "Failed to write to file: " << DIR_PATH + ENTRIESLIST_FNAME << "\n"; return; }
 
 	//generate the file's header, containing number of each entry stored
 	EntryFileHeader entriesHeader = EntryFileHeader(GetEntryTypeCount());
 
 	//write a header to the entry file to hold the counts of each entry stored
-	entriesFile.write((char*)entriesHeader.ToBinary().get(), ENTRIESHEADER_BYTESIZE);
+	entriesFile.write((char*)entriesHeader.ToBinary().get(), EntryFileHeader::BYTESIZE);
 
 	//write twice to total 16 bytes and for validation
-	entriesFile.write((char*)entriesHeader.ToBinary().get(), ENTRIESHEADER_BYTESIZE);
+	entriesFile.write((char*)entriesHeader.ToBinary().get(), EntryFileHeader::BYTESIZE);
 
-	//write each entry to the file. each are 32 bytes
+	char* entryBuffer = new char[ENTRYSTORAGESIZE];
+
+	//write each entry to the file. each are 36 bytes
 	for (const auto& entry : mActiveEntries) {
-		entriesFile.write((char*)entry.GetSummary().ToBinary().get(), EntryInfo_Short::BYTESIZE);
-	}
 
+		EntryDataPath dataPath(false,2,3);
+		if (EntryDataPaths.count(entry.mId) > 0) {
+			dataPath = EntryDataPaths[entry.mId];
+		}
+
+		//copy both entry summary and entry data path into 
+		std::memcpy(&entryBuffer[0], &entry.GetSummary().ToBinary()[0], EntryInfo_Short::BYTESIZE);
+		std::memcpy(&entryBuffer[EntryInfo_Short::BYTESIZE], &dataPath.ToBinary()[0], EntryDataPath::BYTESIZE);
+
+		entriesFile.write(entryBuffer, ENTRYSTORAGESIZE);
+	}
+	delete[](entryBuffer);
 }
 
 void EntryDatabase::AddEntry(Entry entry)
