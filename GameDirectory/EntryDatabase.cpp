@@ -52,9 +52,10 @@ void EntryDatabase::LoadEntriesFile()
 
 		Entry entry = Entry(entrySummary);
 
-		std::cout << "DataPath: " << dataPath.EntryHasData << "  " << dataPath.ParentDirIndex << "  " << dataPath.DirIndex << "\n";
+		std::cout << "DataPath: " << dataPath.EntryHasData << "  " << dataPath.ParentDirIndex << "  " << dataPath.EntryDirIndex << "\n";
 
 		mActiveEntries.push_back(entry);
+		mEntryDataPaths.emplace(entry.mId, dataPath);
 	}
 }
 
@@ -77,10 +78,7 @@ void EntryDatabase::UpdateEntriesFile()
 	//write each entry to the file. each are 36 bytes
 	for (const auto& entry : mActiveEntries) {
 
-		EntryDataPath dataPath(false,2,3);
-		if (EntryDataPaths.count(entry.mId) > 0) {
-			dataPath = EntryDataPaths[entry.mId];
-		}
+		EntryDataPath dataPath = GetDataPath(entry.mId);
 
 		//copy both entry summary and entry data path into 
 		std::memcpy(&entryBuffer[0], &entry.GetSummary().ToBinary()[0], EntryInfo_Short::BYTESIZE);
@@ -206,6 +204,48 @@ bool EntryDatabase::SetUniqueId(Entry& entry)
 		return true;
 	}
 	else { return false; }
+}
+
+inline bool EntryDatabase::DataPathExsists(ENTRYID _entryId)
+{
+	return mEntryDataPaths.count(_entryId) > 0;
+}
+
+EntryDataPath EntryDatabase::GenerateDataPath(ENTRYID _entryId)
+{
+	if (DataPathExsists(_entryId)) { return mEntryDataPaths[_entryId]; }
+
+	uint16_t parentDirIndex = 0; uint8_t entryDirIndex = 0;
+	for (auto entryPathPair : mEntryDataPaths) {
+
+		if (entryPathPair.second.ParentDirIndex >= parentDirIndex) {
+			parentDirIndex = entryPathPair.second.ParentDirIndex;
+
+			if ((entryPathPair.second.EntryDirIndex + 255 * entryPathPair.second.ParentDirIndex)
+				>= (entryDirIndex + 255 * parentDirIndex)) {
+				entryDirIndex = entryPathPair.second.EntryDirIndex;
+			}
+		}
+	}
+
+	if (entryDirIndex == 255) {
+		parentDirIndex++;
+	}
+	entryDirIndex += 1;
+
+	EntryDataPath dataPath = EntryDataPath(true, parentDirIndex, entryDirIndex);
+	mEntryDataPaths.emplace(_entryId, dataPath);
+
+	return dataPath;
+	//folder name will add zero's to make 5 digits
+}
+
+EntryDataPath EntryDatabase::GetDataPath(ENTRYID _entryId)
+{
+	if (!DataPathExsists(_entryId)) {
+		return GenerateDataPath(_entryId);
+	}
+	return mEntryDataPaths[_entryId];
 }
 
 Entry EntryDatabase::GetEntry(ENTRYID _id)

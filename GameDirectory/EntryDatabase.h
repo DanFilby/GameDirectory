@@ -81,6 +81,7 @@ public:
 	bool GetUniqueId(Entry& _entry, int& outId);
 	bool SetUniqueId(Entry& entry);
 
+	inline bool DataPathExsists(ENTRYID _entryId);
 	EntryDataPath GenerateDataPath(ENTRYID _entryId);
 	EntryDataPath GetDataPath(ENTRYID _entryId);
 
