@@ -25,26 +25,26 @@ struct EntryDataPath {
 
 	bool EntryHasData;
 	uint16_t ParentDirIndex; //0-65536
-	uint8_t DirIndex;	//0-255
+	uint8_t EntryDirIndex;	//0-255
 
 	EntryDataPath()
-		:EntryHasData(false), ParentDirIndex(0), DirIndex(0) {
+		:EntryHasData(false), ParentDirIndex(0), EntryDirIndex(0) {
 	}
 
 	EntryDataPath(bool _hasData, uint16_t _parentIndex, uint8_t _dirIndex) 
-		:EntryHasData(_hasData), ParentDirIndex(_parentIndex), DirIndex(_dirIndex){
+		:EntryHasData(_hasData), ParentDirIndex(_parentIndex), EntryDirIndex(_dirIndex){
 	}
 
 	EntryDataPath(char* binDat) {
 		ParentDirIndex = binDat[0];
-		DirIndex = binDat[2];
+		EntryDirIndex = binDat[2];
 		EntryHasData = binDat[3];
 	}
 
 	shared_ptr<char[]> ToBinary() {
 		char* binData = new char[4];
 		std::memcpy(&binData[0], &ParentDirIndex, sizeof(uint16_t));
-		binData[2] = (char)DirIndex;
+		binData[2] = (char)EntryDirIndex;
 		binData[3] = (char)EntryHasData;
 		return shared_ptr<char[]>(binData);
 	}
@@ -81,6 +81,9 @@ public:
 	bool GetUniqueId(Entry& _entry, int& outId);
 	bool SetUniqueId(Entry& entry);
 
+	EntryDataPath GenerateDataPath(ENTRYID _entryId);
+	EntryDataPath GetDataPath(ENTRYID _entryId);
+
 	Entry GetEntry(ENTRYID _id);
 	EntryInfo_Short GetEntrySummary(ENTRYID _id);
 	ENTRYID GetEntryId(EntryType _type, string _name, uint16_t _year);
@@ -97,7 +100,7 @@ private:
 	//all entries found on start-up or added during the session 
 	vector<Entry> mActiveEntries;
 
-	map<ENTRYID, EntryDataPath> EntryDataPaths;
+	map<ENTRYID, EntryDataPath> mEntryDataPaths;
 
 	vector<ENTRYID> tempIds;
 };
