@@ -88,14 +88,31 @@ void EntryDatabase::UpdateEntriesFile()
 	delete[](entryBuffer);
 }
 
-void EntryDatabase::AddEntry(Entry entry)
+void EntryDatabase::WriteGameEntryData(shared_ptr<GameEntry> _gameEntry, const EntryDataPath& _dataPath)
 {
-	if (!IsValidEntry(entry)) { std::cout << "Failed to add entry to database\n"; return; }
+}
 
-	mActiveEntries.push_back(Entry(entry));
+void EntryDatabase::AddEntry(shared_ptr<Entry> _entry)
+{
+	if (!IsValidEntry(_entry.get())) { std::cout << "Failed to add entry to database\n"; return; }
 
-	RemoveTempId(entry.mId);
+	EntryDataPath dataPath = GetDataPath(_entry->mId);
+
+	mActiveEntries.push_back(Entry(*_entry));
+	mEntryDataPaths.emplace(_entry->mId, dataPath);
+
+	RemoveTempId(_entry->mId);
 	UpdateEntriesFile();
+}
+
+void EntryDatabase::AddGameEntry(shared_ptr<GameEntry> _gameEntry)
+{
+	if (!IsValidEntry(_gameEntry.get())) { std::cout << "Failed to add entry to database\n"; return; }
+	AddEntry(_gameEntry);
+
+	EntryDataPath dataPath =  GetDataPath(_gameEntry->mId);
+
+	WriteGameEntryData(_gameEntry, dataPath);
 }
 
 void EntryDatabase::RemoveEntry(const Entry& _entry)
@@ -130,16 +147,16 @@ bool EntryDatabase::EntryExsists(ENTRYID _id)
 	return NULL;
 }
 
-bool EntryDatabase::IsValidEntry(Entry& _entry)
+bool EntryDatabase::IsValidEntry(Entry* _entry)
 {
-	return (!IsDuplicateEntry(_entry) && _entry.mId != 0);
+	return (!IsDuplicateEntry(_entry) && _entry->mId != 0);
 }
 
-bool EntryDatabase::IsDuplicateEntry(Entry& _entry)
+bool EntryDatabase::IsDuplicateEntry(Entry* _entry)
 {
 	for (auto& curEntry : mActiveEntries) {
 		//entry is a duplicate if another entry with the same name and year exsits, checks using custom == operator
-		if (_entry == curEntry) {
+		if (*_entry == curEntry) {
 			return true;
 		}
 	}
@@ -170,7 +187,7 @@ void EntryDatabase::RemoveDuplicates()
 
 bool EntryDatabase::GetUniqueId(Entry& _entry, int& outId)
 {
-	if (IsDuplicateEntry(_entry)) { std::cout << "Entry is duplicate\n"; return false; }
+	if (IsDuplicateEntry(&_entry)) { std::cout << "Entry is duplicate\n"; return false; }
 
 	ENTRYID entryNewId = rand();
 

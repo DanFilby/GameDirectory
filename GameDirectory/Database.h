@@ -52,26 +52,16 @@ public:
 /// </summary>
 class StringFileMan {
 protected:
-	/// <summary>
-	/// Loads a string file into vector
-	/// </summary>
-	vector<string> ReadStringFile(string filePath);
 
-	/// <summary>
-	/// Writes a string vector to file, strings are inputed line by line
-	/// </summary>
+	vector<string> ReadStringFile(string filePath);
 	void WriteStringFile(string filePath, vector<string> contents);
 
-	/// <summary>
-	/// Sorts strings and removes duplicates
-	/// </summary>
 	void SortAndUniqueStrings(vector<string>& strings);
 
 	/// <summary>
 	/// reads a index string map from file, format of comma sperated pairs on new lines
 	/// </summary>
 	map<uint8_t, string> ReadStringIndexFile(string filePath);
-
 	/// <summary>
 	/// Writes an index and string map to file, as comma seperated pair on seperate lines
 	/// </summary>
@@ -100,9 +90,6 @@ public:
 public:
 	GenreListDataBase();
 
-	/// <summary>
-	/// Checks any neccessary folders exsist
-	/// </summary>
 	void FileDirectoriesCheck();
 
 	string GetGenre(uint8_t key);
@@ -117,13 +104,8 @@ public:
 	vector<string> GetAllGenres();
 	void PrintGenreList();
 
-	/// <summary>
-	/// Loads genres from file into memory
-	/// </summary>
+
 	void LoadGenres();
-	/// <summary>
-	/// Updates the genre list file with any genres added during runtime
-	/// </summary>
 	void UpdateGenreListFile();
 
 private:
@@ -142,9 +124,6 @@ public:
 public:
 	TagListDataBase();
 
-	/// <summary>
-	/// Checks any neccessary folders exsist
-	/// </summary>
 	void FileDirectoriesCheck();
 
 	string GetTag(uint8_t key);
@@ -159,14 +138,8 @@ public:
 	vector<string> GetAllTags();
 	void PrintTagList();
 
-	/// <summary>
-	/// Loads genres from file into memory
-	/// </summary>
-	void LoadTags();
 
-	/// <summary>
-	/// Updates the genre list file with any genres added during runtime
-	/// </summary>
+	void LoadTags();
 	void UpdateTagListFile();
 
 private:

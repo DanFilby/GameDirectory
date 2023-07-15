@@ -57,7 +57,7 @@ bool EntryBuilder::BuildAndSaveEntry(shared_ptr<Entry>& entry)
 	if (!databaseCheck) { std::cout << "Entry failed database checks\n"; return false; }
 
 	//add entry to database, and save to file
-	mEntryDatabase->AddEntry(*entry);
+	mEntryDatabase->AddEntry(entry);
 	mEntryDatabase->UpdateEntriesFile();
 
 	return true;
@@ -171,7 +171,7 @@ bool GameEntryBuilder::BuildAndSaveGameEntry(shared_ptr<GameEntry>& gameEntry)
 	if (!databaseCheck) { std::cout << "Entry failed database checks\n"; return false; }
 
 	//add entry to database, and save to file
-	mEntryDatabase->AddEntry(*gameEntry);
+	mEntryDatabase->AddEntry(gameEntry);
 	mEntryDatabase->UpdateEntriesFile();
 
 	return true;

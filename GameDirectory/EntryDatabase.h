@@ -68,14 +68,20 @@ public:
 	void LoadEntriesFile();
 	void UpdateEntriesFile();
 
-	void AddEntry(Entry entry);
+	shared_ptr<GameEntry> ReadGameEntryData(const EntryDataPath& _dataPath);
+	void WriteGameEntryData(shared_ptr<GameEntry> _gameEntry, const EntryDataPath& _dataPath);
+
+	void AddEntry(shared_ptr<Entry> _entry);
+	void AddGameEntry(shared_ptr<GameEntry> _gameEntry);
+
+	//Edit
 
 	void RemoveEntry(const Entry& _entry);
 	void RemoveEntry(ENTRYID _entryId);
 
 	bool EntryExsists(ENTRYID _id);
-	bool IsValidEntry(Entry& _entry);
-	bool IsDuplicateEntry(Entry& _entry);
+	bool IsValidEntry(Entry* _entry);
+	bool IsDuplicateEntry(Entry* _entry);
 	void RemoveDuplicates();
 
 	bool GetUniqueId(Entry& _entry, int& outId);

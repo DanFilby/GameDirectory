@@ -145,7 +145,7 @@ namespace EntryTesting
 			EntryInfo_Short summary = entry->GetSummary();
 
 			//serialize into binary data
-			unique_ptr<char[]> binDat1 = entry->GetRawData_Short();
+			shared_ptr<char[]> binDat1 = entry->GetRawData_Short();
 			unique_ptr<char[]> binDat2 = summary.ToBinary();
 
 			//reserialize into summaries
@@ -164,9 +164,9 @@ namespace EntryTesting
 			EntryInfo_Short summary = gameEntry->GetSummary();
 
 			//turn summaries into binary data
-			unique_ptr<char[]> binDat1 = gameEntry->GetRawData_Short();
-			unique_ptr<char[]> binDat2 = entry->GetRawData_Short();
-			unique_ptr<char[]> binDat3 = summary.ToBinary();
+			shared_ptr<char[]> binDat1 = gameEntry->GetRawData_Short();
+			shared_ptr<char[]> binDat2 = entry->GetRawData_Short();
+			shared_ptr<char[]> binDat3 = summary.ToBinary();
 
 			//reserialise into summary struct
 			EntryInfo_Short summaryRe1(binDat1.get());
