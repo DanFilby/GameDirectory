@@ -19,6 +19,8 @@ struct EntryInfo_Short {
 	uint16_t year;	//Entry's Year (2 bytes)
 	char name[NAMELENGTH];	//Entry's name (26 bytes)
 
+	EntryInfo_Short(){}
+
 	EntryInfo_Short(ENTRYID _id, EntryType _type, uint16_t _year, string _name) :
 		id(_id), type(_type), year(_year) {
 		SetName(_name);

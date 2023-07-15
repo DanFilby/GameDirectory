@@ -30,7 +30,7 @@ void EntryDatabase::LoadEntriesFile()
 {
 	FileReadCheck(DIR_PATH + ENTRIESLIST_FNAME);
 
-	fstream entriesFile(DIR_PATH + "TEST_" + ENTRIESLIST_FNAME, std::ios::in | std::ios::binary);
+	fstream entriesFile(DIR_PATH + ENTRIESLIST_FNAME, std::ios::in | std::ios::binary);
 
 	//read the header into buffer
 	uint16_t* fileHeaderBuf = new uint16_t[8];
@@ -48,20 +48,19 @@ void EntryDatabase::LoadEntriesFile()
 		entriesFile.read((char*)entryBuffer, ENTRYSTORAGESIZE);
 
 		EntryInfo_Short entrySummary = EntryInfo_Short(&entryBuffer[0]);
-		EntryDataPath dataPath = EntryDataPath(&entryBuffer[EntryInfo_Short::BYTESIZE]);
-
 		Entry entry = Entry(entrySummary);
-
-		std::cout << "DataPath: " << dataPath.EntryHasData << "  " << dataPath.ParentDirIndex << "  " << dataPath.EntryDirIndex << "\n";
-
 		mActiveEntries.push_back(entry);
-		mEntryDataPaths.emplace(entry.mId, dataPath);
+
+		EntryDataPath entryDataPath = EntryDataPath(&entryBuffer[EntryInfo_Short::BYTESIZE]);
+		mEntryDataPaths.emplace(entry.mId, entryDataPath);
+		std::cout << "DataPath: " << entryDataPath.EntryHasData << "  " << entryDataPath.ParentDirIndex << "  " << (int)entryDataPath.EntryDirIndex << "\n";
+	
 	}
 }
 
 void EntryDatabase::UpdateEntriesFile()
 {
-	ofstream entriesFile = std::ofstream(DIR_PATH + "TEST_" + ENTRIESLIST_FNAME, std::ios::out | std::ios::binary);
+	ofstream entriesFile = std::ofstream(DIR_PATH + ENTRIESLIST_FNAME, std::ios::out | std::ios::binary);
 	if (!entriesFile.good()) { std::cout << "Failed to write to file: " << DIR_PATH + ENTRIESLIST_FNAME << "\n"; return; }
 
 	//generate the file's header, containing number of each entry stored
@@ -77,12 +76,12 @@ void EntryDatabase::UpdateEntriesFile()
 
 	//write each entry to the file. each are 36 bytes
 	for (const auto& entry : mActiveEntries) {
-
+		//TODO:problems with loading the datapath 
 		EntryDataPath dataPath = GetDataPath(entry.mId);
 
 		//copy both entry summary and entry data path into 
 		std::memcpy(&entryBuffer[0], &entry.GetSummary().ToBinary()[0], EntryInfo_Short::BYTESIZE);
-		std::memcpy(&entryBuffer[EntryInfo_Short::BYTESIZE], &dataPath.ToBinary()[0], EntryDataPath::BYTESIZE);
+		std::memcpy(&entryBuffer[0] + EntryInfo_Short::BYTESIZE, &dataPath.ToBinary()[0], EntryDataPath::BYTESIZE);
 
 		entriesFile.write(entryBuffer, ENTRYSTORAGESIZE);
 	}
