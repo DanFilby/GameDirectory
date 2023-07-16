@@ -90,6 +90,7 @@ public:
 	inline bool DataPathExsists(ENTRYID _entryId);
 	EntryDataPath GenerateDataPath(ENTRYID _entryId);
 	EntryDataPath GetDataPath(ENTRYID _entryId);
+	inline string GetGameEntryDataDirPath(EntryDataPath dataPath);
 
 	Entry GetEntry(ENTRYID _id);
 	EntryInfo_Short GetEntrySummary(ENTRYID _id);

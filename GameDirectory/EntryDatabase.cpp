@@ -90,6 +90,9 @@ void EntryDatabase::UpdateEntriesFile()
 
 void EntryDatabase::WriteGameEntryData(shared_ptr<GameEntry> _gameEntry, const EntryDataPath& _dataPath)
 {
+	SetupDir(GetGameEntryDataDirPath(_dataPath));
+
+
 }
 
 void EntryDatabase::AddEntry(shared_ptr<Entry> _entry)
@@ -262,6 +265,22 @@ EntryDataPath EntryDatabase::GetDataPath(ENTRYID _entryId)
 		return GenerateDataPath(_entryId);
 	}
 	return mEntryDataPaths[_entryId];
+}
+
+inline string EntryDatabase::GetGameEntryDataDirPath(EntryDataPath dataPath)
+{
+	string path = ENTRIESDATA_DIR_PATH + ENTRIESDATA_GAME_DIRNAME;
+
+	//length the index to 5 chars
+	string parentDir = std::to_string(dataPath.ParentDirIndex);
+	for (size_t i = 0; i < 5 - parentDir.length(); i++) { parentDir = "0" + parentDir; }
+
+	string entryDir = std::to_string(dataPath.EntryDirIndex);
+	for (size_t i = 0; i < 3 - entryDir.length(); i++) { entryDir = "0" + entryDir; }
+
+	path = path + parentDir + "/" + entryDir + "/";
+
+	return path;
 }
 
 Entry EntryDatabase::GetEntry(ENTRYID _id)
