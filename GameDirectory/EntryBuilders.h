@@ -20,6 +20,7 @@ public:
 	void SetNameYear(string _name, uint16_t year);
 	void SetName(string _name);
 	void SetYear(uint16_t _year);
+	void SetValidId();
 
 protected:
 	/// <summary>

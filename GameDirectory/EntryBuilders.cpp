@@ -10,6 +10,7 @@ void EntryBuilder::ClearBuild()
 {
 	if (mCurrentEntry) { delete(mCurrentEntry); }
 	mCurrentEntry = new Entry();
+	mCurrentEntry->mId = 0;
 }
 
 void EntryBuilder::EditEntry(Entry& _entry)
@@ -36,9 +37,6 @@ bool EntryBuilder::BuildEntry(shared_ptr<Entry>& entry)
 	//create a copy of the temp entry
 	Entry outputEntry = Entry(*mCurrentEntry);
 	
-	//set id to 0, as it's not being added to the database right away 
-	outputEntry.mId = 0;
-
 	//set the returned out entry 
 	entry = make_shared<Entry>(outputEntry);
 
@@ -93,6 +91,12 @@ void EntryBuilder::SetYear(uint16_t _year)
 	else { std::cout << "Invalid year given to entry\n"; }
 }
 
+void EntryBuilder::SetValidId()
+{
+	bool databaseCheck = mEntryDatabase->SetUniqueId(*mCurrentEntry);
+	if (!databaseCheck) { std::cout << "Unable to set id\n"; }
+}
+
 bool EntryBuilder::RequiredFieldsCheck()
 {
 	//check if year and name have been assigned
@@ -121,6 +125,7 @@ void GameEntryBuilder::ClearBuild()
 	mCurrentGameEntry = new GameEntry();
 	mCurrentEntry = (Entry*)mCurrentGameEntry;
 
+	mCurrentGameEntry->mId = 0;
 	mCurrentGameEntry->mGenres = GameGenres(mDatabases->GetGenreDatabase());
 	mCurrentGameEntry->mTags = GameTags(mDatabases->GetTagDatabase());
 }
@@ -141,20 +146,14 @@ void GameEntryBuilder::EditGameEntry(ENTRYID _gameEntryId)
 
 bool GameEntryBuilder::BuildGameEntry(shared_ptr<GameEntry>& gameEntry)
 {
-	//check all required entry fields are filled
 	if (!RequiredFieldsCheck()) {
 		std::cout << "Required entry are fields incomplete\n";
 		return false;
 	}
 
-	//create a copy of the temp entry
-	GameEntry outputEntry = GameEntry(*mCurrentGameEntry);
-
-	//set id to 0, as it's not being added to the database right away 
-	outputEntry.mId = 0;
-
-	//set the returned out entry 
-	gameEntry = make_shared<GameEntry>(outputEntry);
+	//create a copy of the temp entry & set out param
+	GameEntry outputGameEntry = GameEntry(*mCurrentGameEntry);
+	gameEntry = make_shared<GameEntry>(outputGameEntry);
 
 	return true;
 }
@@ -164,13 +163,10 @@ bool GameEntryBuilder::BuildAndSaveGameEntry(shared_ptr<GameEntry>& gameEntry)
 	//build the entry normally, check if valid
 	if (BuildGameEntry(gameEntry)) { return false; }
 
-	//get and set a unique id for this entry
 	bool databaseCheck = mEntryDatabase->SetUniqueId(*gameEntry);
 
-	//return if failed database checks
 	if (!databaseCheck) { std::cout << "Entry failed database checks\n"; return false; }
 
-	//add entry to database, and save to file
 	mEntryDatabase->AddEntry(gameEntry);
 	mEntryDatabase->UpdateEntriesFile();
 

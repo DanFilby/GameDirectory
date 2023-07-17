@@ -90,8 +90,8 @@ void EntryDatabase::UpdateEntriesFile()
 
 void EntryDatabase::WriteGameEntryData(shared_ptr<GameEntry> _gameEntry, const EntryDataPath& _dataPath)
 {
+	SetupDir(GetGameEntryParentDirPath(_dataPath));
 	SetupDir(GetGameEntryDataDirPath(_dataPath));
-
 
 }
 
@@ -110,8 +110,9 @@ void EntryDatabase::AddEntry(shared_ptr<Entry> _entry)
 
 void EntryDatabase::AddGameEntry(shared_ptr<GameEntry> _gameEntry)
 {
-	if (!IsValidEntry(_gameEntry.get())) { std::cout << "Failed to add entry to database\n"; return; }
-	AddEntry(_gameEntry);
+	shared_ptr<Entry> _entry = dynamic_pointer_cast<Entry>(_gameEntry);
+	if (!IsValidEntry(_entry.get())) { std::cout << "Failed to add entry to database\n"; return; }
+	AddEntry(_entry);
 
 	EntryDataPath dataPath =  GetDataPath(_gameEntry->mId);
 
@@ -267,19 +268,25 @@ EntryDataPath EntryDatabase::GetDataPath(ENTRYID _entryId)
 	return mEntryDataPaths[_entryId];
 }
 
+inline string EntryDatabase::GetGameEntryParentDirPath(EntryDataPath dataPath)
+{
+	//ensure dir name's length is 5
+	string parentDir = std::to_string(dataPath.ParentDirIndex);
+	int extraZeros = 5 - parentDir.length();
+	for (size_t i = 0; i < extraZeros; i++) { parentDir = "0" + parentDir; }
+
+	string path = ENTRIESDATA_DIR_PATH + ENTRIESDATA_GAME_DIRNAME + parentDir + "/";
+	return path;
+}
+
 inline string EntryDatabase::GetGameEntryDataDirPath(EntryDataPath dataPath)
 {
-	string path = ENTRIESDATA_DIR_PATH + ENTRIESDATA_GAME_DIRNAME;
-
-	//length the index to 5 chars
-	string parentDir = std::to_string(dataPath.ParentDirIndex);
-	for (size_t i = 0; i < 5 - parentDir.length(); i++) { parentDir = "0" + parentDir; }
-
+	//ensure entry's name's length is 3
 	string entryDir = std::to_string(dataPath.EntryDirIndex);
-	for (size_t i = 0; i < 3 - entryDir.length(); i++) { entryDir = "0" + entryDir; }
+	int extraZeros = 3 - entryDir.length();
+	for (size_t i = 0; i < extraZeros; i++) { entryDir = "0" + entryDir; }
 
-	path = path + parentDir + "/" + entryDir + "/";
-
+	string path = GetGameEntryParentDirPath(dataPath) + entryDir + "/";
 	return path;
 }
 

@@ -60,7 +60,7 @@ void DataBase() {
 
      GameEntryBuilder gameBuilder(appDbManager);
 
-     gameBuilder.SetNameYear("Dan's Test Game", 2023);
+     gameBuilder.SetNameYear("Dan's Test Game 5", 2023);
 
      gameBuilder.SetShortDescription("Action adventure rpg as a penguin");
      gameBuilder.SetFullDescription("Explore a quaint iceberg village, full of interesting villagers. whilst building their small town and completing their quests. ");
@@ -78,20 +78,15 @@ void DataBase() {
              << "Year: " << entry1.get()->Year() << "\n\n";
      }
 
+     gameBuilder.SetValidId();
      shared_ptr<GameEntry> gameEntry1;
 
      if (gameBuilder.BuildGameEntry(gameEntry1)) {
          gameEntry1->PrintInfo();
      }
 
-     GameEntryBuilder gameBuilder2(appDbManager);
+     dataBase->AddGameEntry(gameEntry1);
 
-     gameBuilder2.EditGameEntry(*gameEntry1);
-
-     gameBuilder2.SetName("Dan's Changed Test Game");
-     if (gameBuilder2.BuildGameEntry(gameEntry1)) {
-         gameEntry1->PrintInfo();
-     }
 
 }
 
