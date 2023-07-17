@@ -60,7 +60,7 @@ void DataBase() {
 
      GameEntryBuilder gameBuilder(appDbManager);
 
-     gameBuilder.SetNameYear("Dan's Test Game 5", 2023);
+     gameBuilder.SetNameYear("Dan's Test Game 12", 2023);
 
      gameBuilder.SetShortDescription("Action adventure rpg as a penguin");
      gameBuilder.SetFullDescription("Explore a quaint iceberg village, full of interesting villagers. whilst building their small town and completing their quests. ");

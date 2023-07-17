@@ -85,6 +85,8 @@ struct EntryInfo_Short {
 
 //set of ratings for games, each rating is an 8 bit uint, with range of 0-20 to get 0-10 stars with halfs eg 7.5/10
 struct GameRatings {
+	static const uint8_t BYTESIZE = 4;
+
 	uint8_t Overall, Gameplay, Narrative, Replayability;
 
 	/// <summary>
@@ -154,7 +156,8 @@ struct GameRatings {
 //each object will be attached to a game entry and holds a list of genres
 //TODO: list will be weighted, meaning a total of 100 points to be split between genres
 struct GameGenres {
-	static const uint16_t NUM_GENRES = 8;
+	static const uint8_t NUM_GENRES = 8;
+	static const uint8_t BYTESIZE = NUM_GENRES;
 
 	uint8_t genreIds[NUM_GENRES];
 
@@ -245,7 +248,8 @@ struct GameGenres {
 /// list of tags atached to game entries, using an array of ids and the tag database
 /// </summary>
 struct GameTags {
-	static const uint16_t NUM_TAGS = 16;
+	static const uint8_t NUM_TAGS = 16;
+	static const uint8_t BYTESIZE = NUM_TAGS;
 
 	uint8_t tagIds[NUM_TAGS];
 

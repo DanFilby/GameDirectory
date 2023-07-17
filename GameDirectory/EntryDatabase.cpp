@@ -91,8 +91,21 @@ void EntryDatabase::UpdateEntriesFile()
 void EntryDatabase::WriteGameEntryData(shared_ptr<GameEntry> _gameEntry, const EntryDataPath& _dataPath)
 {
 	SetupDir(GetGameEntryParentDirPath(_dataPath));
-	SetupDir(GetGameEntryDataDirPath(_dataPath));
 
+	string gameEntryDataPath = GetGameEntryDataDirPath(_dataPath);
+	SetupDir(gameEntryDataPath);
+
+	string fileName = std::to_string(_gameEntry->Id()) + "-" + _gameEntry->Name() + ".dat";
+
+	ofstream entriesFile = std::ofstream(gameEntryDataPath + fileName, std::ios::out | std::ios::binary);
+	if (!entriesFile.good()) { std::cout << "Failed to write to entry data file: " << gameEntryDataPath + fileName << "\n"; return; }
+
+	try {
+		entriesFile.write(&_gameEntry->GetBinaryData().get()[0], GameEntry::DATA_BYTESIZE);
+	}
+	catch (int errCode) {
+		std::cout << "Error writing data to file\n";
+	}
 }
 
 void EntryDatabase::AddEntry(shared_ptr<Entry> _entry)

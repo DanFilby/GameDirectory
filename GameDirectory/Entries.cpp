@@ -36,7 +36,7 @@ shared_ptr<char[]> Entry::GetRawData_Short()
 	return GetSummary().ToBinary();
 }
 
-shared_ptr<char[]> Entry::GetRawData()
+shared_ptr<char[]> Entry::GetBinaryData()
 {
 	return GetSummary().ToBinary();
 }
@@ -47,6 +47,17 @@ EntryInfo_Short Entry::GetSummary() const
 	EntryInfo_Short info{ mId, mType, mYear, mName };
 
 	return info;
+}
+
+bool Entry::IsEntryDataValid()
+{
+	if (!IsValid_Name(mName)) {
+		std::cout << "Entry field invalid: Name\n"; return false;
+	}
+	if (!IsValid_Year(mYear)) {
+		std::cout << "Entry field invalid: Year\n"; return false;
+	}
+	return true;
 }
 
 bool Entry::IsValid_Name(const string& _name)
@@ -88,9 +99,32 @@ GameEntry::GameEntry(ENTRYID _id, uint16_t _year, string _name)
 	mName = _name;
 }
 
-GameEntry::GameEntry(shared_ptr<char[]> rawData)
-	:mGenres(), mTags(), mRatings()
+GameEntry::GameEntry(shared_ptr<char[]> binaryData, shared_ptr<GenreListDataBase> _genreDatabase,
+	shared_ptr<TagListDataBase> _tagDatabase)
 {
+	uint16_t dataIndex = 0;
+
+	memcpy(&mShortDescription, &binaryData[dataIndex], SHORTDESCRIPTION_MAXLEN);
+	dataIndex += SHORTDESCRIPTION_MAXLEN;
+
+	memcpy(&mFullDescription, &binaryData[dataIndex], FULLDESCRIPTION_MAXLEN);
+	dataIndex += FULLDESCRIPTION_MAXLEN;
+
+	char* genresData = new char[GameGenres::BYTESIZE];
+	memcpy(genresData, &binaryData[dataIndex], GameGenres::BYTESIZE);
+	dataIndex += GameGenres::BYTESIZE;
+
+	char* tagsData = new char[GameTags::BYTESIZE];
+	memcpy(tagsData, &binaryData[dataIndex], GameTags::BYTESIZE);
+	dataIndex += GameTags::BYTESIZE;
+
+	char* ratingsData = new char[GameRatings::BYTESIZE];
+	memcpy(ratingsData, &binaryData[dataIndex], GameRatings::BYTESIZE);
+	dataIndex += GameRatings::BYTESIZE;
+
+	mGenres = GameGenres(_genreDatabase, genresData);
+	mTags = GameTags(_tagDatabase, tagsData);
+	mRatings = GameRatings(ratingsData);
 }
 
 GameEntry::~GameEntry()
@@ -104,11 +138,29 @@ EntryInfo_Short GameEntry::GetSummary()
 	return info;
 }
 
-shared_ptr<char[]> GameEntry::GetRawData()
+shared_ptr<char[]> GameEntry::GetBinaryData()
 {
-	shared_ptr<char[]> data;
+	if (!IsEntryDataValid()) { std::cout << "Entry data invalid\n"; throw 01; }
 
-	return shared_ptr<char[]>();
+	shared_ptr<char[]> data = shared_ptr<char[]>(new char[DATA_BYTESIZE]);
+	uint16_t dataIndex = 0;
+
+	memcpy(&data[dataIndex], &mShortDescription[0], mShortDescription.length());
+	dataIndex += SHORTDESCRIPTION_MAXLEN;
+
+	memcpy(&data[dataIndex], &mFullDescription[0], mFullDescription.length());
+	dataIndex += FULLDESCRIPTION_MAXLEN;
+
+	memcpy(&data[dataIndex], mGenres.ToBinary().get(), GameGenres::BYTESIZE);
+	dataIndex += GameGenres::BYTESIZE;
+
+	memcpy(&data[dataIndex], mTags.ToBinary().get(), GameTags::BYTESIZE);
+	dataIndex += GameTags::BYTESIZE;
+
+	memcpy(&data[dataIndex], mRatings.ToBinary().get(), GameRatings::BYTESIZE);
+	dataIndex += GameRatings::BYTESIZE;
+
+	return data;
 }
 
 
@@ -121,6 +173,7 @@ void GameEntry::PrintInfo()
 	std::cout << "Genres: | " << mGenres.GetGenresOneLine() << "\n\n";
 	std::cout << mFullDescription << "\n\n";
 	mRatings.DisplayAllRatings();
+	std::cout << "\n";
 }
 
 void GameEntry::SetShortDescription(string _shortDescription)
@@ -133,6 +186,20 @@ void GameEntry::SetFullDescription(string _fullDescription)
 {
 	_fullDescription.resize(FULLDESCRIPTION_MAXLEN);
 	mFullDescription = _fullDescription;
+}
+
+bool GameEntry::IsEntryDataValid()
+{
+	if (!Entry::IsEntryDataValid()) { return false; }
+
+	if (mShortDescription.length() != SHORTDESCRIPTION_MAXLEN) {
+		std::cout << "Entry field invalid: Short description\n"; return false;
+	}
+	if (mFullDescription.length() != FULLDESCRIPTION_MAXLEN) {
+		std::cout << "Entry field invalid: Full description\n"; return false;
+	}
+
+	return true;
 }
 
 

@@ -20,7 +20,7 @@ public:
 	bool operator==(const Entry& compareEntry) const;
 
 	shared_ptr<char[]> GetRawData_Short();
-	virtual shared_ptr<char[]> GetRawData();
+	virtual shared_ptr<char[]> GetBinaryData();
 
 	virtual EntryInfo_Short GetSummary() const;
 
@@ -34,6 +34,8 @@ protected:
 	EntryType mType;
 	uint16_t mYear;
 	string mName;
+
+	virtual bool IsEntryDataValid();
 
 	virtual bool IsValid_Name(const string& _name);
 	virtual bool IsValid_Year(const uint16_t _year);
@@ -53,10 +55,10 @@ class GameEntry : public Entry {
 public:
 	GameEntry();
 	GameEntry(ENTRYID _id, uint16_t _year, string _name);
-	GameEntry(shared_ptr<char[]> rawData);
+	GameEntry(shared_ptr<char[]> binaryData, shared_ptr<GenreListDataBase> _genreDatabase, shared_ptr<TagListDataBase> _tagDatabase);
 	~GameEntry();
 
-	shared_ptr<char[]> GetRawData();
+	shared_ptr<char[]> GetBinaryData();
 
 	EntryInfo_Short GetSummary();
 	void PrintInfo();
@@ -68,6 +70,9 @@ public:
 	void SetFullDescription(string _fullDescription);
 
 	EntryType Type() const { return ET_Game; };
+
+private:
+	bool IsEntryDataValid();
 
 public:
 	//list of studios which created this game
@@ -84,9 +89,11 @@ private:
 	string mFullDescription;
 
 public:
-	static const uint8_t BYTESIZE = 0;
-	static const uint8_t FULLDESCRIPTION_MAXLEN = 255;
 	static const uint8_t SHORTDESCRIPTION_MAXLEN = 63;
+	static const uint8_t FULLDESCRIPTION_MAXLEN = 255;
+
+	static const uint16_t DATA_BYTESIZE = SHORTDESCRIPTION_MAXLEN + FULLDESCRIPTION_MAXLEN + GameGenres::BYTESIZE
+		+ GameTags::BYTESIZE + GameRatings::BYTESIZE;
 
 	friend class GameEntryBuilder;
 };
