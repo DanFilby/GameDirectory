@@ -61,7 +61,7 @@ class EntryDatabase : Database
 	const uint8_t ENTRYSTORAGESIZE = EntryDataPath::BYTESIZE + EntryInfo_Short::BYTESIZE;
 
 public: 
-	EntryDatabase();
+	EntryDatabase(shared_ptr<GenreListDataBase> _genreDatabase, shared_ptr<TagListDataBase> _tagDatabase);
 	~EntryDatabase();
 
 	void FileDirectoriesCheck();
@@ -100,6 +100,8 @@ public:
 	inline string GetGameEntryData_FilePath(EntryDataPath dataPath, ENTRYID _entryId, string _entryName);
 	inline string GetGameEntryData_FilePath(EntryInfo_Short entrySum);
 
+	GameEntry GetGameEntry(ENTRYID _id);
+
 	Entry GetEntry(ENTRYID _id);
 	EntryInfo_Short GetEntrySummary(ENTRYID _id);
 	ENTRYID GetEntryId(EntryType _type, string _name, uint16_t _year);
@@ -108,6 +110,7 @@ public:
 	int GetEntryCount();
 
 	void PrintActiveEntries();
+	void PrintEntriesPaths();
 
 private:
 	bool IsDuplicateTempId(ENTRYID id);
@@ -119,6 +122,9 @@ private:
 	map<ENTRYID, EntryDataPath> mEntryDataPaths;
 
 	vector<ENTRYID> tempIds;
+
+	shared_ptr<GenreListDataBase> mGenreDatabase;
+	shared_ptr<TagListDataBase> mTagDatabase;
 };
 
 //header for the entries file, contains count of each type of entry

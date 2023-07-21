@@ -99,9 +99,11 @@ GameEntry::GameEntry(ENTRYID _id, uint16_t _year, string _name)
 	mName = _name;
 }
 
-GameEntry::GameEntry(shared_ptr<char[]> binaryData, shared_ptr<GenreListDataBase> _genreDatabase,
+GameEntry::GameEntry(EntryInfo_Short _summary, shared_ptr<char[]> binaryData, shared_ptr<GenreListDataBase> _genreDatabase,
 	shared_ptr<TagListDataBase> _tagDatabase)
 {
+	mName = _summary.name; mYear = _summary.year; mId = _summary.id;
+
 	uint16_t dataIndex = 0;
 
 	mShortDescription.assign(&binaryData[dataIndex], &binaryData.get()[dataIndex + SHORTDESCRIPTION_MAXLEN]);

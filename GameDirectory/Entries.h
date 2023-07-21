@@ -55,7 +55,7 @@ class GameEntry : public Entry {
 public:
 	GameEntry();
 	GameEntry(ENTRYID _id, uint16_t _year, string _name);
-	GameEntry(shared_ptr<char[]> binaryData, shared_ptr<GenreListDataBase> _genreDatabase, shared_ptr<TagListDataBase> _tagDatabase);
+	GameEntry(EntryInfo_Short _summary, shared_ptr<char[]> binaryData, shared_ptr<GenreListDataBase> _genreDatabase, shared_ptr<TagListDataBase> _tagDatabase);
 	~GameEntry();
 
 	shared_ptr<char[]> GetBinaryData();

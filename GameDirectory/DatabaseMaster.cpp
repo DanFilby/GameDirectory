@@ -8,9 +8,10 @@ void DatabaseMaster::AppInit()
 	mEntryDatabase = nullptr;
 
 	//init all databases, each check their own respective directories 
-	mEntryDatabase = make_shared<EntryDatabase>();
 	mGame_GenreDatabase = make_shared<GenreListDataBase>();
 	mGame_TagDatabase = make_shared<TagListDataBase>();
+
+	mEntryDatabase = make_shared<EntryDatabase>(mGame_GenreDatabase, mGame_TagDatabase);
 }
 
 void DatabaseMaster::Close()

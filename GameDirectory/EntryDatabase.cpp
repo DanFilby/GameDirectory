@@ -1,15 +1,15 @@
 #include "EntryDatabase.h"
 
 
-EntryDatabase::EntryDatabase()
+EntryDatabase::EntryDatabase(shared_ptr<GenreListDataBase> _genreDatabase, shared_ptr<TagListDataBase> _tagDatabase)
+	:mGenreDatabase(_genreDatabase), mTagDatabase(_tagDatabase)
 {
-	//setup files, store in folder ids and database
-
 	//checks neccessary folders are valid, otherwise creates them
 	FileDirectoriesCheck();
 
 	//reads entries file, loads all saved entry summaries into memory
 	LoadEntriesFile();	
+
 }
 
 EntryDatabase::~EntryDatabase()
@@ -52,10 +52,6 @@ void EntryDatabase::LoadEntriesFile()
 
 		EntryDataPath entryDataPath = EntryDataPath(&entryBuffer[EntryInfo_Short::BYTESIZE]);
 		mEntryDataPaths.emplace(entry.mId, entryDataPath);
-		std::cout << "DataPath: " << entryDataPath.EntryHasData << "  " << entryDataPath.ParentDirIndex << "  " << (int)entryDataPath.EntryDirIndex << "\n";
-	
-
-
 	}
 }
 
@@ -344,6 +340,20 @@ inline string EntryDatabase::GetGameEntryData_FilePath(EntryInfo_Short entrySum)
 	return GetGameEntryData_FilePath(mEntryDataPaths[entrySum.id], entrySum.id, entrySum.name);
 }
 
+GameEntry EntryDatabase::GetGameEntry(ENTRYID _id)
+{
+	if (!EntryExsists(_id)) { std::cout << "Game entry does not exsist\n"; return GameEntry(); }
+
+	EntryInfo_Short entrySum = GetEntrySummary(_id);
+
+	shared_ptr<char[]> entryData;
+	if (ReadGameEntryData(entrySum, entryData)) {
+
+		return GameEntry(entrySum, entryData, mGenreDatabase, mTagDatabase);
+	}
+	else { return GameEntry(); }
+}
+
 Entry EntryDatabase::GetEntry(ENTRYID _id)
 {
 	for (auto& entry : mActiveEntries) {
@@ -396,6 +406,15 @@ void EntryDatabase::PrintActiveEntries()
 		std::cout << "info name: " << entry.mName << "\n";
 		std::cout << "info type: " << entry.mType << "\n";
 		std::cout << "info year: " << entry.mYear << "\n\n";
+	}
+}
+
+void EntryDatabase::PrintEntriesPaths()
+{
+	for (auto entryPathPair : mEntryDataPaths) {
+		std::cout << "Id: " << entryPathPair.first << " | " << GetEntrySummary(entryPathPair.first).name
+			<<" | DataPath: " << entryPathPair.second.EntryHasData << "  "
+			<< entryPathPair.second.ParentDirIndex << "  " << (int)entryPathPair.second.EntryDirIndex << "\n";
 	}
 }
 

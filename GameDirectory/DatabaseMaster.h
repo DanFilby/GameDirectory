@@ -3,6 +3,7 @@
 #include "EntryDatabase.h"
 #include "EntryUtils.h"
 
+//TODO: potentially turn this into a singleton
 
 /// <summary>
 /// Database manager for the whole application, checks any neccessary directories on start-up
