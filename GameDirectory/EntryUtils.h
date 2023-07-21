@@ -178,7 +178,7 @@ struct GameGenres {
 	GameGenres(shared_ptr<GenreListDataBase> _genreDatabase, char* binaryData) {
 		//set up empty ids and genre database
 		genreDatabase = _genreDatabase;
-		memcpy(&genreIds[0], binaryData, sizeof(uint8_t) * NUM_GENRES);
+		memcpy(&genreIds[0], binaryData, BYTESIZE);
 	}
 	
 	void AddGenre(uint8_t genreKey) {
@@ -238,7 +238,7 @@ struct GameGenres {
 	unique_ptr<char[]> ToBinary() const {
 		unique_ptr<char[]> binaryData = unique_ptr<char[]>(new char[NUM_GENRES]);
 
-		std::memcpy(&binaryData.get()[0], &genreIds[0], sizeof(uint8_t) * NUM_GENRES);
+		std::memcpy(&binaryData.get()[0], &genreIds[0], BYTESIZE);
 
 		return binaryData;
 	}
@@ -270,7 +270,7 @@ struct GameTags {
 	GameTags(shared_ptr<TagListDataBase> _tagDatabase, char* binaryData) {
 		//set up empty ids and database
 		tagDatabase = _tagDatabase;
-		memcpy(&tagIds[0], binaryData, sizeof(uint8_t) * NUM_TAGS);
+		memcpy(&tagIds[0], binaryData, BYTESIZE);
 	}
 
 	void AddTag(uint8_t tagKey) {
@@ -328,7 +328,7 @@ struct GameTags {
 	unique_ptr<char[]> ToBinary() const {
 		unique_ptr<char[]> binaryData = unique_ptr<char[]>(new char[NUM_TAGS]);
 
-		std::memcpy(&binaryData.get()[0], &tagIds[0], sizeof(uint8_t) * NUM_TAGS);
+		std::memcpy(&binaryData.get()[0], &tagIds[0], BYTESIZE);
 
 		return binaryData;
 	}

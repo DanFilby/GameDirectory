@@ -104,27 +104,23 @@ GameEntry::GameEntry(shared_ptr<char[]> binaryData, shared_ptr<GenreListDataBase
 {
 	uint16_t dataIndex = 0;
 
-	mShortDescription.assign(&binaryData.get()[dataIndex], &binaryData.get()[dataIndex + SHORTDESCRIPTION_MAXLEN]);
+	mShortDescription.assign(&binaryData[dataIndex], &binaryData.get()[dataIndex + SHORTDESCRIPTION_MAXLEN]);
 	dataIndex += SHORTDESCRIPTION_MAXLEN;
 
-	mFullDescription.assign(&binaryData.get()[dataIndex], &binaryData.get()[dataIndex + FULLDESCRIPTION_MAXLEN]);
+	mFullDescription.assign(&binaryData[dataIndex], &binaryData.get()[dataIndex + FULLDESCRIPTION_MAXLEN]);
 	dataIndex += FULLDESCRIPTION_MAXLEN;
 
-	char* genresData = new char[GameGenres::BYTESIZE];
-	memcpy(genresData, &binaryData[dataIndex], GameGenres::BYTESIZE);
+	mGenres = GameGenres(_genreDatabase, &binaryData[dataIndex]);
 	dataIndex += GameGenres::BYTESIZE;
 
-	char* tagsData = new char[GameTags::BYTESIZE];
-	memcpy(tagsData, &binaryData[dataIndex], GameTags::BYTESIZE);
+	mTags = GameTags(_tagDatabase, &binaryData[dataIndex]);
 	dataIndex += GameTags::BYTESIZE;
 
 	char* ratingsData = new char[GameRatings::BYTESIZE];
 	memcpy(ratingsData, &binaryData[dataIndex], GameRatings::BYTESIZE);
-	dataIndex += GameRatings::BYTESIZE;
-
-	mGenres = GameGenres(_genreDatabase, genresData);
-	mTags = GameTags(_tagDatabase, tagsData);
 	mRatings = GameRatings(ratingsData);
+
+	dataIndex += GameRatings::BYTESIZE;
 
 	//TODO: look at stream buffers
 }
