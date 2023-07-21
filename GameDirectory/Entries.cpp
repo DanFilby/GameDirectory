@@ -104,10 +104,10 @@ GameEntry::GameEntry(shared_ptr<char[]> binaryData, shared_ptr<GenreListDataBase
 {
 	uint16_t dataIndex = 0;
 
-	memcpy(&mShortDescription, &binaryData[dataIndex], SHORTDESCRIPTION_MAXLEN);
+	mShortDescription.assign(&binaryData.get()[dataIndex], &binaryData.get()[dataIndex + SHORTDESCRIPTION_MAXLEN]);
 	dataIndex += SHORTDESCRIPTION_MAXLEN;
 
-	memcpy(&mFullDescription, &binaryData[dataIndex], FULLDESCRIPTION_MAXLEN);
+	mFullDescription.assign(&binaryData.get()[dataIndex], &binaryData.get()[dataIndex + FULLDESCRIPTION_MAXLEN]);
 	dataIndex += FULLDESCRIPTION_MAXLEN;
 
 	char* genresData = new char[GameGenres::BYTESIZE];
@@ -125,6 +125,8 @@ GameEntry::GameEntry(shared_ptr<char[]> binaryData, shared_ptr<GenreListDataBase
 	mGenres = GameGenres(_genreDatabase, genresData);
 	mTags = GameTags(_tagDatabase, tagsData);
 	mRatings = GameRatings(ratingsData);
+
+	//TODO: look at stream buffers
 }
 
 GameEntry::~GameEntry()

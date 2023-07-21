@@ -60,7 +60,7 @@ void DataBase() {
 
      GameEntryBuilder gameBuilder(appDbManager);
 
-     gameBuilder.SetNameYear("Dan's Test Game 12", 2023);
+     gameBuilder.SetNameYear("Dan's Test Game 22", 2023);
 
      gameBuilder.SetShortDescription("Action adventure rpg as a penguin");
      gameBuilder.SetFullDescription("Explore a quaint iceberg village, full of interesting villagers. whilst building their small town and completing their quests. ");
@@ -87,6 +87,12 @@ void DataBase() {
 
      dataBase->AddGameEntry(gameEntry1);
 
+     shared_ptr<char[]> binDatGe;
+
+     if (dataBase->ReadGameEntryData(gameEntry1->GetSummary(), binDatGe)) {
+         GameEntry ge2 = GameEntry(binDatGe, gdatabase, tagDB);
+         ge2.PrintInfo();
+     }
 
 }
 
