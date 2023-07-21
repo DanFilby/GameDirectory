@@ -9,8 +9,7 @@ EntryDatabase::EntryDatabase()
 	FileDirectoriesCheck();
 
 	//reads entries file, loads all saved entry summaries into memory
-	LoadEntriesFile();
-		
+	LoadEntriesFile();	
 }
 
 EntryDatabase::~EntryDatabase()
@@ -55,6 +54,8 @@ void EntryDatabase::LoadEntriesFile()
 		mEntryDataPaths.emplace(entry.mId, entryDataPath);
 		std::cout << "DataPath: " << entryDataPath.EntryHasData << "  " << entryDataPath.ParentDirIndex << "  " << (int)entryDataPath.EntryDirIndex << "\n";
 	
+
+
 	}
 }
 
@@ -88,20 +89,42 @@ void EntryDatabase::UpdateEntriesFile()
 	delete[](entryBuffer);
 }
 
+bool EntryDatabase::ReadGameEntryData(const EntryInfo_Short& gameEntrySum, shared_ptr<char[]>& outBinData)
+{
+	try {
+		if (gameEntrySum.type != ET_Game || !DataPathExsists(gameEntrySum.id)) { std::cout << "No data exsists for this entry\n"; throw 001; }
+
+		string filePath = GetGameEntryData_FilePath(gameEntrySum);
+		ifstream entriesDataFile = std::ifstream(filePath, std::ios::out | std::ios::binary);
+
+		if (!entriesDataFile.good()) { std::cout << "Failed to read to entry data file: " << filePath << "\n"; throw 001; }
+
+		char* dataBuffer = new char[GameEntry::DATA_BYTESIZE];
+		entriesDataFile.read(dataBuffer, GameEntry::DATA_BYTESIZE);
+
+		outBinData = shared_ptr<char[]>(dataBuffer);
+		return true;
+	}
+	catch (int errCode) {
+		std::cout << "Error reading entry file data\n";
+		return false;
+	}	
+}
+
 void EntryDatabase::WriteGameEntryData(shared_ptr<GameEntry> _gameEntry, const EntryDataPath& _dataPath)
 {
-	SetupDir(GetGameEntryParentDirPath(_dataPath));
-
-	string gameEntryDataPath = GetGameEntryDataDirPath(_dataPath);
-	SetupDir(gameEntryDataPath);
-
-	string fileName = std::to_string(_gameEntry->Id()) + "-" + _gameEntry->Name() + ".dat";
-
-	ofstream entriesFile = std::ofstream(gameEntryDataPath + fileName, std::ios::out | std::ios::binary);
-	if (!entriesFile.good()) { std::cout << "Failed to write to entry data file: " << gameEntryDataPath + fileName << "\n"; return; }
+	SetupDir(GetGameEntryData_ParentDirPath(_dataPath));
+	SetupDir(GetGameEntryData_DirPath(_dataPath));
 
 	try {
-		entriesFile.write(&_gameEntry->GetBinaryData().get()[0], GameEntry::DATA_BYTESIZE);
+		string filePath = GetGameEntryData_FilePath(_dataPath, _gameEntry->Id(), _gameEntry->Name());
+		ofstream entriesDataFile = std::ofstream(filePath, std::ios::out | std::ios::binary);
+
+		if (!entriesDataFile.good()) { std::cout << "Failed to write to entry data file: " << filePath << "\n"; throw; }
+
+		entriesDataFile.write(&_gameEntry->GetBinaryData().get()[0], GameEntry::DATA_BYTESIZE);
+
+		std::cout << _gameEntry->Name() << " - Successfully added to the database\n";
 	}
 	catch (int errCode) {
 		std::cout << "Error writing data to file\n";
@@ -248,7 +271,7 @@ EntryDataPath EntryDatabase::GenerateDataPath(ENTRYID _entryId)
 {
 	if (DataPathExsists(_entryId)) { return mEntryDataPaths[_entryId]; }
 
-	uint16_t parentDirIndex = 0; uint8_t entryDirIndex = 0;
+	uint16_t parentDirIndex = 1; uint8_t entryDirIndex = 0;
 	for (auto entryPathPair : mEntryDataPaths) {
 
 		if (entryPathPair.second.ParentDirIndex >= parentDirIndex) {
@@ -281,7 +304,7 @@ EntryDataPath EntryDatabase::GetDataPath(ENTRYID _entryId)
 	return mEntryDataPaths[_entryId];
 }
 
-inline string EntryDatabase::GetGameEntryParentDirPath(EntryDataPath dataPath)
+inline string EntryDatabase::GetGameEntryData_ParentDirPath(EntryDataPath dataPath)
 {
 	//ensure dir name's length is 5
 	string parentDir = std::to_string(dataPath.ParentDirIndex);
@@ -292,15 +315,33 @@ inline string EntryDatabase::GetGameEntryParentDirPath(EntryDataPath dataPath)
 	return path;
 }
 
-inline string EntryDatabase::GetGameEntryDataDirPath(EntryDataPath dataPath)
+inline string EntryDatabase::GetGameEntryData_DirPath(EntryDataPath dataPath)
 {
 	//ensure entry's name's length is 3
 	string entryDir = std::to_string(dataPath.EntryDirIndex);
 	int extraZeros = 3 - entryDir.length();
 	for (size_t i = 0; i < extraZeros; i++) { entryDir = "0" + entryDir; }
 
-	string path = GetGameEntryParentDirPath(dataPath) + entryDir + "/";
+	string path = GetGameEntryData_ParentDirPath(dataPath) + entryDir + "/";
 	return path;
+}
+
+inline string EntryDatabase::GetGameEntryData_DirPath(ENTRYID gameEntryId)
+{
+	EntryDataPath dataPath = GetDataPath(gameEntryId);
+	return GetGameEntryData_DirPath(dataPath);
+}
+
+inline string EntryDatabase::GetGameEntryData_FilePath(EntryDataPath dataPath, ENTRYID _entryId, string _entryName)
+{
+	return 	GetGameEntryData_DirPath(dataPath) + std::to_string(_entryId) + "-" + _entryName + ".dat";
+}
+
+inline string EntryDatabase::GetGameEntryData_FilePath(EntryInfo_Short entrySum)
+{
+	if (!DataPathExsists(entrySum.id)) { std::cout << "No data found for this entry\n"; throw 001; }
+
+	return GetGameEntryData_FilePath(mEntryDataPaths[entrySum.id], entrySum.id, entrySum.name);
 }
 
 Entry EntryDatabase::GetEntry(ENTRYID _id)

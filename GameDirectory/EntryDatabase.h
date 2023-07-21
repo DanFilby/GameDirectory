@@ -68,7 +68,8 @@ public:
 	void LoadEntriesFile();
 	void UpdateEntriesFile();
 
-	shared_ptr<GameEntry> ReadGameEntryData(const EntryDataPath& _dataPath);
+	bool ReadGameEntryData(const EntryInfo_Short& gameEntrySum, shared_ptr<char[]>& outBinData);
+
 	void WriteGameEntryData(shared_ptr<GameEntry> _gameEntry, const EntryDataPath& _dataPath);
 
 	void AddEntry(shared_ptr<Entry> _entry);
@@ -91,8 +92,13 @@ public:
 	EntryDataPath GenerateDataPath(ENTRYID _entryId);
 	EntryDataPath GetDataPath(ENTRYID _entryId);
 
-	inline string GetGameEntryParentDirPath(EntryDataPath dataPath);
-	inline string GetGameEntryDataDirPath(EntryDataPath dataPath);
+	inline string GetGameEntryData_ParentDirPath(EntryDataPath dataPath);
+
+	inline string GetGameEntryData_DirPath(EntryDataPath dataPath);
+	inline string GetGameEntryData_DirPath(ENTRYID gameEntryId);
+
+	inline string GetGameEntryData_FilePath(EntryDataPath dataPath, ENTRYID _entryId, string _entryName);
+	inline string GetGameEntryData_FilePath(EntryInfo_Short entrySum);
 
 	Entry GetEntry(ENTRYID _id);
 	EntryInfo_Short GetEntrySummary(ENTRYID _id);
