@@ -8,6 +8,8 @@
 
 //Base Entry class containing interface for entries and all common member data: ID, Year, Name
 class Entry {
+	//TODO: platforms, publisher
+
 public:
 	Entry();
 	Entry(EntryInfo_Short _entrySummary);
@@ -47,6 +49,7 @@ public:
 	friend class EntryBuilder;
 	friend class EntryDatabase;
 };
+
 
 #pragma region GameEntry
 

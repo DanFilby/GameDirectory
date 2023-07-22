@@ -336,5 +336,7 @@ struct GameTags {
 
 struct GameFinances {
 
+	//Sales - na, eu, asia, other, total
+
 
 };
