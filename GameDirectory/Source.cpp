@@ -93,6 +93,15 @@ void DataBase() {
 
      ge2.PrintInfo();
 
+     GameFinances finances(12000, 23000, 200, 9000);
+     finances.PrintFinances();
+
+     shared_ptr<char[]> binFinances = finances.ToBinary();
+
+     GameFinances finances2(binFinances.get());
+     finances2.PrintFinances();
+
+
 }
 
 void AppStart() {

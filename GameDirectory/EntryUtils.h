@@ -335,8 +335,55 @@ struct GameTags {
 };
 
 struct GameFinances {
+	static const uint8_t BYTESIZE = sizeof(float) * 4;
+	
+	enum SalesFactor { Billions, Millions, HundredThousands, Thousands };
 
-	//Sales - na, eu, asia, other, total
+	float salesEU, salesNA, salesAsia, salesOther;
+	float salesTotal;
+
+	GameFinances()
+		:salesEU(0), salesNA(0), salesAsia(0), salesOther(0), salesTotal(0) {}
+
+	GameFinances(float _salesEU, float _salesNA, float _salesAsia, float _salesOther) 
+		:salesEU(_salesEU), salesNA(_salesNA), salesAsia(_salesAsia), salesOther(_salesOther){
+		salesTotal = salesEU + salesNA + salesAsia + salesOther;
+	}
+
+	GameFinances(char* binaryData) {
+		memcpy(&salesEU, &binaryData[sizeof(float) * 0], sizeof(float));
+		memcpy(&salesNA, &binaryData[sizeof(float) * 1], sizeof(float));
+		memcpy(&salesAsia, &binaryData[sizeof(float) * 2], sizeof(float));
+		memcpy(&salesOther, &binaryData[sizeof(float) * 3], sizeof(float));
+		salesTotal = salesEU + salesNA + salesAsia + salesOther;
+	}
+
+	void PrintFinances() {
+		//find best suited sales factor
+		PrintFinances();
+	}
+
+	void PrintFinances(SalesFactor salesFactor) {
+		std::cout << "Finances:\n";
+		std::cout << "North America Sales: " << SalesToString(salesEU) << "\n";
+		std::cout << "Europe Sales: " << SalesToString(salesNA) << "\n";
+		std::cout << "Asia Sales: " << SalesToString(salesAsia) << "\n";
+		std::cout << "Other Sales: " << SalesToString(salesOther) << "\n";
+		std::cout << "Total Sales: " << SalesToString(salesTotal) << "\n\n";
+	}
+
+	inline string SalesToString(float sales, SalesFactor salesFactor) {
 
 
+		return std::to_string(sales);
+	}
+
+	unique_ptr<char[]> ToBinary() const {
+		unique_ptr<char[]> binaryData = unique_ptr<char[]>(new char[BYTESIZE]);
+		memcpy(&binaryData[sizeof(float) * 0], &salesEU, sizeof(float));
+		memcpy(& binaryData[sizeof(float) * 1], & salesNA, sizeof(float));
+		memcpy(&binaryData[sizeof(float) * 2], &salesAsia, sizeof(float));
+		memcpy(&binaryData[sizeof(float) * 3],&salesOther, sizeof(float));
+		return binaryData;
+	}
 };
