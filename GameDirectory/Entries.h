@@ -87,6 +87,8 @@ public:
 	//set of ratings about various aspects of the game
 	GameRatings mRatings;
 
+	GameFinances mFinances;
+
 private:
 	string mShortDescription;
 	string mFullDescription;
@@ -96,7 +98,7 @@ public:
 	static const uint8_t FULLDESCRIPTION_MAXLEN = 255;
 
 	static const uint16_t DATA_BYTESIZE = SHORTDESCRIPTION_MAXLEN + FULLDESCRIPTION_MAXLEN + GameGenres::BYTESIZE
-		+ GameTags::BYTESIZE + GameRatings::BYTESIZE;
+		+ GameTags::BYTESIZE + GameRatings::BYTESIZE + GameFinances::BYTESIZE;
 
 	friend class GameEntryBuilder;
 };

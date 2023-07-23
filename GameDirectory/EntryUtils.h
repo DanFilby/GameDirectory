@@ -116,7 +116,7 @@ struct GameRatings {
 		: Overall(), Gameplay(), Narrative(), Replayability() {
 	}
 
-	void DisplayAllRatings() const {
+	void PrintRatings() const {
 		std::cout << "Overall rating: " << FloatRating(Overall)<< "/ 10  " << StarRating(Overall) << "\n";
 		std::cout << "Gameplay rating: " << FloatRating(Gameplay) << "/ 10  " << StarRating(Gameplay) << "\n";
 		std::cout << "Narrative rating: " << FloatRating(Narrative) << "/ 10  " << StarRating(Narrative) << "\n";
@@ -373,8 +373,8 @@ struct GameFinances {
 
 	void PrintFinances(SalesFactor salesFactor) {
 		std::cout << "Finances:\n";
-		std::cout << "North America Sales: " << SalesToString(salesEU, salesFactor) << "\n";
 		std::cout << "Europe Sales: " << SalesToString(salesNA, salesFactor) << "\n";
+		std::cout << "North America Sales: " << SalesToString(salesEU, salesFactor) << "\n";
 		std::cout << "Asia Sales: " << SalesToString(salesAsia, salesFactor) << "\n";
 		std::cout << "Other Sales: " << SalesToString(salesOther, salesFactor) << "\n";
 		std::cout << "Total Sales: " << SalesToString(salesTotal, salesFactor) << "\n\n";
@@ -410,7 +410,7 @@ struct GameFinances {
 	unique_ptr<char[]> ToBinary() const {
 		unique_ptr<char[]> binaryData = unique_ptr<char[]>(new char[BYTESIZE]);
 		memcpy(&binaryData[sizeof(float) * 0], &salesEU, sizeof(float));
-		memcpy(& binaryData[sizeof(float) * 1], & salesNA, sizeof(float));
+		memcpy(&binaryData[sizeof(float) * 1], &salesNA, sizeof(float));
 		memcpy(&binaryData[sizeof(float) * 2], &salesAsia, sizeof(float));
 		memcpy(&binaryData[sizeof(float) * 3],&salesOther, sizeof(float));
 		return binaryData;
