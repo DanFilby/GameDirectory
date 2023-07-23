@@ -8,6 +8,8 @@ using std::cout;
 
 //TODO: studios
 //TODO: Storing game entries
+//TODO: entry's link struct storing linking ids ie games to studios 
+// 
 //each entry get it's own file, need store path with entry database, use folder tree
 //1st: folders games, studios etc
 //2nd: folders Dir00000-Dir65536, Dir00001, Dir00002, Dir00003, etc
@@ -93,15 +95,13 @@ void DataBase() {
 
      ge2.PrintInfo();
 
-     GameFinances finances(12000, 23000, 200, 9000);
+     GameFinances finances(1200000, 2300000, 200, 9000000);
      finances.PrintFinances();
 
      shared_ptr<char[]> binFinances = finances.ToBinary();
 
      GameFinances finances2(binFinances.get());
      finances2.PrintFinances();
-
-
 }
 
 void AppStart() {
