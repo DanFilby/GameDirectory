@@ -416,3 +416,11 @@ struct GameFinances {
 		return binaryData;
 	}
 };
+
+//either store 64 ids, or use a header and variable amount of ids -> requires changes to reading entries
+struct EntryRelations {
+
+
+
+
+};
