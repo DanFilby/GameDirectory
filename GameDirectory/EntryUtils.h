@@ -417,10 +417,54 @@ struct GameFinances {
 	}
 };
 
+//wrapper for a list of entry ids
 //either store 64 ids, or use a header and variable amount of ids -> requires changes to reading entries
 struct EntryRelations {
+	enum RelationType {Studios = 0, Producers = 1, Games = 2};
+
+	RelationType relationType;
+	vector<ENTRYID> relations;
+
+	EntryRelations() {
+
+	}
+
+	EntryRelations(vector<ENTRYID> _relations)
+		:relations(_relations){
+	}
+
+	EntryRelations(ifstream entryRelationsFile) {
+
+	}
+
+	void WriteToFile(string entryDirPath, ENTRYID entryId, RelationType _relationType) {
+		uint16_t maxCount = MaxRelations(_relationType);
+		if (relations.size() > maxCount) {
+			relations.resize(maxCount);
+		}
 
 
+	}
 
+	void AddRelation(ENTRYID id) {
+		relations.push_back(id);
 
+		//remove duplicates
+		std::sort(relations.begin(), relations.end());
+		relations.erase(std::unique(relations.begin(), relations.end()), relations.end());
+	}
+
+	inline string RealtionsFilePath(string entryDirPath, ENTRYID entryId, RelationType type) {
+		return entryDirPath + std::to_string(entryId) + "-" + RelationTypeToString(type) + "-Relations.dat";
+	}
+
+	const inline uint16_t MaxRelations(RelationType relationType) {
+		static const int maxRelations[] = { 16, 16, 256 };
+		return maxRelations[(int)relationType];
+	}
+
+	const inline string RelationTypeToString(RelationType relationType) {
+		static const string relationNames[] = { "Studios", "Producers", "Games"};
+		return relationNames[(int)relationType];
+	}
 };
