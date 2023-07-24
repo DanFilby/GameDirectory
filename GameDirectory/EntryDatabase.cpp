@@ -73,7 +73,6 @@ void EntryDatabase::UpdateEntriesFile()
 
 	//write each entry to the file. each are 36 bytes
 	for (const auto& entry : mActiveEntries) {
-		//TODO:problems with loading the datapath 
 		EntryDataPath dataPath = GetDataPath(entry.mId);
 
 		//copy both entry summary and entry data path into 

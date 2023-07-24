@@ -420,30 +420,50 @@ struct GameFinances {
 //wrapper for a list of entry ids
 //either store 64 ids, or use a header and variable amount of ids -> requires changes to reading entries
 struct EntryRelations {
-	enum RelationType {Studios = 0, Producers = 1, Games = 2};
+	enum RelationType : uint16_t {Studios = 0, Producers = 1, Games = 2};
 
-	RelationType relationType;
+	RelationType entriesRelationType;
 	vector<ENTRYID> relations;
 
 	EntryRelations() {
 
 	}
 
-	EntryRelations(vector<ENTRYID> _relations)
-		:relations(_relations){
+	EntryRelations(vector<ENTRYID> _relations, RelationType relationType)
+		:relations(_relations), entriesRelationType(relationType){
 	}
 
 	EntryRelations(ifstream entryRelationsFile) {
 
 	}
 
-	void WriteToFile(string entryDirPath, ENTRYID entryId, RelationType _relationType) {
-		uint16_t maxCount = MaxRelations(_relationType);
-		if (relations.size() > maxCount) {
-			relations.resize(maxCount);
+	void WriteToFile(string entryDirPath, ENTRYID entryId, RelationType relationType) {
+
+		uint16_t maxCount = MaxRelations(relationType);
+		if (relations.size() > maxCount) { relations.resize(maxCount); }
+		uint16_t relationCount = relations.size();
+
+		string filePath = RelationsFilePath(entryDirPath, entryId, relationType);
+		ofstream entryRelationFile = ofstream(filePath, std::ios::binary | std::ios::out);
+		
+		if (!entryRelationFile.good()) { return; }
+
+		//write 4-byte header -> (relation count) (relation type)
+		char* writeBuffer = new char[4];
+		memcpy(&writeBuffer[0], &relationCount, 2);
+		memcpy(&writeBuffer[2], &entriesRelationType, 2);
+		entryRelationFile.write(&writeBuffer[0], 4);
+
+		delete[](writeBuffer);
+		writeBuffer = new char[sizeof(ENTRYID)];
+
+		for (const ENTRYID& relation : relations) {
+			std::memcpy(&writeBuffer[0], &relation, sizeof(ENTRYID));
+			entryRelationFile.write(&writeBuffer[0], sizeof(ENTRYID));
 		}
 
-
+		delete[](writeBuffer);
+		entryRelationFile.close();
 	}
 
 	void AddRelation(ENTRYID id) {
@@ -454,7 +474,7 @@ struct EntryRelations {
 		relations.erase(std::unique(relations.begin(), relations.end()), relations.end());
 	}
 
-	inline string RealtionsFilePath(string entryDirPath, ENTRYID entryId, RelationType type) {
+	inline string RelationsFilePath(string entryDirPath, ENTRYID entryId, RelationType type) {
 		return entryDirPath + std::to_string(entryId) + "-" + RelationTypeToString(type) + "-Relations.dat";
 	}
 
