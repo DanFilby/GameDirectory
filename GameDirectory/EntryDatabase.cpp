@@ -299,7 +299,7 @@ EntryDataPath EntryDatabase::GetDataPath(ENTRYID _entryId)
 	return mEntryDataPaths[_entryId];
 }
 
-inline string EntryDatabase::GetGameEntryData_ParentDirPath(EntryDataPath dataPath)
+string EntryDatabase::GetGameEntryData_ParentDirPath(EntryDataPath dataPath)
 {
 	//ensure dir name's length is 5
 	string parentDir = std::to_string(dataPath.ParentDirIndex);
@@ -310,7 +310,7 @@ inline string EntryDatabase::GetGameEntryData_ParentDirPath(EntryDataPath dataPa
 	return path;
 }
 
-inline string EntryDatabase::GetGameEntryData_DirPath(EntryDataPath dataPath)
+string EntryDatabase::GetGameEntryData_DirPath(EntryDataPath dataPath)
 {
 	//ensure entry's name's length is 3
 	string entryDir = std::to_string(dataPath.EntryDirIndex);
@@ -321,18 +321,18 @@ inline string EntryDatabase::GetGameEntryData_DirPath(EntryDataPath dataPath)
 	return path;
 }
 
-inline string EntryDatabase::GetGameEntryData_DirPath(ENTRYID gameEntryId)
+string EntryDatabase::GetGameEntryData_DirPath(ENTRYID gameEntryId)
 {
 	EntryDataPath dataPath = GetDataPath(gameEntryId);
 	return GetGameEntryData_DirPath(dataPath);
 }
 
-inline string EntryDatabase::GetGameEntryData_FilePath(EntryDataPath dataPath, ENTRYID _entryId, string _entryName)
+string EntryDatabase::GetGameEntryData_FilePath(EntryDataPath dataPath, ENTRYID _entryId, string _entryName)
 {
 	return 	GetGameEntryData_DirPath(dataPath) + std::to_string(_entryId) + "-" + _entryName + ".dat";
 }
 
-inline string EntryDatabase::GetGameEntryData_FilePath(EntryInfo_Short entrySum)
+string EntryDatabase::GetGameEntryData_FilePath(EntryInfo_Short entrySum)
 {
 	if (!DataPathExsists(entrySum.id)) { std::cout << "No data found for this entry\n"; throw 001; }
 

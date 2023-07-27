@@ -95,7 +95,18 @@ void DataBase() {
 
      ge2.PrintInfo();
 
-     
+     EntryRelations ERelations(EntryRelations::toStudios);
+     ERelations.AddRelation(12);
+     ERelations.AddRelation(14);
+     ERelations.AddRelation(16);
+
+     string entryDataPath = dataBase->GetGameEntryData_DirPath(dataBase->GetEntryId(ET_Game, "Dan's Test Game 29", 2023));
+
+     ERelations.WriteToFile(entryDataPath, dataBase->GetEntryId(ET_Game, "Dan's Test Game 29", 2023), EntryRelations::toStudios);
+
+     EntryRelations ERelations2(entryDataPath, dataBase->GetEntryId(ET_Game, "Dan's Test Game 29", 2023), EntryRelations::toStudios);
+
+
 }
 
 void AppStart() {

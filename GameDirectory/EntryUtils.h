@@ -420,20 +420,23 @@ struct GameFinances {
 //wrapper for a list of entry ids
 //either store 64 ids, or use a header and variable amount of ids -> requires changes to reading entries
 struct EntryRelations {
-	enum RelationType : uint16_t {Studios = 0, Producers = 1, Games = 2};
+	enum RelationType : uint16_t {toStudios = 0, toProducers = 1, toGames = 2};
 
 	RelationType entriesRelationType;
 	vector<ENTRYID> relations;
 
-	EntryRelations() {
-
+	EntryRelations(RelationType _relationType): entriesRelationType(_relationType), relations(){
 	}
 
 	EntryRelations(vector<ENTRYID> _relations, RelationType relationType)
 		:relations(_relations), entriesRelationType(relationType){
 	}
 
-	EntryRelations(ifstream entryRelationsFile):entriesRelationType(Studios){
+	EntryRelations(string entryDirPath, ENTRYID entryId, RelationType relationType):entriesRelationType(toStudios){
+		
+		string filePath = RelationsFilePath(entryDirPath, entryId, relationType);
+		ifstream entryRelationsFile = ifstream(filePath, std::ios::binary);
+
 		if (!entryRelationsFile.good()) { return; }
 
 		uint16_t relationCount;
@@ -441,7 +444,8 @@ struct EntryRelations {
 
 		char* readBuffer = new char[sizeof(ENTRYID)];
 
-		for (const ENTRYID& relation : relations) {
+		for (size_t i = 0; i < relationCount; i++)
+		{
 			entryRelationsFile.read(&readBuffer[0], sizeof(ENTRYID));
 			relations.push_back(ENTRYID(*readBuffer));
 		}

@@ -92,13 +92,13 @@ public:
 	EntryDataPath GenerateDataPath(ENTRYID _entryId);
 	EntryDataPath GetDataPath(ENTRYID _entryId);
 
-	inline string GetGameEntryData_ParentDirPath(EntryDataPath dataPath);
+	string GetGameEntryData_ParentDirPath(EntryDataPath dataPath);
 
-	inline string GetGameEntryData_DirPath(EntryDataPath dataPath);
-	inline string GetGameEntryData_DirPath(ENTRYID gameEntryId);
+	string GetGameEntryData_DirPath(EntryDataPath dataPath);
+	string GetGameEntryData_DirPath(ENTRYID gameEntryId);
 
-	inline string GetGameEntryData_FilePath(EntryDataPath dataPath, ENTRYID _entryId, string _entryName);
-	inline string GetGameEntryData_FilePath(EntryInfo_Short entrySum);
+	string GetGameEntryData_FilePath(EntryDataPath dataPath, ENTRYID _entryId, string _entryName);
+	string GetGameEntryData_FilePath(EntryInfo_Short entrySum);
 
 	GameEntry GetGameEntry(ENTRYID _id);
 
