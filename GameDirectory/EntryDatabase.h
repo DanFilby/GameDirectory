@@ -19,6 +19,7 @@
 *   -> optimse this as will have to loop over all pictures to find the right one
 */
 //TODO: update this comment
+//TODO: Add, remove, and edit entry interface, by id
 
 struct EntryDataPath {
 	static const uint8_t BYTESIZE = 4;
@@ -164,4 +165,23 @@ struct EntryFileHeader {
 	uint16_t totalEntries, baseEntries, gameEntries, studioEntries;
 };
 
-//TODO: Add, remove, and edit entry interface, by id
+//manages all entry relation files
+class FileManager_EntryRelations {
+
+public:
+	FileManager_EntryRelations(const map<ENTRYID, EntryDataPath>& _dataPathsMap);
+
+	void Write_EntryRelationFile(ENTRYID entryId, EntryRelationsType relationType);
+	EntryRelations Read_EntryRelationFile(ENTRYID entryId, EntryRelationsType relationType);
+
+
+private:
+
+	map<ENTRYID, EntryDataPath>& mDataPathsMap;
+
+	inline string RelationsFilePath(string entryDirPath, ENTRYID entryId, EntryRelationsType type);
+
+	inline void WriteFileHeader(ofstream& file, const uint16_t& relationCount, const EntryRelationsType& type);
+	inline void ReadFileHeader(ifstream& file, uint16_t& relationCount, EntryRelationsType& type);
+
+};

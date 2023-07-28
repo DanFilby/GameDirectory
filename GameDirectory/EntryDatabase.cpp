@@ -120,6 +120,8 @@ void EntryDatabase::WriteGameEntryData(shared_ptr<GameEntry> _gameEntry, const E
 		entriesDataFile.write(&_gameEntry->GetBinaryData().get()[0], GameEntry::DATA_BYTESIZE);
 
 		std::cout << _gameEntry->Name() << " - Successfully added to the database\n";
+
+
 	}
 	catch (int errCode) {
 		std::cout << "Error writing data to file\n";

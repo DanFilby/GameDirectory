@@ -417,22 +417,23 @@ struct GameFinances {
 	}
 };
 
+enum EntryRelationsType : uint16_t { Relation_toStudios = 0, Relation_toProducers = 1, Relation_toGames = 2 };
+
 //wrapper for a list of entry ids
 //either store 64 ids, or use a header and variable amount of ids -> requires changes to reading entries
 struct EntryRelations {
-	enum RelationType : uint16_t {toStudios = 0, toProducers = 1, toGames = 2};
 
-	RelationType entriesRelationType;
+	EntryRelationsType entriesRelationType;
 	vector<ENTRYID> relations;
 
-	EntryRelations(RelationType _relationType): entriesRelationType(_relationType), relations(){
+	EntryRelations(EntryRelationsType _relationType): entriesRelationType(_relationType), relations(){
 	}
 
-	EntryRelations(vector<ENTRYID> _relations, RelationType relationType)
+	EntryRelations(vector<ENTRYID> _relations, EntryRelationsType relationType)
 		:relations(_relations), entriesRelationType(relationType){
 	}
 
-	EntryRelations(string entryDirPath, ENTRYID entryId, RelationType relationType):entriesRelationType(toStudios){
+	EntryRelations(string entryDirPath, ENTRYID entryId, EntryRelationsType relationType):entriesRelationType(Relation_toStudios){
 		
 		string filePath = RelationsFilePath(entryDirPath, entryId, relationType);
 		ifstream entryRelationsFile = ifstream(filePath, std::ios::binary);
@@ -451,7 +452,7 @@ struct EntryRelations {
 		}
 	}
 
-	void WriteToFile(string entryDirPath, ENTRYID entryId, RelationType relationType) {
+	void WriteToFile(string entryDirPath, ENTRYID entryId, EntryRelationsType relationType) {
 
 		uint16_t maxCount = MaxRelationsCount(relationType);
 		if (relations.size() > maxCount) { relations.resize(maxCount); }
@@ -460,7 +461,7 @@ struct EntryRelations {
 		string filePath = RelationsFilePath(entryDirPath, entryId, relationType);
 		ofstream entryRelationsFile = ofstream(filePath, std::ios::binary | std::ios::out);
 		
-		if (!entryRelationsFile.good()) { return; }
+		if (!entryRelationsFile.good()) { throw 002; }
 
 		WriteHeader(entryRelationsFile, relationCount, relationType);
 		
@@ -475,7 +476,7 @@ struct EntryRelations {
 		entryRelationsFile.close();
 	}
 
-	inline void WriteHeader(ofstream& file, const uint16_t& relationCount, const RelationType& type) {
+	inline void WriteHeader(ofstream& file, const uint16_t& relationCount, const EntryRelationsType& type) {
 		//write 4-byte header -> (relation count) (relation type)
 		char* writeBuffer = new char[4];
 		memcpy(&writeBuffer[0], &relationCount, 2);
@@ -484,7 +485,7 @@ struct EntryRelations {
 		delete[](writeBuffer);
 	}
 
-	inline void ReadHeader(ifstream& file, uint16_t& relationCount, RelationType& type) {
+	inline void ReadHeader(ifstream& file, uint16_t& relationCount, EntryRelationsType& type) {
 		char* readBuffer = new char[4];
 		file.read(&readBuffer[0], 4);
 		memcpy(&relationCount, &readBuffer[0], 2);
@@ -500,16 +501,16 @@ struct EntryRelations {
 		relations.erase(std::unique(relations.begin(), relations.end()), relations.end());
 	}
 
-	inline string RelationsFilePath(string entryDirPath, ENTRYID entryId, RelationType type) {
+	inline string RelationsFilePath(string entryDirPath, ENTRYID entryId, EntryRelationsType type) {
 		return entryDirPath + std::to_string(entryId) + "-" + RelationTypeToString(type) + "-Relations.dat";
 	}
 
-	const inline uint16_t MaxRelationsCount(RelationType relationType) {
+	static const uint16_t MaxRelationsCount(EntryRelationsType relationType) {
 		static const int maxRelations[] = { 16, 16, 256 };
 		return maxRelations[(int)relationType];
 	}
 
-	const inline string RelationTypeToString(RelationType relationType) {
+	static const string RelationTypeToString(EntryRelationsType relationType) {
 		static const string relationNames[] = { "Studios", "Producers", "Games"};
 		return relationNames[(int)relationType];
 	}

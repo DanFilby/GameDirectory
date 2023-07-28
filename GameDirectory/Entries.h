@@ -78,9 +78,6 @@ private:
 	bool IsEntryDataValid();
 
 public:
-	//list of studios which created this game
-	vector<ENTRYID> mStudioIds;
-
 	GameGenres mGenres;
 	GameTags mTags;
 
@@ -88,6 +85,9 @@ public:
 	GameRatings mRatings;
 
 	GameFinances mFinances;
+
+	EntryRelations mStudios;
+	EntryRelations mProducers;
 
 private:
 	string mShortDescription;
