@@ -2,7 +2,7 @@
 
 
 EntryDatabase::EntryDatabase(shared_ptr<GenreListDataBase> _genreDatabase, shared_ptr<TagListDataBase> _tagDatabase)
-	:mGenreDatabase(_genreDatabase), mTagDatabase(_tagDatabase)
+	:mGenreDatabase(_genreDatabase), mTagDatabase(_tagDatabase), mEntryRelationsFileManager(mEntryDataPaths, GetGameEntryData_DirPath)
 {
 	//checks neccessary folders are valid, otherwise creates them
 	FileDirectoriesCheck();
@@ -10,6 +10,7 @@ EntryDatabase::EntryDatabase(shared_ptr<GenreListDataBase> _genreDatabase, share
 	//reads entries file, loads all saved entry summaries into memory
 	LoadEntriesFile();	
 
+	//mEntryRelationsFileManager = FileManager_EntryRelations(mEntryDataPaths, GetGameEntryData_DirPath);
 }
 
 EntryDatabase::~EntryDatabase()
@@ -447,8 +448,8 @@ void EntryDatabase::RemoveTempId(ENTRYID id)
 
 }
 
-FileManager_EntryRelations::FileManager_EntryRelations(const map<ENTRYID, EntryDataPath>& _dataPathsMap, string(*getEntryDataPath)())
-	:mDataPathsMap(_dataPathsMap)
+FileManager_EntryRelations::FileManager_EntryRelations(const map<ENTRYID, EntryDataPath>& _dataPathsMap, string(*getEntryDataPath)(const EntryDataPath dataPath))
+	:mDataPathsMap(_dataPathsMap), mGetEntryDataPath(getEntryDataPath)
 {
 }
 
@@ -545,7 +546,7 @@ fstream& FileManager_EntryRelations::GetEntryRelationsFile(ENTRYID entryId, Entr
 	if (mDataPathsMap.count(entryId) != 1) { throw 002; }
 	EntryDataPath entryDataPath = mDataPathsMap.at(entryId);
 
-	string entryDataDir = EntryDatabase::GetGameEntryData_DirPath(entryDataPath);
+	string entryDataDir = mGetEntryDataPath(entryDataPath);
 	string filePath = RelationsFilePath(entryDataDir, entryId, relationsType);
 
 	fstream entryRelationsFile = fstream(filePath, std::ios::binary);

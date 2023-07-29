@@ -51,6 +51,31 @@ struct EntryDataPath {
 	}
 };
 
+//manages all entry relation files
+class FileManager_EntryRelations {
+
+public:
+	FileManager_EntryRelations(const map<ENTRYID, EntryDataPath>& _dataPathsMap, string(*getEntryDataPath)(const EntryDataPath dataPath));
+
+	void Write_EntryRelationFile(ENTRYID entryId, EntryRelations entryRelations);
+	EntryRelations Read_EntryRelationFile(ENTRYID entryId, EntryRelationsType relationType);
+
+private:
+
+	const map<ENTRYID, EntryDataPath>& mDataPathsMap;
+	string(*mGetEntryDataPath)(const EntryDataPath dataPath);
+
+	inline void EnsureRelationsSizeValid(vector<ENTRYID>& relations, EntryRelationsType relationsType);
+
+	inline string RelationsFilePath(string entryDirPath, ENTRYID entryId, EntryRelationsType type);
+	fstream& GetEntryRelationsFile(ENTRYID entryId, EntryRelationsType relationsType);
+
+	inline void WriteFileHeader(fstream& file, const uint16_t& relationCount, const EntryRelationsType& type);
+	inline void ReadFileHeader(fstream& file, uint16_t& relationCount, EntryRelationsType& type);
+
+	void WriteFileBody(fstream& file, const vector<ENTRYID>& relations);
+};
+
 class EntryDatabase : Database
 {
 	//entries.dat contains each entry's name and link to its folder location. dupes?
@@ -128,6 +153,8 @@ private:
 
 	shared_ptr<GenreListDataBase> mGenreDatabase;
 	shared_ptr<TagListDataBase> mTagDatabase;
+
+	FileManager_EntryRelations mEntryRelationsFileManager;
 };
 
 //header for the entries file, contains count of each type of entry
@@ -165,28 +192,4 @@ struct EntryFileHeader {
 	}
 
 	uint16_t totalEntries, baseEntries, gameEntries, studioEntries;
-};
-
-//manages all entry relation files
-class FileManager_EntryRelations {
-
-public:
-	FileManager_EntryRelations(const map<ENTRYID, EntryDataPath>& _dataPathsMap, string (*getEntryDataPath)());
-
-	void Write_EntryRelationFile(ENTRYID entryId, EntryRelations entryRelations);
-	EntryRelations Read_EntryRelationFile(ENTRYID entryId, EntryRelationsType relationType);
-
-private:
-
-	const map<ENTRYID, EntryDataPath>& mDataPathsMap;
-
-	inline void EnsureRelationsSizeValid(vector<ENTRYID>& relations, EntryRelationsType relationsType);
-
-	inline string RelationsFilePath(string entryDirPath, ENTRYID entryId, EntryRelationsType type);
-	fstream& GetEntryRelationsFile(ENTRYID entryId, EntryRelationsType relationsType);
-
-	inline void WriteFileHeader(fstream& file, const uint16_t& relationCount, const EntryRelationsType& type);
-	inline void ReadFileHeader(fstream& file, uint16_t& relationCount, EntryRelationsType& type);
-
-	void WriteFileBody(fstream& file, const vector<ENTRYID>& relations);
 };

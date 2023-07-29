@@ -86,8 +86,8 @@ public:
 
 	GameFinances mFinances;
 
-	EntryRelations mStudios;
-	EntryRelations mProducers;
+	EntryRelations mStudios{ EntryRelationsType::Relation_toStudios };
+	EntryRelations mProducers{ EntryRelationsType::Relation_toStudios };
 
 private:
 	string mShortDescription;
