@@ -24,9 +24,9 @@
 struct EntryDataPath {
 	static const uint8_t BYTESIZE = 4;
 
-	bool EntryHasData;
 	uint16_t ParentDirIndex; //0-65536
 	uint8_t EntryDirIndex;	//0-255
+	bool EntryHasData;
 
 	EntryDataPath()
 		:EntryHasData(false), ParentDirIndex(0), EntryDirIndex(0) {
@@ -56,8 +56,8 @@ class EntryDatabase : Database
 	//entries.dat contains each entry's name and link to its folder location. dupes?
 	const string ENTRIESLIST_FNAME = "Entries.dat";
 
-	const string ENTRIESDATA_DIR_PATH = DIR_PATH + "Entries-Data/";
-	const string ENTRIESDATA_GAME_DIRNAME = "Game-Entries/";
+	inline static const string ENTRIESDATA_DIR_PATH = DIR_PATH + "Entries-Data/";
+	inline static const string ENTRIESDATA_GAME_DIRNAME = "Game-Entries/";
 
 	const uint8_t ENTRYSTORAGESIZE = EntryDataPath::BYTESIZE + EntryInfo_Short::BYTESIZE;
 
@@ -93,10 +93,12 @@ public:
 	EntryDataPath GenerateDataPath(ENTRYID _entryId);
 	EntryDataPath GetDataPath(ENTRYID _entryId);
 
-	string GetGameEntryData_ParentDirPath(EntryDataPath dataPath);
+	static string GetGameEntryData_ParentDirPath(const EntryDataPath dataPath);
 
-	string GetGameEntryData_DirPath(EntryDataPath dataPath);
-	string GetGameEntryData_DirPath(ENTRYID gameEntryId);
+	static string GetGameEntryData_DirPath(const EntryDataPath dataPath);
+	string GetGameEntryData_DirPath(const ENTRYID gameEntryId);
+
+	//TODO: get entry data path, automatically sorts out studio and game differences
 
 	string GetGameEntryData_FilePath(EntryDataPath dataPath, ENTRYID _entryId, string _entryName);
 	string GetGameEntryData_FilePath(EntryInfo_Short entrySum);
@@ -169,19 +171,22 @@ struct EntryFileHeader {
 class FileManager_EntryRelations {
 
 public:
-	FileManager_EntryRelations(const map<ENTRYID, EntryDataPath>& _dataPathsMap);
+	FileManager_EntryRelations(const map<ENTRYID, EntryDataPath>& _dataPathsMap, string (*getEntryDataPath)());
 
-	void Write_EntryRelationFile(ENTRYID entryId, EntryRelationsType relationType);
+	void Write_EntryRelationFile(ENTRYID entryId, EntryRelations entryRelations);
 	EntryRelations Read_EntryRelationFile(ENTRYID entryId, EntryRelationsType relationType);
-
 
 private:
 
-	map<ENTRYID, EntryDataPath>& mDataPathsMap;
+	const map<ENTRYID, EntryDataPath>& mDataPathsMap;
+
+	inline void EnsureRelationsSizeValid(vector<ENTRYID>& relations, EntryRelationsType relationsType);
 
 	inline string RelationsFilePath(string entryDirPath, ENTRYID entryId, EntryRelationsType type);
+	fstream& GetEntryRelationsFile(ENTRYID entryId, EntryRelationsType relationsType);
 
-	inline void WriteFileHeader(ofstream& file, const uint16_t& relationCount, const EntryRelationsType& type);
-	inline void ReadFileHeader(ifstream& file, uint16_t& relationCount, EntryRelationsType& type);
+	inline void WriteFileHeader(fstream& file, const uint16_t& relationCount, const EntryRelationsType& type);
+	inline void ReadFileHeader(fstream& file, uint16_t& relationCount, EntryRelationsType& type);
 
+	void WriteFileBody(fstream& file, const vector<ENTRYID>& relations);
 };

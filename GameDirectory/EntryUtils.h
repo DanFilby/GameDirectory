@@ -423,17 +423,17 @@ enum EntryRelationsType : uint16_t { Relation_toStudios = 0, Relation_toProducer
 //either store 64 ids, or use a header and variable amount of ids -> requires changes to reading entries
 struct EntryRelations {
 
-	EntryRelationsType entriesRelationType;
+	EntryRelationsType relationType;
 	vector<ENTRYID> relations;
 
-	EntryRelations(EntryRelationsType _relationType): entriesRelationType(_relationType), relations(){
+	EntryRelations(EntryRelationsType _relationType): relationType(_relationType), relations(){
 	}
 
 	EntryRelations(vector<ENTRYID> _relations, EntryRelationsType relationType)
-		:relations(_relations), entriesRelationType(relationType){
+		:relations(_relations), relationType(relationType){
 	}
 
-	EntryRelations(string entryDirPath, ENTRYID entryId, EntryRelationsType relationType):entriesRelationType(Relation_toStudios){
+	EntryRelations(string entryDirPath, ENTRYID entryId, EntryRelationsType relationType):relationType(Relation_toStudios){
 		
 		string filePath = RelationsFilePath(entryDirPath, entryId, relationType);
 		ifstream entryRelationsFile = ifstream(filePath, std::ios::binary);
@@ -441,7 +441,7 @@ struct EntryRelations {
 		if (!entryRelationsFile.good()) { return; }
 
 		uint16_t relationCount;
-		ReadHeader(entryRelationsFile, relationCount, entriesRelationType);
+		ReadHeader(entryRelationsFile, relationCount, relationType);
 
 		char* readBuffer = new char[sizeof(ENTRYID)];
 

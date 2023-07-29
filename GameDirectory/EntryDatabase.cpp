@@ -266,6 +266,8 @@ inline bool EntryDatabase::DataPathExsists(ENTRYID _entryId)
 
 EntryDataPath EntryDatabase::GenerateDataPath(ENTRYID _entryId)
 {
+	//TODO: differences for game and studio entries
+
 	if (DataPathExsists(_entryId)) { return mEntryDataPaths[_entryId]; }
 
 	uint16_t parentDirIndex = 1; uint8_t entryDirIndex = 0;
@@ -301,7 +303,7 @@ EntryDataPath EntryDatabase::GetDataPath(ENTRYID _entryId)
 	return mEntryDataPaths[_entryId];
 }
 
-string EntryDatabase::GetGameEntryData_ParentDirPath(EntryDataPath dataPath)
+string EntryDatabase::GetGameEntryData_ParentDirPath(const EntryDataPath dataPath)
 {
 	//ensure dir name's length is 5
 	string parentDir = std::to_string(dataPath.ParentDirIndex);
@@ -312,7 +314,7 @@ string EntryDatabase::GetGameEntryData_ParentDirPath(EntryDataPath dataPath)
 	return path;
 }
 
-string EntryDatabase::GetGameEntryData_DirPath(EntryDataPath dataPath)
+string EntryDatabase::GetGameEntryData_DirPath(const EntryDataPath dataPath)
 {
 	//ensure entry's name's length is 3
 	string entryDir = std::to_string(dataPath.EntryDirIndex);
@@ -445,3 +447,109 @@ void EntryDatabase::RemoveTempId(ENTRYID id)
 
 }
 
+FileManager_EntryRelations::FileManager_EntryRelations(const map<ENTRYID, EntryDataPath>& _dataPathsMap, string(*getEntryDataPath)())
+	:mDataPathsMap(_dataPathsMap)
+{
+}
+
+void FileManager_EntryRelations::Write_EntryRelationFile(ENTRYID entryId, EntryRelations entryRelations)
+{
+	vector<ENTRYID> relations = entryRelations.relations;
+	EnsureRelationsSizeValid(relations, entryRelations.relationType);
+	uint16_t relationCount = relations.size();
+
+	try {
+		fstream& entryRelationsFile = GetEntryRelationsFile(entryId, entryRelations.relationType);
+
+		WriteFileHeader(entryRelationsFile, relationCount, entryRelations.relationType);
+		WriteFileBody(entryRelationsFile, relations);
+
+		entryRelationsFile.close();
+	}
+	catch (int errCode) {
+		std::cout << "Error: " << errCode << " - Couldn't write entry relations file. Id: " << entryId << "\n";
+	}	
+}
+
+EntryRelations FileManager_EntryRelations::Read_EntryRelationFile(ENTRYID entryId, EntryRelationsType relationType)
+{
+	try {
+		EntryRelations entryRelations(relationType);
+
+		fstream& entryRelationsFile = GetEntryRelationsFile(entryId, relationType);
+
+		uint16_t relationCount;
+		ReadFileHeader(entryRelationsFile, relationCount, relationType);
+
+		char* readBuffer = new char[sizeof(ENTRYID)];
+
+		for (size_t i = 0; i < relationCount; i++)
+		{
+			entryRelationsFile.read(&readBuffer[0], sizeof(ENTRYID));
+			entryRelations.relations.push_back(ENTRYID(*readBuffer));
+		}
+
+		return entryRelations;
+	}
+	catch (int errCode) {
+		std::cout << "Error: " << errCode << " - Couldn't read entry relations file. Id: " << entryId << "\n";
+	}
+}
+
+
+inline void FileManager_EntryRelations::WriteFileHeader(fstream& file, const uint16_t& relationCount, const EntryRelationsType& type)
+{
+	//write 4-byte header -> (relation count) (relation type)
+	char* writeBuffer = new char[4];
+	memcpy(&writeBuffer[0], &relationCount, 2);
+	memcpy(&writeBuffer[2], &type, 2);
+	file.write(&writeBuffer[0], 4);
+	delete[](writeBuffer);
+}
+
+inline void FileManager_EntryRelations::ReadFileHeader(fstream& file, uint16_t& relationCount, EntryRelationsType& type)
+{
+	char* readBuffer = new char[4];
+	file.read(&readBuffer[0], 4);
+	memcpy(&relationCount, &readBuffer[0], 2);
+	memcpy(&type, &readBuffer[2], 2);
+	delete[](readBuffer);
+}
+
+void FileManager_EntryRelations::WriteFileBody(fstream& file, const vector<ENTRYID>& relations)
+{
+	char* writeBuffer = new char[sizeof(ENTRYID)];
+
+	for (const ENTRYID& relation : relations) {
+		std::memcpy(&writeBuffer[0], &relation, sizeof(ENTRYID));
+		file.write(&writeBuffer[0], sizeof(ENTRYID));
+	}
+
+	delete[](writeBuffer);
+}
+
+inline void FileManager_EntryRelations::EnsureRelationsSizeValid(vector<ENTRYID>& relations, EntryRelationsType relationsType)
+{
+	uint16_t maxCount = EntryRelations::MaxRelationsCount(relationsType);
+
+	if (relations.size() > maxCount) { relations.resize(maxCount); }
+}
+
+inline string FileManager_EntryRelations::RelationsFilePath(string entryDirPath, ENTRYID entryId, EntryRelationsType type)
+{
+	return entryDirPath + std::to_string(entryId) + "-" + EntryRelations::RelationTypeToString(type) + "-Relations.dat";
+}
+
+fstream& FileManager_EntryRelations::GetEntryRelationsFile(ENTRYID entryId, EntryRelationsType relationsType)
+{
+	if (mDataPathsMap.count(entryId) != 1) { throw 002; }
+	EntryDataPath entryDataPath = mDataPathsMap.at(entryId);
+
+	string entryDataDir = EntryDatabase::GetGameEntryData_DirPath(entryDataPath);
+	string filePath = RelationsFilePath(entryDataDir, entryId, relationsType);
+
+	fstream entryRelationsFile = fstream(filePath, std::ios::binary);
+	if (!entryRelationsFile.good()) { throw 002; }
+
+	return entryRelationsFile;
+}
