@@ -433,76 +433,12 @@ struct EntryRelations {
 		:relations(_relations), relationType(relationType){
 	}
 
-	EntryRelations(string entryDirPath, ENTRYID entryId, EntryRelationsType relationType):relationType(Relation_toStudios){
-		
-		string filePath = RelationsFilePath(entryDirPath, entryId, relationType);
-		ifstream entryRelationsFile = ifstream(filePath, std::ios::binary);
-
-		if (!entryRelationsFile.good()) { return; }
-
-		uint16_t relationCount;
-		ReadHeader(entryRelationsFile, relationCount, relationType);
-
-		char* readBuffer = new char[sizeof(ENTRYID)];
-
-		for (size_t i = 0; i < relationCount; i++)
-		{
-			entryRelationsFile.read(&readBuffer[0], sizeof(ENTRYID));
-			relations.push_back(ENTRYID(*readBuffer));
-		}
-	}
-
-	void WriteToFile(string entryDirPath, ENTRYID entryId, EntryRelationsType relationType) {
-
-		uint16_t maxCount = MaxRelationsCount(relationType);
-		if (relations.size() > maxCount) { relations.resize(maxCount); }
-		uint16_t relationCount = relations.size();
-
-		string filePath = RelationsFilePath(entryDirPath, entryId, relationType);
-		ofstream entryRelationsFile = ofstream(filePath, std::ios::binary | std::ios::out);
-		
-		if (!entryRelationsFile.good()) { throw 002; }
-
-		WriteHeader(entryRelationsFile, relationCount, relationType);
-		
-		char* writeBuffer = new char[sizeof(ENTRYID)];
-
-		for (const ENTRYID& relation : relations) {
-			std::memcpy(&writeBuffer[0], &relation, sizeof(ENTRYID));
-			entryRelationsFile.write(&writeBuffer[0], sizeof(ENTRYID));
-		}
-
-		delete[](writeBuffer);
-		entryRelationsFile.close();
-	}
-
-	inline void WriteHeader(ofstream& file, const uint16_t& relationCount, const EntryRelationsType& type) {
-		//write 4-byte header -> (relation count) (relation type)
-		char* writeBuffer = new char[4];
-		memcpy(&writeBuffer[0], &relationCount, 2);
-		memcpy(&writeBuffer[2], &type, 2);
-		file.write(&writeBuffer[0], 4);
-		delete[](writeBuffer);
-	}
-
-	inline void ReadHeader(ifstream& file, uint16_t& relationCount, EntryRelationsType& type) {
-		char* readBuffer = new char[4];
-		file.read(&readBuffer[0], 4);
-		memcpy(&relationCount, &readBuffer[0], 2);
-		memcpy(&type, &readBuffer[2], 2);
-		delete[](readBuffer);
-	}
-
 	void AddRelation(ENTRYID id) {
 		relations.push_back(id);
 
 		//remove duplicates
 		std::sort(relations.begin(), relations.end());
 		relations.erase(std::unique(relations.begin(), relations.end()), relations.end());
-	}
-
-	inline string RelationsFilePath(string entryDirPath, ENTRYID entryId, EntryRelationsType type) {
-		return entryDirPath + std::to_string(entryId) + "-" + RelationTypeToString(type) + "-Relations.dat";
 	}
 
 	static const uint16_t MaxRelationsCount(EntryRelationsType relationType) {
