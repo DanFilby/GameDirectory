@@ -120,9 +120,12 @@ void EntryDatabase::WriteGameEntryData(shared_ptr<GameEntry> _gameEntry, const E
 
 		entriesDataFile.write(&_gameEntry->GetBinaryData().get()[0], GameEntry::DATA_BYTESIZE);
 
-		std::cout << _gameEntry->Name() << " - Successfully added to the database\n";
+		std::cout << _gameEntry->Name() << " - Successfully added game entry data to the database\n";
 
+		mEntryRelationsFileManager.Write_EntryRelationFile(_gameEntry->Id(), _gameEntry->mStudios);
+		mEntryRelationsFileManager.Write_EntryRelationFile(_gameEntry->Id(), _gameEntry->mProducers);
 
+		std::cout << _gameEntry->Name() << " - Successfully added game entry relations to the database\n";
 	}
 	catch (int errCode) {
 		std::cout << "Error writing data to file\n";
@@ -549,7 +552,7 @@ fstream& FileManager_EntryRelations::GetEntryRelationsFile(ENTRYID entryId, Entr
 	string entryDataDir = mGetEntryDataPath(entryDataPath);
 	string filePath = RelationsFilePath(entryDataDir, entryId, relationsType);
 
-	fstream entryRelationsFile = fstream(filePath, std::ios::binary);
+	fstream entryRelationsFile = fstream(filePath, std::ios::binary | std::ios::in | std::ios::out);
 	if (!entryRelationsFile.good()) { throw 002; }
 
 	return entryRelationsFile;
