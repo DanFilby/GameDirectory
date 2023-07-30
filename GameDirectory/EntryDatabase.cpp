@@ -463,7 +463,7 @@ void FileManager_EntryRelations::Write_EntryRelationFile(ENTRYID entryId, EntryR
 	uint16_t relationCount = relations.size();
 
 	try {
-		fstream& entryRelationsFile = GetEntryRelationsFile(entryId, entryRelations.relationType);
+		fstream entryRelationsFile = GetEntryRelationsFile(entryId, entryRelations.relationType);
 
 		WriteFileHeader(entryRelationsFile, relationCount, entryRelations.relationType);
 		WriteFileBody(entryRelationsFile, relations);
@@ -480,7 +480,7 @@ EntryRelations FileManager_EntryRelations::Read_EntryRelationFile(ENTRYID entryI
 	try {
 		EntryRelations entryRelations(relationType);
 
-		fstream& entryRelationsFile = GetEntryRelationsFile(entryId, relationType);
+		fstream entryRelationsFile = GetEntryRelationsFile(entryId, relationType);
 
 		uint16_t relationCount;
 		ReadFileHeader(entryRelationsFile, relationCount, relationType);
@@ -544,7 +544,7 @@ inline string FileManager_EntryRelations::RelationsFilePath(string entryDirPath,
 	return entryDirPath + std::to_string(entryId) + "-" + EntryRelations::RelationTypeToString(type) + "-Relations.dat";
 }
 
-fstream& FileManager_EntryRelations::GetEntryRelationsFile(ENTRYID entryId, EntryRelationsType relationsType)
+fstream FileManager_EntryRelations::GetEntryRelationsFile(ENTRYID entryId, EntryRelationsType relationsType)
 {
 	if (mDataPathsMap.count(entryId) != 1) { throw 002; }
 	EntryDataPath entryDataPath = mDataPathsMap.at(entryId);
@@ -553,7 +553,13 @@ fstream& FileManager_EntryRelations::GetEntryRelationsFile(ENTRYID entryId, Entr
 	string filePath = RelationsFilePath(entryDataDir, entryId, relationsType);
 
 	fstream entryRelationsFile = fstream(filePath, std::ios::binary | std::ios::in | std::ios::out);
-	if (!entryRelationsFile.good()) { throw 002; }
+
+	if (!entryRelationsFile) { 
+		//file doesn't exsist, creating file
+		entryRelationsFile.open(filePath, std::ios::binary | std::ios::in | std::ios::out);
+	}
+
+	if (entryRelationsFile.bad()) { throw 002; }
 
 	return entryRelationsFile;
 }

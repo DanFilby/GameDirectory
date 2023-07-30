@@ -68,7 +68,7 @@ private:
 	inline void EnsureRelationsSizeValid(vector<ENTRYID>& relations, EntryRelationsType relationsType);
 
 	inline string RelationsFilePath(string entryDirPath, ENTRYID entryId, EntryRelationsType type);
-	fstream& GetEntryRelationsFile(ENTRYID entryId, EntryRelationsType relationsType);
+	fstream GetEntryRelationsFile(ENTRYID entryId, EntryRelationsType relationsType);
 
 	inline void WriteFileHeader(fstream& file, const uint16_t& relationCount, const EntryRelationsType& type);
 	inline void ReadFileHeader(fstream& file, uint16_t& relationCount, EntryRelationsType& type);
