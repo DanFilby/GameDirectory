@@ -94,6 +94,7 @@ void DataBase() {
      GameEntry ge2 = dataBase->GetGameEntry(gameEntry1->Id());
 
      ge2.PrintInfo();
+
 }
 
 void AppStart() {

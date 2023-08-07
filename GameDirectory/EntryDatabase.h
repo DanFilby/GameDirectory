@@ -95,6 +95,7 @@ public:
 	void UpdateEntriesFile();
 
 	bool ReadGameEntryData(const EntryInfo_Short& gameEntrySum, shared_ptr<char[]>& outBinData);
+	void ReadandAddGameEntryRelations(GameEntry& gameEntry);
 
 	void WriteGameEntryData(shared_ptr<GameEntry> _gameEntry, const EntryDataPath& _dataPath);
 

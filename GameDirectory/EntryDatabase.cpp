@@ -107,6 +107,17 @@ bool EntryDatabase::ReadGameEntryData(const EntryInfo_Short& gameEntrySum, share
 	}	
 }
 
+void EntryDatabase::ReadandAddGameEntryRelations(GameEntry& gameEntry)
+{
+	try {	
+		gameEntry.mStudios = mEntryRelationsFileManager.Read_EntryRelationFile(gameEntry.Id(), Relation_toStudios);
+		gameEntry.mProducers = mEntryRelationsFileManager.Read_EntryRelationFile(gameEntry.Id(), Relation_toProducers);
+	}
+	catch (int errCode) {
+		std::cout << "Error reading game entry relations\n";
+	}
+}
+
 void EntryDatabase::WriteGameEntryData(shared_ptr<GameEntry> _gameEntry, const EntryDataPath& _dataPath)
 {
 	SetupDir(GetGameEntryData_ParentDirPath(_dataPath));
@@ -354,9 +365,12 @@ GameEntry EntryDatabase::GetGameEntry(ENTRYID _id)
 	EntryInfo_Short entrySum = GetEntrySummary(_id);
 
 	shared_ptr<char[]> entryData;
-	if (ReadGameEntryData(entrySum, entryData)) {
+	if (ReadGameEntryData(entrySum, entryData)) {	
 
-		return GameEntry(entrySum, entryData, mGenreDatabase, mTagDatabase);
+		GameEntry gameEntry(entrySum, entryData, mGenreDatabase, mTagDatabase);
+		ReadandAddGameEntryRelations(gameEntry);
+
+		return gameEntry;
 	}
 	else { return GameEntry(); }
 }
