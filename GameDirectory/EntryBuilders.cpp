@@ -234,6 +234,18 @@ void GameEntryBuilder::SetRatings(GameRatings _ratings)
 	mCurrentGameEntry->mRatings = _ratings;
 }
 
+void GameEntryBuilder::SetDevStudio(EntryRelations _studios)
+{
+	if (_studios.relationType != Relation_toStudios) { return; }
+	mCurrentGameEntry->mStudios = _studios;
+}
+
+void GameEntryBuilder::SetDevProducers(EntryRelations _producers)
+{
+	if (_producers.relationType != Relation_toProducers) { return; }
+	mCurrentGameEntry->mProducers = _producers;
+}
+
 void GameEntryBuilder::AddGenre(string _genre, bool addToDatabase)
 {
 	shared_ptr<GenreListDataBase> genreDatabase = mDatabases->GetGenreDatabase();

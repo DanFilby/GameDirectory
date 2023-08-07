@@ -59,8 +59,13 @@ public:
 
 	void SetRatings(GameRatings _ratings);
 
+	void SetDevStudio(EntryRelations _studios);
+	void SetDevProducers(EntryRelations _producers);
+
 	void AddGenre(string _genre, bool addToDatabase = false);
 	void AddTag(string _tag, bool addToDatabase = false);
+	void AddDevStudio(ENTRYID _studioId);
+	void AddDevProducer(ENTRYID _producerId);
 
 private:
 	bool RequiredFieldsCheck();
