@@ -17,6 +17,60 @@ using std::cout;
 
 shared_ptr<DatabaseMaster> appDbManager;
 
+void TestTempGameEntryReadWrite(shared_ptr<EntryDatabase>dataBase, shared_ptr<TagListDataBase> tagDB, shared_ptr<GenreListDataBase> gdatabase) {
+    GameGenres genres(gdatabase);
+    genres.AddGenre(gdatabase->GetKey("Strategy"));
+
+    GameTags tags(tagDB);
+    tags.AddTag(tagDB->GetKey("Favourites"));
+
+    GameRatings ratings(8.0f, 9.0f, 5.5f, 3.1f);
+
+
+    GameEntryBuilder gameBuilder(appDbManager);
+
+    gameBuilder.SetNameYear("Dan's Test Game 63", 2023);
+    gameBuilder.SetShortDescription("Action adventure rpg as a penguin");
+    gameBuilder.SetFullDescription("Explore a quaint iceberg village, full of interesting villagers. whilst building their small town and completing their quests. ");
+    gameBuilder.SetRatings(ratings);
+    gameBuilder.SetTags(tags);
+    gameBuilder.SetGenres(genres);
+
+    gameBuilder.AddTag("Dan's-Game", true);
+
+    EntryRelations rel1(vector<ENTRYID>{125, 250, 375}, Relation_toStudios);
+    EntryRelations rel2(vector<ENTRYID>{50, 100, 150}, Relation_toProducers);
+
+    gameBuilder.SetDevStudio(rel1);
+    gameBuilder.SetDevProducers(rel2);
+
+    shared_ptr<Entry> entry;
+    if (gameBuilder.BuildEntry(entry)) {
+        cout << "Successfully built entry:\n"
+            << "Id: " << entry.get()->Id() << "\n"
+            << "Name: " << entry.get()->Name() << "\n"
+            << "Type: " << entry.get()->Type() << "\n"
+            << "Year: " << entry.get()->Year() << "\n\n";
+    }
+
+    gameBuilder.SetValidId();
+    shared_ptr<GameEntry> gameEntry;
+
+    if (gameBuilder.BuildGameEntry(gameEntry)) {
+        gameEntry->PrintInfo();
+    }
+
+    dataBase->AddGameEntry(gameEntry);
+
+    GameEntry ge2 = dataBase->GetGameEntry(gameEntry->Id());
+
+    ge2.PrintInfo();
+
+    dataBase->RemoveGameEntry(gameEntry->Id());
+
+}
+
+
 void DataBase() {
      shared_ptr<EntryDatabase>dataBase = appDbManager->GetEntryDatabase();
      shared_ptr<GenreListDataBase> gdatabase = appDbManager->GetGenreDatabase();
@@ -29,77 +83,7 @@ void DataBase() {
      gdatabase->PrintGenreList();
      tagDB->PrintTagList();
 
-     GameGenres genres(gdatabase);
-     genres.AddGenre(gdatabase->GetKey("Strategy"));
-     genres.AddGenre(gdatabase->GetKey("Racing"));
-     genres.AddGenre(gdatabase->GetKey("Casual"));
-     unique_ptr<char[]> binGenre = genres.ToBinary();
-
-     GameGenres genresRe = GameGenres(gdatabase, binGenre.get());
-     genresRe.PrintGenres();
-
-     GameTags tags(tagDB);
-     tags.AddTag(tagDB->GetKey("Zombies"));
-     tags.AddTag(tagDB->GetKey("Favourites"));
-
-     unique_ptr<char[]> binTags = tags.ToBinary();
-
-     GameTags tagsRe = GameTags(tagDB, binTags.get());
-     tagsRe.PrintTags();
-
-     EntryBuilder entryBuilder( dataBase);
-
-     entryBuilder.SetNameYear("Fifa22", 2021);
-
-     shared_ptr<Entry> entry1;
-
-     if (entryBuilder.BuildAndSaveEntry(entry1)) {
-         cout << "Successfully built entry:\n"
-             << "Id: " << entry1.get()->Id() << "\n"
-             << "Name: " << entry1.get()->Name() << "\n"
-             << "Type: " << entry1.get()->Type() << "\n"
-             << "Year: " << entry1.get()->Year() << "\n\n";
-     }
-     GameRatings ratings(8.0f, 9.0f, 5.5f, 3.1f);
-
-     GameEntryBuilder gameBuilder(appDbManager);
-
-     gameBuilder.SetNameYear("Dan's Test Game 62", 2023);
-
-     gameBuilder.SetShortDescription("Action adventure rpg as a penguin");
-     gameBuilder.SetFullDescription("Explore a quaint iceberg village, full of interesting villagers. whilst building their small town and completing their quests. ");
-     gameBuilder.SetRatings(ratings);
-     gameBuilder.SetTags(tags);
-     gameBuilder.SetGenres(genres);
-
-     gameBuilder.AddTag("Dan's-Game", true);
-
-     EntryRelations rel1(vector<ENTRYID>{125, 250, 375}, Relation_toStudios);
-     EntryRelations rel2(vector<ENTRYID>{50, 100, 150}, Relation_toProducers);
-
-     gameBuilder.SetDevStudio(rel1);
-     gameBuilder.SetDevProducers(rel2);
-
-     if (gameBuilder.BuildEntry(entry1)) {
-         cout << "Successfully built entry:\n"
-             << "Id: " << entry1.get()->Id() << "\n"
-             << "Name: " << entry1.get()->Name() << "\n"
-             << "Type: " << entry1.get()->Type() << "\n"
-             << "Year: " << entry1.get()->Year() << "\n\n";
-     }
-
-     gameBuilder.SetValidId();
-     shared_ptr<GameEntry> gameEntry1;
-
-     if (gameBuilder.BuildGameEntry(gameEntry1)) {
-         gameEntry1->PrintInfo();
-     }
-
-     dataBase->AddGameEntry(gameEntry1);
-
-     GameEntry ge2 = dataBase->GetGameEntry(gameEntry1->Id());
-
-     ge2.PrintInfo();
+     TestTempGameEntryReadWrite(dataBase, tagDB, gdatabase);
 }
 
 void AppStart() {

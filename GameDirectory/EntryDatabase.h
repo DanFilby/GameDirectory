@@ -106,6 +106,7 @@ public:
 
 	void RemoveEntry(const Entry& _entry);
 	void RemoveEntry(ENTRYID _entryId);
+	void RemoveGameEntry(ENTRYID _id);
 
 	bool EntryExsists(ENTRYID _id);
 	bool IsValidEntry(Entry* _entry);
@@ -142,6 +143,7 @@ public:
 	void PrintEntriesPaths();
 
 private:
+	int GetEntryListIndex(ENTRYID _id);
 	bool IsDuplicateTempId(ENTRYID id);
 	void RemoveTempId(ENTRYID id);
 

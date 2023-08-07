@@ -170,23 +170,24 @@ void EntryDatabase::AddGameEntry(shared_ptr<GameEntry> _gameEntry)
 void EntryDatabase::RemoveEntry(const Entry& _entry)
 {
 	RemoveEntry(_entry.mId);
-	UpdateEntriesFile();
 }
 
 void EntryDatabase::RemoveEntry(ENTRYID entryId)
 {
-	int entryIndex = -1;
-	for (size_t i = 0; i < mActiveEntries.size(); i++)
-	{
-		if (mActiveEntries[i].mId == entryId) {
-			entryIndex = i;
-			break;
-		}
-	}
+	if (!EntryExsists(entryId)) { return; }
 
-	if (entryIndex != -1) {
-		mActiveEntries.erase(mActiveEntries.begin() + entryIndex);
-	}
+	mActiveEntries.erase(mActiveEntries.begin() + GetEntryListIndex(entryId));
+	mEntryDataPaths.erase(entryId);
+
+	UpdateEntriesFile();
+}
+
+void EntryDatabase::RemoveGameEntry(ENTRYID _id)
+{
+	if (!EntryExsists(_id) || GetEntrySummary(_id).type != ET_Game) { return; }
+	
+	std::filesystem::remove_all(GetGameEntryData_DirPath(_id));
+	RemoveEntry(_id);
 }
 
 bool EntryDatabase::EntryExsists(ENTRYID _id)
@@ -437,6 +438,19 @@ void EntryDatabase::PrintEntriesPaths()
 			<<" | DataPath: " << entryPathPair.second.EntryHasData << "  "
 			<< entryPathPair.second.ParentDirIndex << "  " << (int)entryPathPair.second.EntryDirIndex << "\n";
 	}
+}
+
+int EntryDatabase::GetEntryListIndex(ENTRYID _id)
+{
+	int entryIndex = -1;
+	for (size_t i = 0; i < mActiveEntries.size(); i++)
+	{
+		if (mActiveEntries[i].mId == _id) {
+			entryIndex = i;
+			break;
+		}
+	}
+	return entryIndex;
 }
 
 bool EntryDatabase::IsDuplicateTempId(ENTRYID id)
