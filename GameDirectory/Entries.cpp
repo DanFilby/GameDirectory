@@ -82,7 +82,8 @@ bool Entry::IsValid_Year(const uint16_t _year)
 #pragma region GameEntry
 
 GameEntry::GameEntry()
-	:mGenres(), mTags(), mRatings(),mFinances()
+	:mGenres(), mTags(), mRatings(), mFinances(),
+	mStudios(Relation_toStudios), mProducers(Relation_toProducers)
 {
 	mId = 0;
 	mType = ET_Game;
@@ -91,7 +92,7 @@ GameEntry::GameEntry()
 }
 
 GameEntry::GameEntry(ENTRYID _id, uint16_t _year, string _name)
-	:mGenres(), mTags(), mRatings(), mFinances()
+	:GameEntry()
 {
 	mId = _id;
 	mType = ET_Game;
@@ -100,7 +101,7 @@ GameEntry::GameEntry(ENTRYID _id, uint16_t _year, string _name)
 }
 
 GameEntry::GameEntry(EntryInfo_Short _summary, shared_ptr<char[]> binaryData, shared_ptr<GenreListDataBase> _genreDatabase,
-	shared_ptr<TagListDataBase> _tagDatabase):mFinances()
+	shared_ptr<TagListDataBase> _tagDatabase): mFinances()
 {
 	mName = _summary.name; mYear = _summary.year; mId = _summary.id;
 
@@ -178,6 +179,8 @@ void GameEntry::PrintInfo()
 	std::cout << "Tags: | " << mTags.GetTagsOneLine() << "\n";
 	std::cout << "Genres: | " << mGenres.GetGenresOneLine() << "\n\n";
 	std::cout << mFullDescription << "\n\n";
+	mStudios.PrintRelations();
+	mProducers.PrintRelations();
 	mRatings.PrintRatings(); std::cout << "\n";
 	mFinances.PrintFinances();
 	std::cout << "\n";

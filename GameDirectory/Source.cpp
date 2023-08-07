@@ -64,7 +64,7 @@ void DataBase() {
 
      GameEntryBuilder gameBuilder(appDbManager);
 
-     gameBuilder.SetNameYear("Dan's Test Game 54", 2023);
+     gameBuilder.SetNameYear("Dan's Test Game 62", 2023);
 
      gameBuilder.SetShortDescription("Action adventure rpg as a penguin");
      gameBuilder.SetFullDescription("Explore a quaint iceberg village, full of interesting villagers. whilst building their small town and completing their quests. ");
@@ -73,6 +73,12 @@ void DataBase() {
      gameBuilder.SetGenres(genres);
 
      gameBuilder.AddTag("Dan's-Game", true);
+
+     EntryRelations rel1(vector<ENTRYID>{125, 250, 375}, Relation_toStudios);
+     EntryRelations rel2(vector<ENTRYID>{50, 100, 150}, Relation_toProducers);
+
+     gameBuilder.SetDevStudio(rel1);
+     gameBuilder.SetDevProducers(rel2);
 
      if (gameBuilder.BuildEntry(entry1)) {
          cout << "Successfully built entry:\n"
@@ -94,7 +100,6 @@ void DataBase() {
      GameEntry ge2 = dataBase->GetGameEntry(gameEntry1->Id());
 
      ge2.PrintInfo();
-
 }
 
 void AppStart() {

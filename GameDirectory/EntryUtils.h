@@ -441,6 +441,14 @@ struct EntryRelations {
 		relations.erase(std::unique(relations.begin(), relations.end()), relations.end());
 	}
 
+	void PrintRelations() {
+		std::cout << RelationTypeToString(relationType) << " Relations: ";
+		for (const ENTRYID& entryRel : relations) {
+			std::cout << (int)entryRel << ", ";
+		}
+		std::cout << "\n\n";
+	}
+
 	static const uint16_t MaxRelationsCount(EntryRelationsType relationType) {
 		static const int maxRelations[] = { 16, 16, 256 };
 		return maxRelations[(int)relationType];

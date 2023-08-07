@@ -501,11 +501,11 @@ EntryRelations FileManager_EntryRelations::Read_EntryRelationFile(ENTRYID entryI
 		uint16_t relationCount;
 		ReadFileHeader(entryRelationsFile, relationCount, relationType);
 
-		char* readBuffer = new char[sizeof(ENTRYID)];
+		ENTRYID* readBuffer = new ENTRYID;
 
 		for (size_t i = 0; i < relationCount; i++)
 		{
-			entryRelationsFile.read(&readBuffer[0], sizeof(ENTRYID));
+			entryRelationsFile.read((char*)readBuffer, sizeof(ENTRYID));
 			entryRelations.relations.push_back(ENTRYID(*readBuffer));
 		}
 
