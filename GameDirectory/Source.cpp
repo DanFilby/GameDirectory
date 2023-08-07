@@ -64,7 +64,7 @@ void DataBase() {
 
      GameEntryBuilder gameBuilder(appDbManager);
 
-     gameBuilder.SetNameYear("Dan's Test Game 44", 2023);
+     gameBuilder.SetNameYear("Dan's Test Game 54", 2023);
 
      gameBuilder.SetShortDescription("Action adventure rpg as a penguin");
      gameBuilder.SetFullDescription("Explore a quaint iceberg village, full of interesting villagers. whilst building their small town and completing their quests. ");
@@ -94,19 +94,6 @@ void DataBase() {
      GameEntry ge2 = dataBase->GetGameEntry(gameEntry1->Id());
 
      ge2.PrintInfo();
-
-     /*EntryRelations ERelations(EntryRelations::toStudios);
-     ERelations.AddRelation(12);
-     ERelations.AddRelation(14);
-     ERelations.AddRelation(16);
-
-     string entryDataPath = dataBase->GetGameEntryData_DirPath(dataBase->GetEntryId(ET_Game, "Dan's Test Game 29", 2023));
-
-     ERelations.WriteToFile(entryDataPath, dataBase->GetEntryId(ET_Game, "Dan's Test Game 29", 2023), EntryRelations::toStudios);
-
-     EntryRelations ERelations2(entryDataPath, dataBase->GetEntryId(ET_Game, "Dan's Test Game 29", 2023), EntryRelations::toStudios);*/
-
-
 }
 
 void AppStart() {
