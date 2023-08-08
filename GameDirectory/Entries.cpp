@@ -49,6 +49,10 @@ EntryInfo_Short Entry::GetSummary() const
 	return info;
 }
 
+void Entry::PrintInfo()
+{
+}
+
 bool Entry::IsEntryDataValid()
 {
 	if (!IsValid_Name(mName)) {
@@ -135,7 +139,7 @@ GameEntry::~GameEntry()
 {
 }
 
-EntryInfo_Short GameEntry::GetSummary()
+EntryInfo_Short GameEntry::GetSummary() const
 {
 	//pass game's id, name and the game type into the struct
 	EntryInfo_Short info{ mId, ET_Game, mYear, mName };

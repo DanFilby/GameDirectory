@@ -136,6 +136,7 @@ public:
 	EntryInfo_Short GetEntrySummary(ENTRYID _id);
 	ENTRYID GetEntryId(EntryType _type, string _name, uint16_t _year);
 
+	EntryType GetEntryType(ENTRYID _id);
 	std::map<EntryType, uint16_t> GetEntryTypeCount();
 	int GetEntryCount();
 

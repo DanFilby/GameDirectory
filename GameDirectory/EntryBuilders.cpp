@@ -259,6 +259,13 @@ void GameEntryBuilder::AddGenre(string _genre, bool addToDatabase)
 	}
 }
 
+void GameEntryBuilder::AddGenres(vector<string> _genres, bool addToDatabase)
+{
+	for (string genre : _genres) {
+		AddGenre(genre, addToDatabase);
+	}
+}
+
 void GameEntryBuilder::AddTag(string _tag, bool addToDatabase)
 {
 	shared_ptr<TagListDataBase> tagDatabase = mDatabases->GetTagDatabase();
@@ -269,6 +276,31 @@ void GameEntryBuilder::AddTag(string _tag, bool addToDatabase)
 	else if (addToDatabase) {
 		tagDatabase->AddTag(_tag);
 		mCurrentGameEntry->mTags.AddTag(tagDatabase->GetKey(_tag));
+	}
+}
+
+void GameEntryBuilder::AddTags(vector<string> _tags, bool addToDatabase)
+{
+	for (string tag : _tags) {
+		AddTag(tag, addToDatabase);
+	}
+}
+
+void GameEntryBuilder::AddDevStudio(ENTRYID _studioId)
+{
+	if (mDatabases->GetEntryDatabase()->EntryExsists(_studioId) &&
+		mDatabases->GetEntryDatabase()->GetEntryType(_studioId) == ET_Studio) {
+
+		mCurrentGameEntry->mStudios.AddRelation(_studioId);
+	}
+}
+
+void GameEntryBuilder::AddDevProducer(ENTRYID _producerId)
+{
+	if (mDatabases->GetEntryDatabase()->EntryExsists(_producerId) &&
+		mDatabases->GetEntryDatabase()->GetEntryType(_producerId) == ET_Producer) {
+
+		mCurrentGameEntry->mProducers.AddRelation(_producerId);
 	}
 }
 
@@ -286,6 +318,11 @@ bool GameEntryBuilder::RequiredFieldsCheck()
 
 	if (mCurrentGameEntry->mGenres.GetGenres().size() == 0) {
 		std::cout << "Entry missing required field: " << "Genre\n";
+		return false;
+	}
+
+	if (mCurrentGameEntry->mStudios.relations.size() == 0) {
+		std::cout << "Entry missing required field: " << "Development Studio\n";		
 		return false;
 	}
 

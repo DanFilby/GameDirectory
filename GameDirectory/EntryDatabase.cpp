@@ -403,6 +403,11 @@ ENTRYID EntryDatabase::GetEntryId(EntryType _type, string _name, uint16_t _year)
 	return 0;
 }
 
+EntryType EntryDatabase::GetEntryType(ENTRYID _id)
+{
+	return GetEntrySummary(_id).type;
+}
+
 std::map<EntryType, uint16_t> EntryDatabase::GetEntryTypeCount()
 {
 	std::map<EntryType, uint16_t> entryTypeMap{ {ET_Base, 0},{ET_Game, 0}, {ET_Studio, 0 } };

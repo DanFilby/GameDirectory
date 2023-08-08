@@ -26,6 +26,8 @@ public:
 
 	virtual EntryInfo_Short GetSummary() const;
 
+	virtual void PrintInfo();
+
 	ENTRYID  Id() const { return mId; }
 	string Name() const { return mName; }
 	uint16_t Year() const { return mYear; }
@@ -61,10 +63,10 @@ public:
 	GameEntry(EntryInfo_Short _summary, shared_ptr<char[]> binaryData, shared_ptr<GenreListDataBase> _genreDatabase, shared_ptr<TagListDataBase> _tagDatabase);
 	~GameEntry();
 
-	shared_ptr<char[]> GetBinaryData();
+	shared_ptr<char[]> GetBinaryData() override;
 
-	EntryInfo_Short GetSummary();
-	void PrintInfo();
+	EntryInfo_Short GetSummary() const override;
+	void PrintInfo() override;
 
 	//getters and setters for descriptions as they're length restricted
 	string ShortDescription() const { return mShortDescription; }
@@ -103,26 +105,45 @@ public:
 	friend class GameEntryBuilder;
 };
 
-
 #pragma endregion
+
+#pragma region StudioEntry
 
 //Studio entry: an entry reperenting a video game studio 
 class StudioEntry : public Entry {
 
-private: const uint8_t BYTESIZE = 0;
-
 public:
 	StudioEntry();
-	StudioEntry(char* rawData);
+	StudioEntry(EntryInfo_Short _summary, shared_ptr<char[]> binaryData);
 
 	~StudioEntry();
 
-	 EntryType Type() const { return ET_Studio; };
+	shared_ptr<char[]> GetBinaryData() override;
 
-	EntryInfo_Short GetSummary();
-	unique_ptr<char[]> GetRawData_Short();
+	EntryInfo_Short GetSummary() const override;
+	void PrintInfo() override;
 
+	EntryType Type() const { return ET_Studio; };
+	
+private:
+	virtual bool IsEntryDataValid();
+
+public:
+	EntryRelations mGamesDeveloped{ Relation_toGames };
+
+	string mDescription;
+
+
+public:
+	static const uint16_t DESCRIPTION_MAXLEN = 512;
+	static const uint16_t DATA_BYTESIZE = 0;
 };
+
+
+#pragma endregion
+
+
+
 
 
 

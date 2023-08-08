@@ -63,7 +63,11 @@ public:
 	void SetDevProducers(EntryRelations _producers);
 
 	void AddGenre(string _genre, bool addToDatabase = false);
+	void AddGenres(vector<string> _genres, bool addToDatabase = false);
+
 	void AddTag(string _tag, bool addToDatabase = false);
+	void AddTags(vector<string> _tags, bool addToDatabase = false);
+
 	void AddDevStudio(ENTRYID _studioId);
 	void AddDevProducer(ENTRYID _producerId);
 
