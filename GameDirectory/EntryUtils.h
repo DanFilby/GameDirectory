@@ -143,7 +143,7 @@ struct SimpleDate {
 
 	string GetDateAsString() { 
 		std::stringstream ss;
-		ss << (int)month <<" / " << (int)year << "\n\n";
+		ss << (int)month <<" / " << (int)year;
 		return ss.str();
 	}
 
@@ -155,17 +155,42 @@ struct SimpleDate {
 
 	unique_ptr<char[]> ToBinary() {
 		unique_ptr<char[]> binaryData = unique_ptr<char[]>(new char[4]);
-		binaryData[0] = char(year); binaryData[2] = char(month);
+		memcpy(&binaryData[0], &year, sizeof(uint16_t));
+		memcpy(&binaryData[sizeof(uint16_t)], &month, sizeof(uint16_t));
 		return binaryData;
 	}
 };
 
 
 struct Person {
+	static const uint8_t BYTESIZE = 36;
+	static const uint8_t NAME_MAXLEN = 32;
+
 	string FullName;
+	SimpleDate DateBorn;
 
+	Person() :FullName(), DateBorn() {}
+	Person(string _FullName, SimpleDate _DateBorn) :DateBorn(_DateBorn), FullName(_FullName) {
+		FullName.resize(32);
+	}
+	Person(char* binData) :FullName(), DateBorn() {
+		char* strData = new char[NAME_MAXLEN];
+		memcpy(strData, &binData[0], NAME_MAXLEN);
+		FullName = string(strData);
 
+		DateBorn = SimpleDate(&binData[NAME_MAXLEN]);
+	}
 
+	void Print() {
+		std::cout << FullName << " - Born: " << DateBorn.GetDateAsString() << " - Age: " << DateBorn.GetAge() << "\n\n";
+	}
+
+	unique_ptr<char[]> ToBinary() {
+		unique_ptr<char[]> binaryData = unique_ptr<char[]>(new char[36]);
+		memcpy(&binaryData[0], &FullName[0], NAME_MAXLEN);
+		memcpy(&binaryData[NAME_MAXLEN], &DateBorn.ToBinary()[0], SimpleDate::BYTESIZE);
+		return binaryData;
+	}
 
 };
 

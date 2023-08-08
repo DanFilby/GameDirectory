@@ -112,7 +112,18 @@ int main()
     //ratings2.DisplayAllRatings();
 
     SimpleDate danBday(2002, 1);
-    std::cout << "Age: " << danBday.GetAge() << " Date: " << danBday.GetDateAsString();
+    std::cout << "Age: " << danBday.GetAge() << " Date: " << danBday.GetDateAsString() << "\n\n";
+
+    SimpleDate danBday2(&danBday.ToBinary()[0]);
+    std::cout << "Age: " << danBday2.GetAge() << " Date: " << danBday2.GetDateAsString() << "\n\n";
+
+    Person dan("Daniel Filbs", danBday);
+    dan.Print();
+
+    auto binDAt = dan.ToBinary();
+
+    Person Dan2(binDAt.get());
+    Dan2.Print();
 
     AppClose();
 }
