@@ -114,16 +114,18 @@ int main()
     SimpleDate danBday(2002, 1);
     std::cout << "Age: " << danBday.GetAge() << " Date: " << danBday.GetDateAsString() << "\n\n";
 
-    SimpleDate danBday2(&danBday.ToBinary()[0]);
-    std::cout << "Age: " << danBday2.GetAge() << " Date: " << danBday2.GetDateAsString() << "\n\n";
-
-    Person dan("Daniel Filbs", danBday);
+    Person dan("Daniel Filby", danBday);
     dan.Print();
 
-    auto binDAt = dan.ToBinary();
+    Person p1("Natela");
+    Person p2("Martin");
+    Person p3("Alex");
 
-    Person Dan2(binDAt.get());
-    Dan2.Print();
+    StudioExecutives execs(dan, vector<Person>{p1,p2,p3});
+    execs.PrintAllExecs();
+
+    StudioExecutives execs2 = StudioExecutives(execs.ToBinary().get());
+    execs2.PrintAllExecs();
 
     AppClose();
 }

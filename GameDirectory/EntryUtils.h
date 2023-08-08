@@ -170,6 +170,9 @@ struct Person {
 	SimpleDate DateBorn;
 
 	Person() :FullName(), DateBorn() {}
+	Person(string _FullName) :DateBorn(), FullName(_FullName) {
+		FullName.resize(32);
+	}
 	Person(string _FullName, SimpleDate _DateBorn) :DateBorn(_DateBorn), FullName(_FullName) {
 		FullName.resize(32);
 	}
@@ -535,8 +538,42 @@ struct GameFinances {
 #pragma region StuidoEntryUtils
 
 struct StudioExecutives {
+	static const uint8_t FOUNDERS_MAXCOUNT = 3;
+	static const uint8_t BYTESIZE = Person::BYTESIZE * 4;
 
+	Person CEO;
+	Person Founders[FOUNDERS_MAXCOUNT];
 
+	//TODO: add further executives/ directors
+
+	StudioExecutives() :CEO(), Founders() {}
+	StudioExecutives(Person _CEO) :CEO(_CEO), Founders() {}
+	StudioExecutives(Person _CEO, vector<Person> _Founders) :CEO(_CEO){
+		_Founders.resize(FOUNDERS_MAXCOUNT);
+
+		int count = 0;
+		for (Person founder : _Founders) { Founders[count++] = founder; }
+	}
+	StudioExecutives(char* binData){
+		CEO = Person(binData);
+		for (size_t i = 0; i < FOUNDERS_MAXCOUNT; i++) { Founders[i] = Person(&binData[Person::BYTESIZE * (i + 1)]); }
+	}
+
+	void PrintAllExecs() {
+		std::cout << "CEO: " << CEO.FullName << "\n";
+		for(const Person& founder : Founders){ std::cout << "Founder: " << founder.FullName << "\n"; }
+		std::cout << "\n";
+	}
+	
+	unique_ptr<char[]> ToBinary() {
+		unique_ptr<char[]> binaryData = unique_ptr<char[]>(new char[BYTESIZE]);
+		memcpy(&binaryData[0], CEO.ToBinary().get(), Person::BYTESIZE);
+		for (size_t i = 0; i < FOUNDERS_MAXCOUNT; i++) {
+			memcpy(&binaryData[Person::BYTESIZE * (i + 1)], Founders[i].ToBinary().get(), Person::BYTESIZE);
+		}
+
+		return binaryData;
+	}
 };
 
 
