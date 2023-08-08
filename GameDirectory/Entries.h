@@ -125,18 +125,27 @@ public:
 
 	EntryType Type() const { return ET_Studio; };
 	
+	string GetDescription() { return mDescription; }
+	void SetDescription(string _stuioDesctription);
+
 private:
 	virtual bool IsEntryDataValid();
 
 public:
 	EntryRelations mGamesDeveloped{ Relation_toGames };
 
-	string mDescription;
+	StudioExecutives mExecutives;
 
+	//finances
+
+	uint16_t mGamesReleased{0};
+
+private:
+	string mDescription;
 
 public:
 	static const uint16_t DESCRIPTION_MAXLEN = 512;
-	static const uint16_t DATA_BYTESIZE = 0;
+	static const uint16_t DATA_BYTESIZE = DESCRIPTION_MAXLEN + StudioExecutives::BYTESIZE;
 };
 
 

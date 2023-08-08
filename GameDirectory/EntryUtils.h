@@ -539,7 +539,7 @@ struct GameFinances {
 
 struct StudioExecutives {
 	static const uint8_t FOUNDERS_MAXCOUNT = 3;
-	static const uint8_t BYTESIZE = Person::BYTESIZE * 4;
+	static const uint8_t BYTESIZE = Person::BYTESIZE * (1 + FOUNDERS_MAXCOUNT);
 
 	Person CEO;
 	Person Founders[FOUNDERS_MAXCOUNT];

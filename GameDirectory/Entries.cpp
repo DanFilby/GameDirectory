@@ -178,7 +178,7 @@ shared_ptr<char[]> GameEntry::GetBinaryData()
 void GameEntry::PrintInfo()
 {
 	std::cout << "\nGame entry: " << mName << "\n";
-	std::cout << " Id: " << mId << " Year: " << mYear << "\n";
+	std::cout << " Id: " << mId << " Year Released: " << mYear << "\n";
 	std::cout << "- " << mShortDescription << " -\n\n";
 	std::cout << "Tags: | " << mTags.GetTagsOneLine() << "\n";
 	std::cout << "Genres: | " << mGenres.GetGenresOneLine() << "\n\n";
@@ -219,5 +219,70 @@ bool GameEntry::IsEntryDataValid()
 
 #pragma endregion
 
+StudioEntry::StudioEntry():mGamesDeveloped(Relation_toGames), mExecutives()
+{
+	mDescription.reserve(DESCRIPTION_MAXLEN);
+}
 
+StudioEntry::StudioEntry(EntryInfo_Short _summary, shared_ptr<char[]> binaryData)
+{
+}
 
+StudioEntry::~StudioEntry()
+{
+}
+
+shared_ptr<char[]> StudioEntry::GetBinaryData()
+{
+	if (!IsEntryDataValid()) { std::cout << "Entry data invalid\n"; throw 01; }
+
+	shared_ptr<char[]> data = shared_ptr<char[]>(new char[DATA_BYTESIZE]);
+	uint16_t dataIndex = 0;
+
+	memcpy(&data[dataIndex], &mDescription[0], mDescription.length());
+	dataIndex += DESCRIPTION_MAXLEN;
+
+	memcpy(&data[dataIndex], &mGamesDeveloped, sizeof(uint16_t));
+	dataIndex += sizeof(uint16_t);
+
+	memcpy(&data[dataIndex], mExecutives.ToBinary().get(), StudioExecutives::BYTESIZE);
+	dataIndex += StudioExecutives::BYTESIZE;
+
+	return data;
+}
+
+EntryInfo_Short StudioEntry::GetSummary() const
+{
+	return EntryInfo_Short{ mId, ET_Studio, mYear, mName };
+}
+
+void StudioEntry::PrintInfo()
+{
+	std::cout << "\nGame entry: " << mName << "\n";
+	std::cout << " Id: " << mId << " Year Founded: " << mYear << "\n\n";
+	std::cout << "- " << mDescription << " -\n\n";
+	mExecutives.PrintAllExecs();
+	mGamesDeveloped.PrintRelations();
+	std::cout << "\n";
+}
+
+void StudioEntry::SetDescription(string _stuioDesctription)
+{
+	mDescription = _stuioDesctription;
+	mDescription.resize(DESCRIPTION_MAXLEN);
+}
+
+bool StudioEntry::IsEntryDataValid()
+{
+	if (!Entry::IsEntryDataValid()) { return false; }
+
+	if (mDescription.length() != DESCRIPTION_MAXLEN) {
+		std::cout << "Entry field invalid: description\n"; return false;
+	}
+
+	if (mExecutives.CEO.FullName.empty() || mExecutives.Founders[0].FullName.empty()) {
+		std::cout << "Entry field invalid: executives\n"; return false;
+	}
+
+	return true;
+}
