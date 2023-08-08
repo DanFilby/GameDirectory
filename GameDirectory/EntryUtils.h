@@ -7,7 +7,7 @@
 #include "Database.h"
 
 
-enum EntryType : uint16_t { ET_Base = 0, ET_Game = 1, ET_Studio = 2 };
+enum EntryType : uint16_t { ET_Base = 0, ET_Game = 1, ET_Studio = 2, ET_Producer = 3 };
 using ENTRYID = uint16_t;
 
 //Contains summurised info for each entry, limited to 32 bytes
@@ -84,6 +84,87 @@ struct EntryInfo_Short {
 
 };
 
+enum EntryRelationsType : uint16_t { Relation_toStudios = 0, Relation_toProducers = 1, Relation_toGames = 2 };
+
+//wrapper for a list of entry ids
+//either store 64 ids, or use a header and variable amount of ids -> requires changes to reading entries
+struct EntryRelations {
+
+	EntryRelationsType relationType;
+	vector<ENTRYID> relations;
+
+	EntryRelations(EntryRelationsType _relationType) : relationType(_relationType), relations() {
+	}
+
+	EntryRelations(vector<ENTRYID> _relations, EntryRelationsType relationType)
+		:relations(_relations), relationType(relationType) {
+	}
+
+	void AddRelation(ENTRYID id) {
+		relations.push_back(id);
+
+		//remove duplicates
+		std::sort(relations.begin(), relations.end());
+		relations.erase(std::unique(relations.begin(), relations.end()), relations.end());
+	}
+
+	void PrintRelations() {
+		std::cout << RelationTypeToString(relationType) << " Relations: ";
+		for (const ENTRYID& entryRel : relations) {
+			std::cout << (int)entryRel << ", ";
+		}
+		std::cout << "\n\n";
+	}
+
+	static const uint16_t MaxRelationsCount(EntryRelationsType relationType) {
+		static const int maxRelations[] = { 16, 16, 256 };
+		return maxRelations[(int)relationType];
+	}
+
+	static const string RelationTypeToString(EntryRelationsType relationType) {
+		static const string relationNames[] = { "Studios", "Producers", "Games" };
+		return relationNames[(int)relationType];
+	}
+};
+
+struct SimpleDate {
+	uint16_t year;
+	uint16_t month;
+
+	SimpleDate() :year(0), month(0) {}
+	SimpleDate(uint16_t _year):year(_year), month(0){}
+	SimpleDate(uint16_t _year, uint16_t _month) :year(_year), month(_month) {}
+	SimpleDate(char* binData) :year(0), month(0) {
+		memcpy(&year, &binData[0], sizeof(uint16_t));
+		memcpy(&month, &binData[sizeof(uint16_t)], sizeof(uint16_t));
+	}
+
+	string GetDateAsString() { 
+		std::stringstream ss;
+		ss << (int)month <<" / " << (int)year << "\n\n";
+		return ss.str();
+	}
+	int GetAge() { 
+		time_t timeNow = time(0); struct tm localTime;
+		localtime_s(&localTime ,&timeNow);
+		return (1900 + localTime.tm_year) - year + ((localTime.tm_mon + 1 < month) ? -1 : 0);
+	}
+
+
+};
+
+
+struct Person {
+	string FullName;
+
+
+
+
+};
+
+
+#pragma region GameEntryUtils
+
 //set of ratings for games, each rating is an 8 bit uint, with range of 0-20 to get 0-10 stars with halfs eg 7.5/10
 struct GameRatings {
 	static const uint8_t BYTESIZE = 4;
@@ -105,7 +186,7 @@ struct GameRatings {
 	}
 
 	GameRatings(char* binaryData)
-		:Overall(), Gameplay(), Narrative(), Replayability(){
+		:Overall(), Gameplay(), Narrative(), Replayability() {
 		memcpy(&Overall, &binaryData[0], sizeof(uint8_t));
 		memcpy(&Gameplay, &binaryData[1], sizeof(uint8_t));
 		memcpy(&Narrative, &binaryData[2], sizeof(uint8_t));
@@ -117,7 +198,7 @@ struct GameRatings {
 	}
 
 	void PrintRatings() const {
-		std::cout << "Overall rating: " << FloatRating(Overall)<< "/ 10  " << StarRating(Overall) << "\n";
+		std::cout << "Overall rating: " << FloatRating(Overall) << "/ 10  " << StarRating(Overall) << "\n";
 		std::cout << "Gameplay rating: " << FloatRating(Gameplay) << "/ 10  " << StarRating(Gameplay) << "\n";
 		std::cout << "Narrative rating: " << FloatRating(Narrative) << "/ 10  " << StarRating(Narrative) << "\n";
 		std::cout << "Replayability rating: " << FloatRating(Replayability) << "/ 10  " << StarRating(Replayability) << "\n";
@@ -145,8 +226,8 @@ struct GameRatings {
 
 	unique_ptr<char[]> ToBinary() {
 		unique_ptr<char[]> binaryData = unique_ptr<char[]>(new char[4]);
-		binaryData[0] = char(Overall);binaryData[1] = char(Gameplay);
-		binaryData[2] = char(Narrative);binaryData[3] = char(Replayability);
+		binaryData[0] = char(Overall); binaryData[1] = char(Gameplay);
+		binaryData[2] = char(Narrative); binaryData[3] = char(Replayability);
 
 		return binaryData;
 	}
@@ -181,7 +262,7 @@ struct GameGenres {
 		genreDatabase = _genreDatabase;
 		memcpy(&genreIds[0], binaryData, BYTESIZE);
 	}
-	
+
 	void AddGenre(uint8_t genreKey) {
 		if (!genreDatabase || !genreDatabase->GenreExsists(genreKey)) { std::cout << "Unable to add genre\n"; return; }
 
@@ -216,7 +297,7 @@ struct GameGenres {
 	}
 
 	void PrintGenres() {
-		if (!genreDatabase) { return ; }
+		if (!genreDatabase) { return; }
 
 		for (uint8_t genreKey : genreIds) {
 			if (genreKey == 0) { break; }
@@ -337,8 +418,8 @@ struct GameTags {
 
 struct GameFinances {
 	static const uint8_t BYTESIZE = sizeof(float) * 4;
-	
-	enum SalesFactor { Billions = 0, Millions = 1, HundredThousands = 2, Thousands = 3, none = 4};
+
+	enum SalesFactor { Billions = 0, Millions = 1, HundredThousands = 2, Thousands = 3, none = 4 };
 
 	float salesEU, salesNA, salesAsia, salesOther;
 	float salesTotal;
@@ -346,8 +427,8 @@ struct GameFinances {
 	GameFinances()
 		:salesEU(0), salesNA(0), salesAsia(0), salesOther(0), salesTotal(0) {}
 
-	GameFinances(float _salesEU, float _salesNA, float _salesAsia, float _salesOther) 
-		:salesEU(_salesEU), salesNA(_salesNA), salesAsia(_salesAsia), salesOther(_salesOther){
+	GameFinances(float _salesEU, float _salesNA, float _salesAsia, float _salesOther)
+		:salesEU(_salesEU), salesNA(_salesNA), salesAsia(_salesAsia), salesOther(_salesOther) {
 		salesTotal = salesEU + salesNA + salesAsia + salesOther;
 	}
 
@@ -380,7 +461,7 @@ struct GameFinances {
 		std::cout << "Total Sales: " << SalesToString(salesTotal, salesFactor) << "\n\n";
 	}
 
-	inline string SalesToString(float sales, SalesFactor salesFactor) {	
+	inline string SalesToString(float sales, SalesFactor salesFactor) {
 		float salesFactorised = sales / FactorToNum(salesFactor);
 
 		std::stringstream salesString;
@@ -398,7 +479,7 @@ struct GameFinances {
 	}
 
 	const inline string FactorToString(SalesFactor salesFactor) {
-		static const string factorsNames[] = { "Billion", "Million", "Hundred Thousand", "Thousand", ""};
+		static const string factorsNames[] = { "Billion", "Million", "Hundred Thousand", "Thousand", "" };
 		return factorsNames[(int)salesFactor];
 	}
 
@@ -412,50 +493,20 @@ struct GameFinances {
 		memcpy(&binaryData[sizeof(float) * 0], &salesEU, sizeof(float));
 		memcpy(&binaryData[sizeof(float) * 1], &salesNA, sizeof(float));
 		memcpy(&binaryData[sizeof(float) * 2], &salesAsia, sizeof(float));
-		memcpy(&binaryData[sizeof(float) * 3],&salesOther, sizeof(float));
+		memcpy(&binaryData[sizeof(float) * 3], &salesOther, sizeof(float));
 		return binaryData;
 	}
 };
 
-enum EntryRelationsType : uint16_t { Relation_toStudios = 0, Relation_toProducers = 1, Relation_toGames = 2 };
+#pragma endregion
 
-//wrapper for a list of entry ids
-//either store 64 ids, or use a header and variable amount of ids -> requires changes to reading entries
-struct EntryRelations {
+#pragma region StuidoEntryUtils
 
-	EntryRelationsType relationType;
-	vector<ENTRYID> relations;
+struct StudioExecutives {
 
-	EntryRelations(EntryRelationsType _relationType): relationType(_relationType), relations(){
-	}
 
-	EntryRelations(vector<ENTRYID> _relations, EntryRelationsType relationType)
-		:relations(_relations), relationType(relationType){
-	}
-
-	void AddRelation(ENTRYID id) {
-		relations.push_back(id);
-
-		//remove duplicates
-		std::sort(relations.begin(), relations.end());
-		relations.erase(std::unique(relations.begin(), relations.end()), relations.end());
-	}
-
-	void PrintRelations() {
-		std::cout << RelationTypeToString(relationType) << " Relations: ";
-		for (const ENTRYID& entryRel : relations) {
-			std::cout << (int)entryRel << ", ";
-		}
-		std::cout << "\n\n";
-	}
-
-	static const uint16_t MaxRelationsCount(EntryRelationsType relationType) {
-		static const int maxRelations[] = { 16, 16, 256 };
-		return maxRelations[(int)relationType];
-	}
-
-	static const string RelationTypeToString(EntryRelationsType relationType) {
-		static const string relationNames[] = { "Studios", "Producers", "Games"};
-		return relationNames[(int)relationType];
-	}
 };
+
+
+#pragma endregion
+

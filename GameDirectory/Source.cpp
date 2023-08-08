@@ -111,5 +111,8 @@ int main()
 
     //ratings2.DisplayAllRatings();
 
+    SimpleDate danBday(2002, 01);
+    std::cout << "Age: " << danBday.GetAge() << " Date: " << danBday.GetDateAsString();
+
     AppClose();
 }
