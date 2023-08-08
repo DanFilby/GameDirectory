@@ -128,6 +128,8 @@ struct EntryRelations {
 };
 
 struct SimpleDate {
+	static const uint8_t BYTESIZE = 4;
+
 	uint16_t year;
 	uint16_t month;
 
@@ -144,13 +146,18 @@ struct SimpleDate {
 		ss << (int)month <<" / " << (int)year << "\n\n";
 		return ss.str();
 	}
+
 	int GetAge() { 
 		time_t timeNow = time(0); struct tm localTime;
 		localtime_s(&localTime ,&timeNow);
 		return (1900 + localTime.tm_year) - year + ((localTime.tm_mon + 1 < month) ? -1 : 0);
 	}
 
-
+	unique_ptr<char[]> ToBinary() {
+		unique_ptr<char[]> binaryData = unique_ptr<char[]>(new char[4]);
+		binaryData[0] = char(year); binaryData[2] = char(month);
+		return binaryData;
+	}
 };
 
 
