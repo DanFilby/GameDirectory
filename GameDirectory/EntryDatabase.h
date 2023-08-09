@@ -95,12 +95,14 @@ public:
 	void UpdateEntriesFile();
 
 	bool ReadGameEntryData(const EntryInfo_Short& gameEntrySum, shared_ptr<char[]>& outBinData);
-	void ReadandAddGameEntryRelations(GameEntry& gameEntry);
+	void ReadandAddRelations_GameEntry(GameEntry& gameEntry);
 
 	void WriteGameEntryData(shared_ptr<GameEntry> _gameEntry, const EntryDataPath& _dataPath);
 
+
 	void AddEntry(shared_ptr<Entry> _entry);
 	void AddGameEntry(shared_ptr<GameEntry> _gameEntry);
+	void AddStudioEntry(shared_ptr<StudioEntry> _studioEntry);
 
 	//Edit
 
@@ -131,6 +133,7 @@ public:
 	string GetGameEntryData_FilePath(EntryInfo_Short entrySum);
 
 	GameEntry GetGameEntry(ENTRYID _id);
+	StudioEntry GetStudioEntry(ENTRYID _id);
 
 	Entry GetEntry(ENTRYID _id);
 	EntryInfo_Short GetEntrySummary(ENTRYID _id);

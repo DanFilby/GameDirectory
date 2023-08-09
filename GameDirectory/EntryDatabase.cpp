@@ -107,7 +107,7 @@ bool EntryDatabase::ReadGameEntryData(const EntryInfo_Short& gameEntrySum, share
 	}	
 }
 
-void EntryDatabase::ReadandAddGameEntryRelations(GameEntry& gameEntry)
+void EntryDatabase::ReadandAddRelations_GameEntry(GameEntry& gameEntry)
 {
 	try {	
 		gameEntry.mStudios = mEntryRelationsFileManager.Read_EntryRelationFile(gameEntry.Id(), Relation_toStudios);
@@ -369,7 +369,7 @@ GameEntry EntryDatabase::GetGameEntry(ENTRYID _id)
 	if (ReadGameEntryData(entrySum, entryData)) {	
 
 		GameEntry gameEntry(entrySum, entryData, mGenreDatabase, mTagDatabase);
-		ReadandAddGameEntryRelations(gameEntry);
+		ReadandAddRelations_GameEntry(gameEntry);
 
 		return gameEntry;
 	}

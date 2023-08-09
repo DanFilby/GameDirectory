@@ -140,6 +140,8 @@ public:
 
 	//finances
 
+	//employees, count, num programers & leaders etc.
+
 	uint16_t mNumGamesReleased{0};
 
 private:
