@@ -1,3 +1,5 @@
+#include "Common.h"
+
 #include "Entries.h"
 
 #pragma region Entry

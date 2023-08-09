@@ -1,3 +1,5 @@
+#include "Common.h"
+
 #include "Database.h"
 #include <sstream>
 

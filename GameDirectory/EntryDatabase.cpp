@@ -1,5 +1,6 @@
-#include "EntryDatabase.h"
+#include "Common.h"
 
+#include "EntryDatabase.h"
 
 EntryDatabase::EntryDatabase(shared_ptr<GenreListDataBase> _genreDatabase, shared_ptr<TagListDataBase> _tagDatabase)
 	:mGenreDatabase(_genreDatabase), mTagDatabase(_tagDatabase), mEntryRelationsFileManager(mEntryDataPaths, GetGameEntryData_DirPath)

@@ -1,10 +1,9 @@
-#include <iostream>
-using std::cout;
-
 #include "Common.h"
 #include "EntryDatabase.h"
 #include "EntryBuilders.h"
 #include "DatabaseMaster.h"
+
+using std::cout;
 
 //TODO: studios
 //TODO: Storing game entries

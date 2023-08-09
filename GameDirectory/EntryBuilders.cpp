@@ -1,3 +1,5 @@
+#include "Common.h"
+
 #include "EntryBuilders.h"
 
 EntryBuilder::EntryBuilder(shared_ptr<EntryDatabase> _entryDatabase)

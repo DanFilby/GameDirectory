@@ -14,7 +14,6 @@ using std::filesystem::path;
 
 #include <Windows.h>
 #include<cassert>
-#include <iostream>
 
 #include "Common.h"
 

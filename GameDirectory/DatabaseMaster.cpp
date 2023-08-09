@@ -1,3 +1,5 @@
+#include "Common.h"
+
 #include "DatabaseMaster.h"
 
 void DatabaseMaster::AppInit()
