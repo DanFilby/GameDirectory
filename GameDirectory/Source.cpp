@@ -124,8 +124,19 @@ int main()
     StudioExecutives execs(dan, vector<Person>{p1,p2,p3});
     execs.PrintAllExecs();
 
-    StudioExecutives execs2 = StudioExecutives(execs.ToBinary().get());
-    execs2.PrintAllExecs();
+    EntryInfo_Short studioinfo(ET_Studio, 2023, "Shady Seals");
 
+    StudioEntry se= StudioEntry();
+
+    se.SetBaseInfo(studioinfo);
+    se.mExecutives = execs;
+    se.SetDescription("A small studio based in falmouth. consists of five elite members");
+
+    se.PrintInfo();
+
+    auto bindaaat = se.GetBinaryData();
+
+    StudioEntry se2(studioinfo, bindaaat);
+    se2.PrintInfo();
     AppClose();
 }

@@ -41,6 +41,12 @@ shared_ptr<char[]> Entry::GetBinaryData()
 	return GetSummary().ToBinary();
 }
 
+void Entry::SetBaseInfo(EntryInfo_Short info)
+{
+	mYear = info.year;
+	mName = info.name;
+}
+
 EntryInfo_Short Entry::GetSummary() const
 {
 	//pass game's id, name and the game type into the struct
@@ -86,13 +92,10 @@ bool Entry::IsValid_Year(const uint16_t _year)
 #pragma region GameEntry
 
 GameEntry::GameEntry()
-	:mGenres(), mTags(), mRatings(), mFinances(),
+	:Entry(), mGenres(), mTags(), mRatings(), mFinances(),
 	mStudios(Relation_toStudios), mProducers(Relation_toProducers)
 {
-	mId = 0;
 	mType = ET_Game;
-	mYear = 0;
-	mName = "";
 }
 
 GameEntry::GameEntry(ENTRYID _id, uint16_t _year, string _name)
@@ -178,7 +181,7 @@ shared_ptr<char[]> GameEntry::GetBinaryData()
 void GameEntry::PrintInfo()
 {
 	std::cout << "\nGame entry: " << mName << "\n";
-	std::cout << " Id: " << mId << " Year Released: " << mYear << "\n";
+	std::cout << "Id: " << mId << " - Year Released: " << mYear << "\n";
 	std::cout << "- " << mShortDescription << " -\n\n";
 	std::cout << "Tags: | " << mTags.GetTagsOneLine() << "\n";
 	std::cout << "Genres: | " << mGenres.GetGenresOneLine() << "\n\n";
@@ -219,13 +222,34 @@ bool GameEntry::IsEntryDataValid()
 
 #pragma endregion
 
-StudioEntry::StudioEntry():mGamesDeveloped(Relation_toGames), mExecutives()
+StudioEntry::StudioEntry():Entry(), mGamesDeveloped(Relation_toGames), mExecutives()
 {
+	mType = ET_Studio;
 	mDescription.reserve(DESCRIPTION_MAXLEN);
+}
+
+StudioEntry::StudioEntry(string _name, uint16_t _year, ENTRYID _id)
+	: StudioEntry()
+{
+	mName = _name;
+	mYear = _year;
+	mId = _id;
 }
 
 StudioEntry::StudioEntry(EntryInfo_Short _summary, shared_ptr<char[]> binaryData)
 {
+	mName = _summary.name; mYear = _summary.year; mId = _summary.id;
+
+	uint16_t dataIndex = 0;
+
+	mDescription.assign(&binaryData[dataIndex], &binaryData[dataIndex + DESCRIPTION_MAXLEN]);
+	dataIndex += DESCRIPTION_MAXLEN;
+
+	memcpy(&mNumGamesReleased, &binaryData[dataIndex], sizeof(uint16_t));
+	dataIndex += sizeof(uint16_t);
+
+	mExecutives = StudioExecutives(&binaryData[dataIndex]);
+	dataIndex += StudioExecutives::BYTESIZE;
 }
 
 StudioEntry::~StudioEntry()
@@ -242,7 +266,7 @@ shared_ptr<char[]> StudioEntry::GetBinaryData()
 	memcpy(&data[dataIndex], &mDescription[0], mDescription.length());
 	dataIndex += DESCRIPTION_MAXLEN;
 
-	memcpy(&data[dataIndex], &mGamesDeveloped, sizeof(uint16_t));
+	memcpy(&data[dataIndex], &mNumGamesReleased, sizeof(uint16_t));
 	dataIndex += sizeof(uint16_t);
 
 	memcpy(&data[dataIndex], mExecutives.ToBinary().get(), StudioExecutives::BYTESIZE);
@@ -258,9 +282,10 @@ EntryInfo_Short StudioEntry::GetSummary() const
 
 void StudioEntry::PrintInfo()
 {
-	std::cout << "\nGame entry: " << mName << "\n";
-	std::cout << " Id: " << mId << " Year Founded: " << mYear << "\n\n";
+	std::cout << "\nStudio entry: " << mName << "\n";
+	std::cout << "Id: " << mId << " - Year Founded: " << mYear << "\n\n";
 	std::cout << "- " << mDescription << " -\n\n";
+	std::cout << "Num of games released: " << mNumGamesReleased << "\n\n";
 	mExecutives.PrintAllExecs();
 	mGamesDeveloped.PrintRelations();
 	std::cout << "\n";

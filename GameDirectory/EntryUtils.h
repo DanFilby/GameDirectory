@@ -163,8 +163,8 @@ struct SimpleDate {
 
 
 struct Person {
-	static const uint8_t BYTESIZE = 36;
 	static const uint8_t NAME_MAXLEN = 32;
+	static const uint8_t BYTESIZE = NAME_MAXLEN + SimpleDate::BYTESIZE;
 
 	string FullName;
 	SimpleDate DateBorn;
@@ -189,7 +189,7 @@ struct Person {
 	}
 
 	unique_ptr<char[]> ToBinary() {
-		unique_ptr<char[]> binaryData = unique_ptr<char[]>(new char[36]);
+		unique_ptr<char[]> binaryData = unique_ptr<char[]>(new char[BYTESIZE]);
 		memcpy(&binaryData[0], &FullName[0], NAME_MAXLEN);
 		memcpy(&binaryData[NAME_MAXLEN], &DateBorn.ToBinary()[0], SimpleDate::BYTESIZE);
 		return binaryData;

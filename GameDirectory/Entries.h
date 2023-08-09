@@ -24,6 +24,7 @@ public:
 	shared_ptr<char[]> GetRawData_Short();
 	virtual shared_ptr<char[]> GetBinaryData();
 
+	virtual void SetBaseInfo(EntryInfo_Short info);
 	virtual EntryInfo_Short GetSummary() const;
 
 	virtual void PrintInfo();
@@ -114,6 +115,7 @@ class StudioEntry : public Entry {
 
 public:
 	StudioEntry();
+	StudioEntry(string _name, uint16_t _year, ENTRYID _id);
 	StudioEntry(EntryInfo_Short _summary, shared_ptr<char[]> binaryData);
 
 	~StudioEntry();
@@ -138,14 +140,14 @@ public:
 
 	//finances
 
-	uint16_t mGamesReleased{0};
+	uint16_t mNumGamesReleased{0};
 
 private:
 	string mDescription;
 
 public:
 	static const uint16_t DESCRIPTION_MAXLEN = 512;
-	static const uint16_t DATA_BYTESIZE = DESCRIPTION_MAXLEN + StudioExecutives::BYTESIZE;
+	static const uint16_t DATA_BYTESIZE = DESCRIPTION_MAXLEN + sizeof(mNumGamesReleased) + StudioExecutives::BYTESIZE;
 };
 
 
