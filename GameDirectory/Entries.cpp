@@ -33,11 +33,6 @@ bool Entry::operator==(const Entry& compareEntry) const
 	return false;
 }
 
-shared_ptr<char[]> Entry::GetRawData_Short()
-{
-	return GetSummary().ToBinary();
-}
-
 shared_ptr<char[]> Entry::GetBinaryData()
 {
 	return GetSummary().ToBinary();
@@ -150,6 +145,7 @@ EntryInfo_Short GameEntry::GetSummary() const
 	EntryInfo_Short info{ mId, ET_Game, mYear, mName };
 	return info;
 }
+
 
 shared_ptr<char[]> GameEntry::GetBinaryData()
 {

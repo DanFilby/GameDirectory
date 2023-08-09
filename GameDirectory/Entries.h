@@ -19,7 +19,6 @@ public:
 	/// </summary>
 	bool operator==(const Entry& compareEntry) const;
 
-	shared_ptr<char[]> GetRawData_Short();
 	virtual shared_ptr<char[]> GetBinaryData();
 
 	virtual void SetBaseInfo(EntryInfo_Short info);

@@ -55,20 +55,20 @@ struct EntryDataPath {
 class FileManager_EntryRelations {
 
 public:
-	FileManager_EntryRelations(const map<ENTRYID, EntryDataPath>& _dataPathsMap, string(*getEntryDataPath)(const EntryDataPath dataPath));
+	FileManager_EntryRelations(const map<ENTRYID, EntryDataPath>& _dataPathsMap, string(*getEntryDataPath)(const EntryDataPath dataPath, const EntryType entryType));
 
-	void Write_EntryRelationFile(ENTRYID entryId, EntryRelations entryRelations);
-	EntryRelations Read_EntryRelationFile(ENTRYID entryId, EntryRelationsType relationType);
+	void Write_EntryRelationFile(EntryInfo_Short entrySum, EntryRelations entryRelations);
+	EntryRelations Read_EntryRelationFile(EntryInfo_Short entrySum, EntryRelationsType relationType);
 
 private:
 
 	const map<ENTRYID, EntryDataPath>& mDataPathsMap;
-	string(*mGetEntryDataPath)(const EntryDataPath dataPath);
+	string(*mGetEntryDataPath)(const EntryDataPath dataPath, EntryType entryType);
 
 	inline void EnsureRelationsSizeValid(vector<ENTRYID>& relations, EntryRelationsType relationsType);
 
 	inline string RelationsFilePath(string entryDirPath, ENTRYID entryId, EntryRelationsType type);
-	void GetEntryRelationsFile(fstream& entryRelationsFile, ENTRYID entryId, EntryRelationsType relationsType);
+	void GetEntryRelationsFile(fstream& entryRelationsFile, EntryInfo_Short entrySum, EntryRelationsType relationsType);
 
 	inline void WriteFileHeader(fstream& file, const uint16_t& relationCount, const EntryRelationsType& type);
 	inline void ReadFileHeader(fstream& file, uint16_t& relationCount, EntryRelationsType& type);
@@ -83,6 +83,7 @@ class EntryDatabase : Database
 
 	inline static const string ENTRIESDATA_DIR_PATH = DIR_PATH + "Entries-Data/";
 	inline static const string ENTRIESDATA_GAME_DIRNAME = "Game-Entries/";
+	inline static const string ENTRIESDATA_STUDIO_DIRNAME = "Studio-Entries/";
 
 	const uint8_t ENTRYSTORAGESIZE = EntryDataPath::BYTESIZE + EntryInfo_Short::BYTESIZE;
 
@@ -94,13 +95,14 @@ public:
 	void LoadEntriesFile();
 	void UpdateEntriesFile();
 
-	bool ReadGameEntryData(const EntryInfo_Short& gameEntrySum, shared_ptr<char[]>& outBinData);
+	template<typename EntryT>
+	bool ReadEntryData(const EntryInfo_Short& entrySum, shared_ptr<char[]>& outBinData);
 
 	void ReadandAddRelations_GameEntry(GameEntry& gameEntry);
-	void ReadandAddRelations_StudioEntry(StudioEntry& gameEntry);
+	void ReadandAddRelations_StudioEntry(StudioEntry& studioEntry);
 
 	void WriteGameEntryData(shared_ptr<GameEntry> _gameEntry, const EntryDataPath& _dataPath);
-
+	void WriteStudioEntryData(shared_ptr<StudioEntry> _studioEntry, const EntryDataPath& _dataPath);
 
 	void AddEntry(shared_ptr<Entry> _entry);
 	void AddGameEntry(shared_ptr<GameEntry> _gameEntry);
@@ -124,15 +126,15 @@ public:
 	EntryDataPath GenerateDataPath(ENTRYID _entryId);
 	EntryDataPath GetDataPath(ENTRYID _entryId);
 
-	static string GetGameEntryData_ParentDirPath(const EntryDataPath dataPath);
+	static string GetParentDirFromType(const EntryType entryType);
 
-	static string GetGameEntryData_DirPath(const EntryDataPath dataPath);
-	string GetGameEntryData_DirPath(const ENTRYID gameEntryId);
+	static string GetEntryData_ParentDirPath(const EntryDataPath dataPath, const EntryType entryType);
 
-	//TODO: get entry data path, automatically sorts out studio and game differences
+	static string GetEntryData_DirPath(const EntryDataPath dataPath, const EntryType entryType);
+	string GetEntryData_DirPath(const ENTRYID entryId);
 
-	string GetGameEntryData_FilePath(EntryDataPath dataPath, ENTRYID _entryId, string _entryName);
-	string GetGameEntryData_FilePath(EntryInfo_Short entrySum);
+	string GetEntryData_FilePath(EntryDataPath dataPath, ENTRYID _entryId, string _entryName);
+	string GetEntryData_FilePath(EntryInfo_Short entrySum);
 
 	GameEntry GetGameEntry(ENTRYID _id);
 	StudioEntry GetStudioEntry(ENTRYID _id);
