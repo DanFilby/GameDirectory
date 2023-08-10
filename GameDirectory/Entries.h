@@ -19,7 +19,11 @@ public:
 	/// </summary>
 	bool operator==(const Entry& compareEntry) const;
 
+	virtual uint16_t GetDataByteSize();
 	virtual shared_ptr<char[]> GetBinaryData();
+
+	virtual vector<EntryRelations*> GetRelations();
+
 
 	virtual void SetBaseInfo(EntryInfo_Short info);
 	virtual EntryInfo_Short GetSummary() const;
@@ -61,7 +65,10 @@ public:
 	GameEntry(EntryInfo_Short _summary, shared_ptr<char[]> binaryData, shared_ptr<GenreListDataBase> _genreDatabase, shared_ptr<TagListDataBase> _tagDatabase);
 	~GameEntry();
 
+	uint16_t GetDataByteSize() override;
 	shared_ptr<char[]> GetBinaryData() override;
+
+	vector<EntryRelations*> GetRelations() override;
 
 	EntryInfo_Short GetSummary() const override;
 	void PrintInfo() override;
@@ -117,7 +124,10 @@ public:
 
 	~StudioEntry();
 
+	uint16_t GetDataByteSize() override;
 	shared_ptr<char[]> GetBinaryData() override;
+
+	vector<EntryRelations*> GetRelations() override;
 
 	EntryInfo_Short GetSummary() const override;
 	void PrintInfo() override;

@@ -28,7 +28,7 @@ void TestTempGameEntryReadWrite(shared_ptr<EntryDatabase>dataBase, shared_ptr<Ta
 
     GameEntryBuilder gameBuilder(appDbManager);
 
-    gameBuilder.SetNameYear("Dan's Test Game 63", 2023);
+    gameBuilder.SetNameYear("Dan's Test Game 68", 2023);
     gameBuilder.SetShortDescription("Action adventure rpg as a penguin");
     gameBuilder.SetFullDescription("Explore a quaint iceberg village, full of interesting villagers. whilst building their small town and completing their quests. ");
     gameBuilder.SetRatings(ratings);
@@ -82,7 +82,10 @@ void DataBase() {
      gdatabase->PrintGenreList();
      tagDB->PrintTagList();
 
-     TestTempGameEntryReadWrite(dataBase, tagDB, gdatabase);
+     for (size_t i = 0; i < 5; i++)
+     {
+         TestTempGameEntryReadWrite(dataBase, tagDB, gdatabase);
+     }
 }
 
 void AppStart() {

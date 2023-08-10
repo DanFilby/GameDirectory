@@ -107,6 +107,51 @@ bool EntryDatabase::ReadEntryData(const EntryInfo_Short& entrySum, shared_ptr<ch
 	}	
 }
 
+void EntryDatabase::WriteEntryData(shared_ptr<Entry> _Entry, const EntryDataPath& _dataPath)
+{
+	SetupDir(GetEntryData_ParentDirPath(_dataPath, _Entry->Type()));
+	SetupDir(GetEntryData_DirPath(_dataPath, _Entry->Type()));
+
+	try {
+		string filePath = GetEntryData_FilePath(_dataPath, _Entry->Id(), _Entry->Name());
+		ofstream entriesDataFile = std::ofstream(filePath, std::ios::out | std::ios::binary);
+
+		if (!entriesDataFile.good()) { std::cout << "Failed to write to entry data file: " << filePath << "\n"; throw; }
+
+		entriesDataFile.write(&_Entry->GetBinaryData().get()[0], _Entry->GetDataByteSize());
+
+		std::cout << _Entry->Name() << " - Successfully added game entry data to the database\n";
+
+		WriteRelations(_Entry);
+
+		std::cout << _Entry->Name() << " - Successfully added game entry relations to the database\n";
+	}
+	catch (int errCode) {
+		std::cout << "Error writing data to file\n";
+	}
+
+}
+
+void EntryDatabase::WriteRelations(shared_ptr<Entry> _Entry)
+{
+	for (auto relation : _Entry->GetRelations()) {
+		mEntryRelationsFileManager.Write_EntryRelationFile(_Entry->GetSummary(), *relation);
+	}
+}
+
+void EntryDatabase::ReadRelations(shared_ptr<Entry> _Entry)
+{
+	try {
+		for (EntryRelations* relation : _Entry->GetRelations()) {
+			EntryRelations readInRelation = mEntryRelationsFileManager.Read_EntryRelationFile(_Entry->GetSummary(), relation->relationType);
+			*relation = EntryRelations(readInRelation);
+		}
+	}
+	catch (int errCode) {
+		std::cout << "Error reading game entry relations\n";
+	}
+}
+
 void EntryDatabase::ReadandAddRelations_GameEntry(GameEntry& gameEntry)
 {
 	try {	
@@ -143,6 +188,10 @@ void EntryDatabase::WriteGameEntryData(shared_ptr<GameEntry> _gameEntry, const E
 	}
 }
 
+void EntryDatabase::WriteStudioEntryData(shared_ptr<StudioEntry> _studioEntry, const EntryDataPath& _dataPath)
+{
+}
+
 void EntryDatabase::AddEntry(shared_ptr<Entry> _entry)
 {
 	if (!IsValidEntry(_entry.get())) { std::cout << "Failed to add entry to database\n"; return; }
@@ -164,7 +213,7 @@ void EntryDatabase::AddGameEntry(shared_ptr<GameEntry> _gameEntry)
 
 	EntryDataPath dataPath =  GetDataPath(_gameEntry->mId);
 
-	WriteGameEntryData(_gameEntry, dataPath);
+	WriteEntryData(_entry, dataPath);
 }
 
 void EntryDatabase::AddStudioEntry(shared_ptr<StudioEntry> _studioEntry)
@@ -393,9 +442,15 @@ GameEntry EntryDatabase::GetGameEntry(ENTRYID _id)
 	if (ReadEntryData<GameEntry>(entrySum, entryData)) {	
 
 		GameEntry gameEntry(entrySum, entryData, mGenreDatabase, mTagDatabase);
-		ReadandAddRelations_GameEntry(gameEntry);
 
-		return gameEntry;
+		auto gePtr = make_shared<GameEntry>(gameEntry);
+		auto enPtr = dynamic_pointer_cast<Entry>(gePtr);
+		//ReadandAddRelations_GameEntry(gameEntry);
+		ReadRelations(enPtr);
+
+		//need to clean this, remove set relations, go back to refs or pointers and check again 
+
+		return *gePtr.get();
 	}
 	else { return GameEntry(); }
 }

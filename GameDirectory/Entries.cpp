@@ -33,9 +33,19 @@ bool Entry::operator==(const Entry& compareEntry) const
 	return false;
 }
 
+uint16_t Entry::GetDataByteSize()
+{
+	return 0;
+}
+
 shared_ptr<char[]> Entry::GetBinaryData()
 {
 	return GetSummary().ToBinary();
+}
+
+vector<EntryRelations*> Entry::GetRelations()
+{
+	return vector<EntryRelations*>();
 }
 
 void Entry::SetBaseInfo(EntryInfo_Short info)
@@ -147,6 +157,11 @@ EntryInfo_Short GameEntry::GetSummary() const
 }
 
 
+uint16_t GameEntry::GetDataByteSize()
+{
+	return DATA_BYTESIZE;
+}
+
 shared_ptr<char[]> GameEntry::GetBinaryData()
 {
 	if (!IsEntryDataValid()) { std::cout << "Entry data invalid\n"; throw 01; }
@@ -175,6 +190,13 @@ shared_ptr<char[]> GameEntry::GetBinaryData()
 	return data;
 }
 
+vector<EntryRelations*> GameEntry::GetRelations()
+{
+	vector<EntryRelations*> vec;
+	vec.push_back(&mStudios);
+	vec.push_back(&mProducers);
+	return vec;
+}
 
 void GameEntry::PrintInfo()
 {
@@ -254,6 +276,11 @@ StudioEntry::~StudioEntry()
 {
 }
 
+uint16_t StudioEntry::GetDataByteSize()
+{
+	return DATA_BYTESIZE;
+}
+
 shared_ptr<char[]> StudioEntry::GetBinaryData()
 {
 	if (!IsEntryDataValid()) { std::cout << "Entry data invalid\n"; throw 01; }
@@ -271,6 +298,13 @@ shared_ptr<char[]> StudioEntry::GetBinaryData()
 	dataIndex += StudioExecutives::BYTESIZE;
 
 	return data;
+}
+
+vector<EntryRelations*> StudioEntry::GetRelations()
+{
+	vector<EntryRelations*> vec;
+	vec.push_back( &mGamesDeveloped);
+	return vec;
 }
 
 EntryInfo_Short StudioEntry::GetSummary() const

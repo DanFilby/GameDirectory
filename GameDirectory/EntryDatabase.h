@@ -98,6 +98,11 @@ public:
 	template<typename EntryT>
 	bool ReadEntryData(const EntryInfo_Short& entrySum, shared_ptr<char[]>& outBinData);
 
+	void WriteEntryData(shared_ptr<Entry> _Entry, const EntryDataPath& _dataPath);
+
+	void WriteRelations(shared_ptr<Entry> _Entry);
+	void ReadRelations(shared_ptr<Entry> _Entry);
+
 	void ReadandAddRelations_GameEntry(GameEntry& gameEntry);
 	void ReadandAddRelations_StudioEntry(StudioEntry& studioEntry);
 
