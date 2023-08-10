@@ -154,7 +154,7 @@ struct SimpleDate {
 	}
 
 	unique_ptr<char[]> ToBinary() {
-		unique_ptr<char[]> binaryData = unique_ptr<char[]>(new char[4]);
+		unique_ptr<char[]> binaryData = unique_ptr<char[]>(new char[BYTESIZE]);
 		memcpy(&binaryData[0], &year, sizeof(uint16_t));
 		memcpy(&binaryData[sizeof(uint16_t)], &month, sizeof(uint16_t));
 		return binaryData;
