@@ -102,14 +102,12 @@ public:
 	void WriteRelations(shared_ptr<Entry> _Entry);
 
 	void AddEntry(shared_ptr<Entry> _entry);
-	void AddGameEntry(shared_ptr<GameEntry> _gameEntry);
-	void AddStudioEntry(shared_ptr<StudioEntry> _studioEntry);
+	template<class EntryTy> void AddEntry(shared_ptr<EntryTy> _entry) { AddEntry(dynamic_pointer_cast<Entry>(_entry)); }
 
-	//Edit
+	//TODO: add Edit
 
-	void RemoveEntry(const Entry& _entry);
 	void RemoveEntry(ENTRYID _entryId);
-	void RemoveGameEntry(ENTRYID _id);
+	template<typename EntryTy> void RemoveEntry(shared_ptr<EntryTy> _entry);
 
 	bool EntryExsists(ENTRYID _id);
 	bool IsValidEntry(Entry* _entry);
@@ -123,7 +121,7 @@ public:
 	EntryDataPath GenerateDataPath(ENTRYID _entryId);
 	EntryDataPath GetDataPath(ENTRYID _entryId);
 
-	static string GetParentDirFromType(const EntryType entryType);
+	static string GetParentDirNameFromType(const EntryType entryType);
 
 	static string GetEntryData_ParentDirPath(const EntryDataPath dataPath, const EntryType entryType);
 

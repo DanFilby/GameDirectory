@@ -116,7 +116,7 @@ void EntryDatabase::WriteEntryData(shared_ptr<Entry> _Entry, const EntryDataPath
 		string filePath = GetEntryData_FilePath(_dataPath, _Entry->Id(), _Entry->Name());
 		ofstream entriesDataFile = std::ofstream(filePath, std::ios::out | std::ios::binary);
 
-		if (!entriesDataFile.good()) { std::cout << "Failed to write to entry data file: " << filePath << "\n"; throw; }
+		if (!entriesDataFile.good() || _Entry->GetDataByteSize() <= 0) { std::cout << "Failed to write to entry data file: " << filePath << "\n"; throw; }
 
 		entriesDataFile.write(&_Entry->GetBinaryData().get()[0], _Entry->GetDataByteSize());
 
@@ -155,49 +155,29 @@ void EntryDatabase::ReadRelationsIntoEntry(shared_ptr<EntryTy> _Entry)
 	}
 }
 
-void EntryDatabase::AddEntry(shared_ptr<Entry> _entry)
+void EntryDatabase::AddEntry(shared_ptr<Entry> entry)
 {
-	if (!IsValidEntry(_entry.get())) { std::cout << "Failed to add entry to database\n"; return; }
+	if (!IsValidEntry(entry.get())) { std::cout << "Failed to add entry to database\n"; return; }
 
-	EntryDataPath dataPath = GetDataPath(_entry->mId);
+	EntryDataPath dataPath = GetDataPath(entry->mId);
 
-	mActiveEntries.push_back(Entry(*_entry));
-	mEntryDataPaths.emplace(_entry->mId, dataPath);
+	mActiveEntries.push_back(Entry(*entry));
+	mEntryDataPaths.emplace(entry->mId, dataPath);
 
-	RemoveTempId(_entry->mId);
+	RemoveTempId(entry->mId);
 	UpdateEntriesFile();
+
+	WriteEntryData(entry, dataPath);
 }
 
-void EntryDatabase::AddGameEntry(shared_ptr<GameEntry> _gameEntry)
-{
-	shared_ptr<Entry> _entry = dynamic_pointer_cast<Entry>(_gameEntry);
-	if (!IsValidEntry(_entry.get())) { std::cout << "Failed to add entry to database\n"; return; }
-	AddEntry(_entry);
-
-	EntryDataPath dataPath =  GetDataPath(_gameEntry->mId);
-
-	WriteEntryData(_entry, dataPath);
-}
-
-void EntryDatabase::AddStudioEntry(shared_ptr<StudioEntry> _studioEntry)
-{
-	shared_ptr<Entry> _entry = dynamic_pointer_cast<Entry>(_studioEntry);
-	if (!IsValidEntry(_entry.get())) { std::cout << "Failed to add entry to database\n"; return; }
-	AddEntry(_entry);
-
-	EntryDataPath dataPath = GetDataPath(_studioEntry->mId);
-
-	WriteEntryData(_studioEntry, dataPath);
-}
-
-void EntryDatabase::RemoveEntry(const Entry& _entry)
-{
-	RemoveEntry(_entry.mId);
-}
 
 void EntryDatabase::RemoveEntry(ENTRYID entryId)
 {
 	if (!EntryExsists(entryId)) { return; }
+
+	if (DataPathExsists(entryId)) {
+		std::filesystem::remove_all(GetEntryData_DirPath(entryId));
+	}
 
 	mActiveEntries.erase(mActiveEntries.begin() + GetEntryListIndex(entryId));
 	mEntryDataPaths.erase(entryId);
@@ -205,12 +185,11 @@ void EntryDatabase::RemoveEntry(ENTRYID entryId)
 	UpdateEntriesFile();
 }
 
-void EntryDatabase::RemoveGameEntry(ENTRYID _id)
+template<typename EntryTy>
+void EntryDatabase::RemoveEntry(shared_ptr<EntryTy> _entry)
 {
-	if (!EntryExsists(_id) || GetEntrySummary(_id).type != ET_Game) { return; }
-	
-	std::filesystem::remove_all(GetEntryData_DirPath(_id));
-	RemoveEntry(_id);
+	shared_ptr<Entry> entry = dynamic_pointer_cast<Entry>(_entry);
+	RemoveEntry(entry->Id());
 }
 
 bool EntryDatabase::EntryExsists(ENTRYID _id)
@@ -342,7 +321,7 @@ EntryDataPath EntryDatabase::GetDataPath(ENTRYID _entryId)
 	return mEntryDataPaths[_entryId];
 }
 
-string EntryDatabase::GetParentDirFromType(const EntryType entryType)
+string EntryDatabase::GetParentDirNameFromType(const EntryType entryType)
 {
 	switch (entryType)
 	{
@@ -362,7 +341,7 @@ string EntryDatabase::GetEntryData_ParentDirPath(const EntryDataPath dataPath, c
 	int extraZeros = 5 - parentDir.length();
 	for (size_t i = 0; i < extraZeros; i++) { parentDir = "0" + parentDir; }
 
-	string path = ENTRIESDATA_DIR_PATH + GetParentDirFromType(entryType) + parentDir + "/";
+	string path = ENTRIESDATA_DIR_PATH + GetParentDirNameFromType(entryType) + parentDir + "/";
 	return path;
 }
 

@@ -57,7 +57,7 @@ bool EntryBuilder::BuildAndSaveEntry(shared_ptr<Entry>& entry)
 	if (!databaseCheck) { std::cout << "Entry failed database checks\n"; return false; }
 
 	//add entry to database, and save to file
-	mEntryDatabase->AddEntry(entry);
+	mEntryDatabase->AddEntry<Entry>(entry);
 	mEntryDatabase->UpdateEntriesFile();
 
 	return true;
