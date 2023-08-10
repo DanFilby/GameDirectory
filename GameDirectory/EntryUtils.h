@@ -187,6 +187,10 @@ struct Person {
 		std::cout << FullName << " - Born: " << DateBorn.GetDateAsString() << " - Age: " << DateBorn.GetAge() << "\n\n";
 	}
 
+	bool IsEmpty() {
+		return (FullName.empty());
+	}
+
 	unique_ptr<char[]> ToBinary() {
 		unique_ptr<char[]> binaryData = unique_ptr<char[]>(new char[BYTESIZE]);
 		memcpy(&binaryData[0], &FullName[0], NAME_MAXLEN);

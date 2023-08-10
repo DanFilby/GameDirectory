@@ -169,7 +169,7 @@ bool GameEntryBuilder::BuildAndSaveGameEntry(shared_ptr<GameEntry>& gameEntry)
 
 	if (!databaseCheck) { std::cout << "Entry failed database checks\n"; return false; }
 
-	mEntryDatabase->AddEntry(gameEntry);
+	mEntryDatabase->AddEntry<GameEntry>(gameEntry);
 	mEntryDatabase->UpdateEntriesFile();
 
 	return true;
@@ -236,7 +236,7 @@ void GameEntryBuilder::SetRatings(GameRatings _ratings)
 	mCurrentGameEntry->mRatings = _ratings;
 }
 
-void GameEntryBuilder::SetDevStudio(EntryRelations _studios)
+void GameEntryBuilder::SetDevStudios(EntryRelations _studios)
 {
 	if (_studios.relationType != Relation_toStudios) { return; }
 	mCurrentGameEntry->mStudios = _studios;
@@ -308,25 +308,120 @@ void GameEntryBuilder::AddDevProducer(ENTRYID _producerId)
 
 bool GameEntryBuilder::RequiredFieldsCheck()
 {
+	bool EntryValid = true;
+
 	if (!EntryBuilder::RequiredFieldsCheck()) {
 		std::cout << "Base entry requirements check failed\n";
-		return false;
+		EntryValid &= false;
 	}
 
 	if (mCurrentGameEntry->mShortDescription.empty()) {
 		std::cout << "Entry missing required field: " << "Short description\n";
-		return false;
+		EntryValid &= false;
 	}
 
 	if (mCurrentGameEntry->mGenres.GetGenres().size() == 0) {
 		std::cout << "Entry missing required field: " << "Genre\n";
-		return false;
+		EntryValid &= false;
 	}
 
 	if (mCurrentGameEntry->mStudios.relations.size() == 0) {
-		std::cout << "Entry missing required field: " << "Development Studio\n";		
+		std::cout << "Entry missing required field: " << "Development Studio\n";
+		EntryValid &= false;
+	}
+
+	return EntryValid;
+}
+
+StudioEntryBuilder::StudioEntryBuilder(shared_ptr<DatabaseMaster> databases)
+	:EntryBuilder(databases->GetEntryDatabase()), mDatabases(databases)
+{
+	ClearBuild();
+}
+
+void StudioEntryBuilder::ClearBuild()
+{
+	if (mCurrentStudioEntry) { delete(mCurrentStudioEntry); }
+	mCurrentStudioEntry = new StudioEntry();
+	mCurrentEntry = (Entry*)mCurrentStudioEntry;
+
+	mCurrentStudioEntry->mId = 0;
+}
+
+bool StudioEntryBuilder::BuildStudioEntry(shared_ptr<StudioEntry>& studioEntry)
+{
+	if (!RequiredFieldsCheck()) {
+		std::cout << "Required entry are fields incomplete\n";
 		return false;
 	}
 
+	//create a copy of the temp entry and set out param
+	StudioEntry outputGameEntry = StudioEntry(*mCurrentStudioEntry);
+	studioEntry = make_shared<StudioEntry>(outputGameEntry);
+
 	return true;
 }
+
+bool StudioEntryBuilder::BuildAndSaveStudioEntry(shared_ptr<StudioEntry>& studioEntry)
+{
+	//build the entry normally, check if valid
+	if (BuildStudioEntry(studioEntry)) { return false; }
+
+	bool databaseCheck = mEntryDatabase->SetUniqueId(*studioEntry);
+
+	if (!databaseCheck) { std::cout << "Entry failed database checks\n"; return false; }
+
+	mEntryDatabase->AddEntry<StudioEntry>(studioEntry);
+	mEntryDatabase->UpdateEntriesFile();
+
+	return true;
+}
+
+void StudioEntryBuilder::SetDescription(string _description)
+{
+	if (_description.empty() || _description.size() > StudioEntry::DESCRIPTION_MAXLEN) { std::cout << "Invalid description\n"; return; }
+	mCurrentStudioEntry->SetDescription(_description);
+}
+
+void StudioEntryBuilder::SetNumGamesReleased(unsigned int _numGamesReleased)
+{
+	mCurrentStudioEntry->mNumGamesReleased = _numGamesReleased;
+}
+
+void StudioEntryBuilder::SetStudioExecutives(StudioExecutives _studioExecs)
+{
+	if (_studioExecs.CEO.IsEmpty() && _studioExecs.Founders[0].IsEmpty()) {
+		return;
+	}
+	mCurrentStudioEntry->mExecutives = _studioExecs;
+}
+
+void StudioEntryBuilder::SetDevelopedGamesRelations(EntryRelations _gamesDeveloped)
+{
+	if (_gamesDeveloped.relationType != Relation_toGames) { return; }
+	mCurrentStudioEntry->mGamesDeveloped = _gamesDeveloped;
+}
+
+bool StudioEntryBuilder::RequiredFieldsCheck()
+{
+	bool EntryValid = true;
+
+	if (!EntryBuilder::RequiredFieldsCheck()) {
+		std::cout << "Base entry requirements check failed\n";
+		EntryValid &= false;
+	}
+
+	if (mCurrentStudioEntry->mDescription.empty()) {
+		std::cout << "Entry missing required field: " << "description\n";
+		EntryValid &= false;
+	}
+
+	if (mCurrentStudioEntry->mExecutives.CEO.IsEmpty() && mCurrentStudioEntry->mExecutives.Founders[0].IsEmpty()) {
+		std::cout << "Entry missing required field: " << "key studio executives\n";
+		EntryValid &= false;
+	}
+
+	return EntryValid;
+}
+
+

@@ -40,7 +40,7 @@ class GameEntryBuilder : public EntryBuilder {
 public:
 	GameEntryBuilder(shared_ptr<DatabaseMaster> databases);
 
-	void ClearBuild();
+	void ClearBuild() override;
 
 	void EditGameEntry(GameEntry& _gameEntry);
 	void EditGameEntry(ENTRYID _gameEntryId);
@@ -59,7 +59,7 @@ public:
 
 	void SetRatings(GameRatings _ratings);
 
-	void SetDevStudio(EntryRelations _studios);
+	void SetDevStudios(EntryRelations _studios);
 	void SetDevProducers(EntryRelations _producers);
 
 	void AddGenre(string _genre, bool addToDatabase = false);
@@ -72,12 +72,38 @@ public:
 	void AddDevProducer(ENTRYID _producerId);
 
 private:
-	bool RequiredFieldsCheck();
+	bool RequiredFieldsCheck() override;
 
 	shared_ptr<DatabaseMaster> mDatabases;
 
 	GameEntry* mCurrentGameEntry;
 
+};
+
+class StudioEntryBuilder : public EntryBuilder {
+
+public:	
+	StudioEntryBuilder(shared_ptr<DatabaseMaster> databases);
+
+	void ClearBuild() override;
+
+	bool BuildStudioEntry(shared_ptr<StudioEntry>& studioEntry);
+	bool BuildAndSaveStudioEntry(shared_ptr<StudioEntry>& studioEntry);
+
+	void SetDescription(string _description);
+	void SetNumGamesReleased(unsigned int _numGamesReleased);
+
+	void SetStudioExecutives(StudioExecutives _studioExecs);
+
+	void SetDevelopedGamesRelations(EntryRelations _gamesDeveloped);
+
+
+private:
+	bool RequiredFieldsCheck() override;
+
+	shared_ptr<DatabaseMaster> mDatabases;
+
+	StudioEntry* mCurrentStudioEntry;
 };
 
 

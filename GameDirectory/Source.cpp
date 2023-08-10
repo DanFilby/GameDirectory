@@ -40,7 +40,7 @@ void TestTempGameEntryReadWrite(shared_ptr<EntryDatabase>dataBase, shared_ptr<Ta
     EntryRelations rel1(vector<ENTRYID>{125, 250, 375}, Relation_toStudios);
     EntryRelations rel2(vector<ENTRYID>{50, 100, 150}, Relation_toProducers);
 
-    gameBuilder.SetDevStudio(rel1);
+    gameBuilder.SetDevStudios(rel1);
     gameBuilder.SetDevProducers(rel2);
 
     shared_ptr<Entry> entry;
@@ -63,10 +63,12 @@ void TestTempGameEntryReadWrite(shared_ptr<EntryDatabase>dataBase, shared_ptr<Ta
 
     Entry_Editor<GameEntry> geEditor = dataBase->EditEntry<GameEntry>(gameEntry->Id());
 
-
-    //shared_ptr<GameEntry> ge2 = dataBase->GetGameEntry(gameEntry->Id());
-
+    geEditor.entry->SetShortDescription("Changed this desciption");
     geEditor.entry->PrintInfo();
+    geEditor.UpateEntry();
+
+    shared_ptr<GameEntry> ge2 = dataBase->GetGameEntry(gameEntry->Id());
+    ge2->PrintInfo();
 
     dataBase->RemoveEntry(gameEntry->Id());
 

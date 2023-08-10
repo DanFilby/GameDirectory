@@ -123,11 +123,14 @@ public:
 	template<class EntryTy> void AddEntry(shared_ptr<EntryTy> _entry) { AddEntry(dynamic_pointer_cast<Entry>(_entry)); }
 
 	void UpdateEntryData(shared_ptr<Entry> _entry);
-
 	bool GetEntryAndData(ENTRYID _entryId, shared_ptr<Entry>& outEntry);
-	template<class EntryTy> Entry_Editor<EntryTy> EditEntry(ENTRYID _entryId) {
+
+	template<class EntryTy>
+	Entry_Editor<EntryTy> EditEntry(ENTRYID _entryId) {
 		shared_ptr<Entry> entry;
-		if (GetEntryAndData(_entryId, entry)) { return Entry_Editor(dynamic_pointer_cast<EntryTy>(entry), this, &EntryDatabase::UpdateEntryData); }
+		if (GetEntryAndData(_entryId, entry)) {
+			return Entry_Editor(dynamic_pointer_cast<EntryTy>(entry), this, &EntryDatabase::UpdateEntryData);
+		}
 		else { return Entry_Editor<EntryTy>(); }
 	}
 

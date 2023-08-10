@@ -82,7 +82,7 @@ public:
 	EntryType Type() const { return ET_Game; };
 
 private:
-	bool IsEntryDataValid();
+	bool IsEntryDataValid() override;
 
 public:
 	GameGenres mGenres;
@@ -138,7 +138,7 @@ public:
 	void SetDescription(string _stuioDesctription);
 
 private:
-	virtual bool IsEntryDataValid();
+	bool IsEntryDataValid() override;
 
 public:
 	EntryRelations mGamesDeveloped{ Relation_toGames };
@@ -157,6 +157,8 @@ private:
 public:
 	static const uint16_t DESCRIPTION_MAXLEN = 512;
 	static const uint16_t DATA_BYTESIZE = DESCRIPTION_MAXLEN + sizeof(mNumGamesReleased) + StudioExecutives::BYTESIZE;
+
+	friend class StudioEntryBuilder;
 };
 
 
