@@ -10,4 +10,4 @@ Things learnt:
 - CSV files in C++
 - Unit testings
 - template functions
-- 
+- Composition vs Inheritance 
