@@ -61,9 +61,9 @@ void TestTempGameEntryReadWrite(shared_ptr<EntryDatabase>dataBase, shared_ptr<Ta
 
     dataBase->AddGameEntry(gameEntry);
 
-    GameEntry ge2 = dataBase->GetGameEntry(gameEntry->Id());
+    shared_ptr<GameEntry> ge2 = dataBase->GetGameEntry(gameEntry->Id());
 
-    ge2.PrintInfo();
+    ge2->PrintInfo();
 
     dataBase->RemoveGameEntry(gameEntry->Id());
 
@@ -82,10 +82,8 @@ void DataBase() {
      gdatabase->PrintGenreList();
      tagDB->PrintTagList();
 
-     for (size_t i = 0; i < 5; i++)
-     {
-         TestTempGameEntryReadWrite(dataBase, tagDB, gdatabase);
-     }
+     TestTempGameEntryReadWrite(dataBase, tagDB, gdatabase);         
+     
 }
 
 void AppStart() {

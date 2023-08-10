@@ -95,19 +95,11 @@ public:
 	void LoadEntriesFile();
 	void UpdateEntriesFile();
 
-	template<typename EntryT>
-	bool ReadEntryData(const EntryInfo_Short& entrySum, shared_ptr<char[]>& outBinData);
-
+	template<typename EntryTy> bool ReadEntryData(const EntryInfo_Short& entrySum, shared_ptr<char[]>& outBinData);
 	void WriteEntryData(shared_ptr<Entry> _Entry, const EntryDataPath& _dataPath);
 
+	template<typename EntryTy> void ReadRelationsIntoEntry(shared_ptr<EntryTy> _Entry); 
 	void WriteRelations(shared_ptr<Entry> _Entry);
-	void ReadRelations(shared_ptr<Entry> _Entry);
-
-	void ReadandAddRelations_GameEntry(GameEntry& gameEntry);
-	void ReadandAddRelations_StudioEntry(StudioEntry& studioEntry);
-
-	void WriteGameEntryData(shared_ptr<GameEntry> _gameEntry, const EntryDataPath& _dataPath);
-	void WriteStudioEntryData(shared_ptr<StudioEntry> _studioEntry, const EntryDataPath& _dataPath);
 
 	void AddEntry(shared_ptr<Entry> _entry);
 	void AddGameEntry(shared_ptr<GameEntry> _gameEntry);
@@ -141,7 +133,7 @@ public:
 	string GetEntryData_FilePath(EntryDataPath dataPath, ENTRYID _entryId, string _entryName);
 	string GetEntryData_FilePath(EntryInfo_Short entrySum);
 
-	GameEntry GetGameEntry(ENTRYID _id);
+	shared_ptr<GameEntry> GetGameEntry(ENTRYID _id);
 	StudioEntry GetStudioEntry(ENTRYID _id);
 
 	Entry GetEntry(ENTRYID _id);

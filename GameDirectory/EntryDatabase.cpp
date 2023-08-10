@@ -84,7 +84,7 @@ void EntryDatabase::UpdateEntriesFile()
 	delete[](entryBuffer);
 }
 
-template<typename EntryT>
+template<typename EntryTy>
 bool EntryDatabase::ReadEntryData(const EntryInfo_Short& entrySum, shared_ptr<char[]>& outBinData)
 {
 	try {
@@ -95,8 +95,8 @@ bool EntryDatabase::ReadEntryData(const EntryInfo_Short& entrySum, shared_ptr<ch
 
 		if (!entriesDataFile.good()) { std::cout << "Failed to read to entry data file: " << filePath << "\n"; throw 001; }
 
-		char* dataBuffer = new char[EntryT::DATA_BYTESIZE];
-		entriesDataFile.read(dataBuffer, EntryT::DATA_BYTESIZE);
+		char* dataBuffer = new char[EntryTy::DATA_BYTESIZE];
+		entriesDataFile.read(dataBuffer, EntryTy::DATA_BYTESIZE);
 
 		outBinData = shared_ptr<char[]>(dataBuffer);
 		return true;
@@ -139,57 +139,20 @@ void EntryDatabase::WriteRelations(shared_ptr<Entry> _Entry)
 	}
 }
 
-void EntryDatabase::ReadRelations(shared_ptr<Entry> _Entry)
+template<typename EntryTy>
+void EntryDatabase::ReadRelationsIntoEntry(shared_ptr<EntryTy> _Entry)
 {
 	try {
-		for (EntryRelations* relation : _Entry->GetRelations()) {
-			EntryRelations readInRelation = mEntryRelationsFileManager.Read_EntryRelationFile(_Entry->GetSummary(), relation->relationType);
+		shared_ptr<Entry> entry = dynamic_pointer_cast<Entry>(_Entry);
+
+		for (EntryRelations* relation : entry->GetRelations()) {
+			EntryRelations readInRelation = mEntryRelationsFileManager.Read_EntryRelationFile(entry->GetSummary(), relation->relationType);
 			*relation = EntryRelations(readInRelation);
 		}
 	}
 	catch (int errCode) {
 		std::cout << "Error reading game entry relations\n";
 	}
-}
-
-void EntryDatabase::ReadandAddRelations_GameEntry(GameEntry& gameEntry)
-{
-	try {	
-		gameEntry.mStudios = mEntryRelationsFileManager.Read_EntryRelationFile(gameEntry.GetSummary(), Relation_toStudios);
-		gameEntry.mProducers = mEntryRelationsFileManager.Read_EntryRelationFile(gameEntry.GetSummary(), Relation_toProducers);
-	}
-	catch (int errCode) {
-		std::cout << "Error reading game entry relations\n";
-	}
-}
-
-void EntryDatabase::WriteGameEntryData(shared_ptr<GameEntry> _gameEntry, const EntryDataPath& _dataPath)
-{
-	SetupDir(GetEntryData_ParentDirPath(_dataPath, ET_Game));
-	SetupDir(GetEntryData_DirPath(_dataPath, ET_Game));
-
-	try {
-		string filePath = GetEntryData_FilePath(_dataPath, _gameEntry->Id(), _gameEntry->Name());
-		ofstream entriesDataFile = std::ofstream(filePath, std::ios::out | std::ios::binary);
-
-		if (!entriesDataFile.good()) { std::cout << "Failed to write to entry data file: " << filePath << "\n"; throw; }
-
-		entriesDataFile.write(&_gameEntry->GetBinaryData().get()[0], GameEntry::DATA_BYTESIZE);
-
-		std::cout << _gameEntry->Name() << " - Successfully added game entry data to the database\n";
-
-		mEntryRelationsFileManager.Write_EntryRelationFile(_gameEntry->GetSummary(), _gameEntry->mStudios);
-		mEntryRelationsFileManager.Write_EntryRelationFile(_gameEntry->GetSummary(), _gameEntry->mProducers);
-
-		std::cout << _gameEntry->Name() << " - Successfully added game entry relations to the database\n";
-	}
-	catch (int errCode) {
-		std::cout << "Error writing data to file\n";
-	}
-}
-
-void EntryDatabase::WriteStudioEntryData(shared_ptr<StudioEntry> _studioEntry, const EntryDataPath& _dataPath)
-{
 }
 
 void EntryDatabase::AddEntry(shared_ptr<Entry> _entry)
@@ -224,7 +187,7 @@ void EntryDatabase::AddStudioEntry(shared_ptr<StudioEntry> _studioEntry)
 
 	EntryDataPath dataPath = GetDataPath(_studioEntry->mId);
 
-	WriteStudioEntryData(_studioEntry, dataPath);
+	WriteEntryData(_studioEntry, dataPath);
 }
 
 void EntryDatabase::RemoveEntry(const Entry& _entry)
@@ -347,7 +310,7 @@ EntryDataPath EntryDatabase::GenerateDataPath(ENTRYID _entryId)
 	if (DataPathExsists(_entryId)) { return mEntryDataPaths[_entryId]; }
 
 	uint16_t parentDirIndex = 1; uint8_t entryDirIndex = 0;
-	for (auto entryPathPair : mEntryDataPaths) {
+	for (const auto& entryPathPair : mEntryDataPaths) {
 
 		if (entryPathPair.second.ParentDirIndex >= parentDirIndex) {
 			parentDirIndex = entryPathPair.second.ParentDirIndex;
@@ -432,27 +395,21 @@ string EntryDatabase::GetEntryData_FilePath(EntryInfo_Short entrySum)
 	return GetEntryData_FilePath(mEntryDataPaths[entrySum.id], entrySum.id, entrySum.name);
 }
 
-GameEntry EntryDatabase::GetGameEntry(ENTRYID _id)
+shared_ptr<GameEntry> EntryDatabase::GetGameEntry(ENTRYID _id)
 {
-	if (!EntryExsists(_id)) { std::cout << "Game entry does not exsist\n"; return GameEntry(); }
+	if (!EntryExsists(_id)) { std::cout << "Game entry does not exsist\n"; return shared_ptr<GameEntry>(nullptr); }
 
 	EntryInfo_Short entrySum = GetEntrySummary(_id);
 
 	shared_ptr<char[]> entryData;
 	if (ReadEntryData<GameEntry>(entrySum, entryData)) {	
 
-		GameEntry gameEntry(entrySum, entryData, mGenreDatabase, mTagDatabase);
+		shared_ptr<GameEntry> gameEntry = make_shared<GameEntry>(entrySum, entryData, mGenreDatabase, mTagDatabase);
+		ReadRelationsIntoEntry<GameEntry>(gameEntry);
 
-		auto gePtr = make_shared<GameEntry>(gameEntry);
-		auto enPtr = dynamic_pointer_cast<Entry>(gePtr);
-		//ReadandAddRelations_GameEntry(gameEntry);
-		ReadRelations(enPtr);
-
-		//need to clean this, remove set relations, go back to refs or pointers and check again 
-
-		return *gePtr.get();
+		return gameEntry;
 	}
-	else { return GameEntry(); }
+	else { return shared_ptr<GameEntry>(nullptr); }
 }
 
 Entry EntryDatabase::GetEntry(ENTRYID _id)
