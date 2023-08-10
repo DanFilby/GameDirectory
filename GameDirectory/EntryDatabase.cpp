@@ -170,6 +170,31 @@ void EntryDatabase::AddEntry(shared_ptr<Entry> entry)
 	WriteEntryData(entry, dataPath);
 }
 
+void EntryDatabase::UpdateEntryData(shared_ptr<Entry> _entry)
+{
+	if (!EntryExsists(_entry->Id())) { return; }
+
+	EntryDataPath dataPath = GetDataPath(_entry->mId);
+
+	WriteEntryData(_entry, dataPath);
+}
+
+bool EntryDatabase::GetEntryAndData(ENTRYID _entryId, shared_ptr<Entry>& outEntry)
+{
+	if (!EntryExsists(_entryId)) { return false; }
+
+	switch (GetEntryType(_entryId)) {
+	case(ET_Game):
+		outEntry = dynamic_pointer_cast<Entry>(GetGameEntry(_entryId)); break;
+	case(ET_Studio):
+		outEntry = dynamic_pointer_cast<Entry>(GetStudioEntry(_entryId)); break;
+	default:
+		outEntry = shared_ptr<Entry>(nullptr); break;
+	}
+
+	if (outEntry.get() != nullptr) { return true; }
+	else { return false; }
+}
 
 void EntryDatabase::RemoveEntry(ENTRYID entryId)
 {
@@ -185,13 +210,6 @@ void EntryDatabase::RemoveEntry(ENTRYID entryId)
 	UpdateEntriesFile();
 }
 
-template<typename EntryTy>
-void EntryDatabase::RemoveEntry(shared_ptr<EntryTy> _entry)
-{
-	shared_ptr<Entry> entry = dynamic_pointer_cast<Entry>(_entry);
-	RemoveEntry(entry->Id());
-}
-
 bool EntryDatabase::EntryExsists(ENTRYID _id)
 {
 	for (const auto& entry : mActiveEntries) {
@@ -201,6 +219,7 @@ bool EntryDatabase::EntryExsists(ENTRYID _id)
 	}
 	return NULL;
 }
+
 
 bool EntryDatabase::IsValidEntry(Entry* _entry)
 {
@@ -378,12 +397,10 @@ shared_ptr<GameEntry> EntryDatabase::GetGameEntry(ENTRYID _id)
 {
 	if (!EntryExsists(_id)) { std::cout << "Game entry does not exsist\n"; return shared_ptr<GameEntry>(nullptr); }
 
-	EntryInfo_Short entrySum = GetEntrySummary(_id);
-
 	shared_ptr<char[]> entryData;
-	if (ReadEntryData<GameEntry>(entrySum, entryData)) {	
+	if (ReadEntryData<GameEntry>(GetEntrySummary(_id), entryData)) {
 
-		shared_ptr<GameEntry> gameEntry = make_shared<GameEntry>(entrySum, entryData, mGenreDatabase, mTagDatabase);
+		shared_ptr<GameEntry> gameEntry = make_shared<GameEntry>(GetEntrySummary(_id), entryData, mGenreDatabase, mTagDatabase);
 		ReadRelationsIntoEntry<GameEntry>(gameEntry);
 
 		return gameEntry;
@@ -391,12 +408,25 @@ shared_ptr<GameEntry> EntryDatabase::GetGameEntry(ENTRYID _id)
 	else { return shared_ptr<GameEntry>(nullptr); }
 }
 
-Entry EntryDatabase::GetEntry(ENTRYID _id)
+shared_ptr<StudioEntry> EntryDatabase::GetStudioEntry(ENTRYID _id)
+{
+	if (!EntryExsists(_id)) { std::cout << "Stuido entry does not exsist\n"; return shared_ptr<StudioEntry>(nullptr); }
+
+	shared_ptr<char[]> entryData;
+	if (ReadEntryData<StudioEntry>(GetEntrySummary(_id), entryData)) {
+
+		shared_ptr<StudioEntry> studioEntry = make_shared<StudioEntry>(GetEntrySummary(_id), entryData);
+		ReadRelationsIntoEntry<StudioEntry>(studioEntry);
+
+		return studioEntry;
+	}
+	else { return shared_ptr<StudioEntry>(nullptr); }
+}
+
+Entry EntryDatabase::GetBaseEntry(ENTRYID _id)
 {
 	for (auto& entry : mActiveEntries) {
-		if (entry.mId == _id) {
-			return entry;
-		}
+		if (entry.mId == _id) { return entry; }
 	}
 
 	std::cout << "Unable to find entry in database\n";
@@ -405,7 +435,7 @@ Entry EntryDatabase::GetEntry(ENTRYID _id)
 
 EntryInfo_Short EntryDatabase::GetEntrySummary(ENTRYID _id)
 {
-	return GetEntry(_id).GetSummary();
+	return GetBaseEntry(_id).GetSummary();
 }
 
 ENTRYID EntryDatabase::GetEntryId(EntryType _type, string _name, uint16_t _year)

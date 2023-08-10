@@ -15,13 +15,13 @@ void EntryBuilder::ClearBuild()
 	mCurrentEntry->mId = 0;
 }
 
-void EntryBuilder::EditEntry(Entry& _entry)
+void EntryBuilder::GetEntryAndData(Entry& _entry)
 {
 	ClearBuild();
 	mCurrentEntry = new Entry(_entry);
 }
 
-void EntryBuilder::EditEntry(ENTRYID _entryId)
+void EntryBuilder::GetEntryAndData(ENTRYID _entryId)
 {
 	if (mEntryDatabase->EntryExsists(_entryId)) { std::cout << "Entry doesn't exsist to edit\n"; return; }
 	return;

@@ -10,8 +10,8 @@ public:
 
 	virtual void ClearBuild();
 
-	void EditEntry(Entry& _entry);
-	void EditEntry(ENTRYID _entryId);
+	void GetEntryAndData(Entry& _entry);
+	void GetEntryAndData(ENTRYID _entryId);
 
 	virtual bool BuildEntry(shared_ptr<Entry> & entry);
 	virtual bool BuildAndSaveEntry(shared_ptr<Entry>& entry);

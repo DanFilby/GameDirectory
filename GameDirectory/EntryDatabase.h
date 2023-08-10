@@ -76,6 +76,24 @@ private:
 	void WriteFileBody(fstream& file, const vector<ENTRYID>& relations);
 };
 
+template<class EntryTy>
+struct Entry_Editor {
+	shared_ptr<EntryTy> entry;
+	EntryDatabase* EDatabase;
+	typedef void (EntryDatabase::* WriteEntryDataFunction)(shared_ptr<Entry>);
+	WriteEntryDataFunction WriteEntryDataFuncPtr;
+
+	Entry_Editor():entry(nullptr), EDatabase(nullptr), WriteEntryDataFuncPtr(nullptr){}
+
+	Entry_Editor(shared_ptr<EntryTy> _entry, EntryDatabase* _database, WriteEntryDataFunction _updateEntryFuncPtr)
+		:entry(_entry), EDatabase(_database), WriteEntryDataFuncPtr(_updateEntryFuncPtr)
+	{}
+	
+	void UpateEntry() {
+		if (EDatabase) { (EDatabase->*WriteEntryDataFuncPtr)(dynamic_pointer_cast<Entry>(entry)); }
+	}
+};
+
 class EntryDatabase : Database
 {
 	//entries.dat contains each entry's name and link to its folder location. dupes?
@@ -104,10 +122,17 @@ public:
 	void AddEntry(shared_ptr<Entry> _entry);
 	template<class EntryTy> void AddEntry(shared_ptr<EntryTy> _entry) { AddEntry(dynamic_pointer_cast<Entry>(_entry)); }
 
-	//TODO: add Edit
+	void UpdateEntryData(shared_ptr<Entry> _entry);
+
+	bool GetEntryAndData(ENTRYID _entryId, shared_ptr<Entry>& outEntry);
+	template<class EntryTy> Entry_Editor<EntryTy> EditEntry(ENTRYID _entryId) {
+		shared_ptr<Entry> entry;
+		if (GetEntryAndData(_entryId, entry)) { return Entry_Editor(dynamic_pointer_cast<EntryTy>(entry), this, &EntryDatabase::UpdateEntryData); }
+		else { return Entry_Editor<EntryTy>(); }
+	}
 
 	void RemoveEntry(ENTRYID _entryId);
-	template<typename EntryTy> void RemoveEntry(shared_ptr<EntryTy> _entry);
+	template<typename EntryTy> void RemoveEntry(shared_ptr<EntryTy> _entry) { RemoveEntry(dynamic_pointer_cast<Entry>(_entry)->Id()); }
 
 	bool EntryExsists(ENTRYID _id);
 	bool IsValidEntry(Entry* _entry);
@@ -122,7 +147,6 @@ public:
 	EntryDataPath GetDataPath(ENTRYID _entryId);
 
 	static string GetParentDirNameFromType(const EntryType entryType);
-
 	static string GetEntryData_ParentDirPath(const EntryDataPath dataPath, const EntryType entryType);
 
 	static string GetEntryData_DirPath(const EntryDataPath dataPath, const EntryType entryType);
@@ -132,9 +156,9 @@ public:
 	string GetEntryData_FilePath(EntryInfo_Short entrySum);
 
 	shared_ptr<GameEntry> GetGameEntry(ENTRYID _id);
-	StudioEntry GetStudioEntry(ENTRYID _id);
+	shared_ptr<StudioEntry> GetStudioEntry(ENTRYID _id);
 
-	Entry GetEntry(ENTRYID _id);
+	Entry GetBaseEntry(ENTRYID _id);
 	EntryInfo_Short GetEntrySummary(ENTRYID _id);
 	ENTRYID GetEntryId(EntryType _type, string _name, uint16_t _year);
 

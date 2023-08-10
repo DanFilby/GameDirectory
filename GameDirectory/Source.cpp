@@ -61,9 +61,12 @@ void TestTempGameEntryReadWrite(shared_ptr<EntryDatabase>dataBase, shared_ptr<Ta
 
     dataBase->AddEntry<GameEntry>(gameEntry);
 
-    shared_ptr<GameEntry> ge2 = dataBase->GetGameEntry(gameEntry->Id());
+    Entry_Editor<GameEntry> geEditor = dataBase->EditEntry<GameEntry>(gameEntry->Id());
 
-    ge2->PrintInfo();
+
+    //shared_ptr<GameEntry> ge2 = dataBase->GetGameEntry(gameEntry->Id());
+
+    geEditor.entry->PrintInfo();
 
     dataBase->RemoveEntry(gameEntry->Id());
 
