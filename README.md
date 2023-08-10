@@ -9,3 +9,5 @@ Things learnt:
 - Builder design pattern (in progress)
 - CSV files in C++
 - Unit testings
+- template functions
+- 
