@@ -4,6 +4,7 @@
 
 #include "Common.h"
 #include "Database.h"
+#include "Financials.h"
 
 
 enum EntryType : uint16_t { ET_Base = 0, ET_Game = 1, ET_Studio = 2, ET_Producer = 3 };
@@ -454,10 +455,8 @@ struct GameTags {
 	}
 };
 
-struct GameFinances {
+struct GameFinances: MoneyFactoring {
 	static const uint8_t BYTESIZE = sizeof(float) * 4;
-
-	enum SalesFactor { Billions = 0, Millions = 1, HundredThousands = 2, Thousands = 3, none = 4 };
 
 	float salesEU, salesNA, salesAsia, salesOther;
 	float salesTotal;
@@ -479,51 +478,26 @@ struct GameFinances {
 	}
 
 	void PrintFinances() {
-		float averageSales = salesTotal / 3.0f;
-		float lowestSales = min(min(salesEU, salesNA), salesAsia);
-
-		//use average if lowest sales are an anomaly
-		if (averageSales - lowestSales > 1000) { lowestSales = averageSales; }
-
-		SalesFactor highestFactor = FindHigestFactor(lowestSales);
-
-		PrintFinances(highestFactor);
+		MoneyFactor salesFactor = BestSuitedMoneyFactor(vector<float>{salesEU, salesNA, salesAsia, salesOther});
+		PrintFinances(salesFactor);
 	}
 
-	void PrintFinances(SalesFactor salesFactor) {
+	void PrintFinances(MoneyFactor moneyFactor) {
 		std::cout << "Finances:\n";
-		std::cout << "Europe Sales: " << SalesToString(salesNA, salesFactor) << "\n";
-		std::cout << "North America Sales: " << SalesToString(salesEU, salesFactor) << "\n";
-		std::cout << "Asia Sales: " << SalesToString(salesAsia, salesFactor) << "\n";
-		std::cout << "Other Sales: " << SalesToString(salesOther, salesFactor) << "\n";
-		std::cout << "Total Sales: " << SalesToString(salesTotal, salesFactor) << "\n\n";
+		std::cout << "Europe Sales: " << SalesToString(salesNA, moneyFactor) << "\n";
+		std::cout << "North America Sales: " << SalesToString(salesEU, moneyFactor) << "\n";
+		std::cout << "Asia Sales: " << SalesToString(salesAsia, moneyFactor) << "\n";
+		std::cout << "Other Sales: " << SalesToString(salesOther, moneyFactor) << "\n";
+		std::cout << "Total Sales: " << SalesToString(salesTotal, moneyFactor) << "\n\n";
 	}
 
-	inline string SalesToString(float sales, SalesFactor salesFactor) {
-		float salesFactorised = sales / FactorToNum(salesFactor);
+	inline string SalesToString(float sales, MoneyFactor moneyFactor) {
+		float salesFactorised = sales / MoneyFactor_ToNum(moneyFactor);
 
 		std::stringstream salesString;
 		salesString << std::fixed << std::setprecision(3) << salesFactorised;
 
-		return salesString.str() + " " + FactorToString(salesFactor);
-	}
-
-	const SalesFactor FindHigestFactor(float val) {
-		if (val > FactorToNum(Billions)) { return Billions; }
-		else if (val > FactorToNum(Millions)) { return Millions; }
-		else if (val > FactorToNum(HundredThousands)) { return HundredThousands; }
-		else if (val > FactorToNum(Thousands)) { return Thousands; }
-		else { return none; }
-	}
-
-	const inline string FactorToString(SalesFactor salesFactor) {
-		static const string factorsNames[] = { "Billion", "Million", "Hundred Thousand", "Thousand", "" };
-		return factorsNames[(int)salesFactor];
-	}
-
-	const inline float FactorToNum(SalesFactor salesFactor) {
-		static const float factorsNum[] = { 1000000000.0f, 1000000.0f, 100000.0f, 1000.0f, 1.0f };
-		return factorsNum[(int)salesFactor];
+		return salesString.str() + " " + MoneyFactor_ToString(moneyFactor);
 	}
 
 	unique_ptr<char[]> ToBinary() const {

@@ -36,6 +36,9 @@
     <ClCompile Include="DatabaseMaster.cpp">
       <Filter>Databases</Filter>
     </ClCompile>
+    <ClCompile Include="Financials.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.h">
@@ -58,6 +61,9 @@
     </ClInclude>
     <ClInclude Include="DatabaseMaster.h">
       <Filter>Databases</Filter>
+    </ClInclude>
+    <ClInclude Include="Financials.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

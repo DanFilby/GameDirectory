@@ -135,6 +135,7 @@
     <ClCompile Include="Entries.cpp" />
     <ClCompile Include="EntryBuilders.cpp" />
     <ClCompile Include="EntryDatabase.cpp" />
+    <ClCompile Include="Financials.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -145,6 +146,7 @@
     <ClInclude Include="EntryBuilders.h" />
     <ClInclude Include="EntryDatabase.h" />
     <ClInclude Include="EntryUtils.h" />
+    <ClInclude Include="Financials.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -117,7 +117,7 @@ GameEntry::GameEntry(ENTRYID _id, uint16_t _year, string _name)
 GameEntry::GameEntry(EntryInfo_Short _summary, shared_ptr<char[]> binaryData, shared_ptr<GenreListDataBase> _genreDatabase,
 	shared_ptr<TagListDataBase> _tagDatabase): mFinances()
 {
-	mName = _summary.name; mYear = _summary.year; mId = _summary.id;
+	mName = _summary.name; mYear = _summary.year; mId = _summary.id; mType = ET_Game;
 
 	uint16_t dataIndex = 0;
 
@@ -258,7 +258,7 @@ StudioEntry::StudioEntry(string _name, uint16_t _year, ENTRYID _id)
 
 StudioEntry::StudioEntry(EntryInfo_Short _summary, shared_ptr<char[]> binaryData)
 {
-	mName = _summary.name; mYear = _summary.year; mId = _summary.id;
+	mName = _summary.name; mYear = _summary.year; mId = _summary.id; mType = ET_Studio;
 
 	uint16_t dataIndex = 0;
 

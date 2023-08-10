@@ -28,7 +28,7 @@ void TestTempGameEntryReadWrite(shared_ptr<EntryDatabase>dataBase, shared_ptr<Ta
 
     GameEntryBuilder gameBuilder(appDbManager);
 
-    gameBuilder.SetNameYear("Dan's Test Game 69", 2023);
+    gameBuilder.SetNameYear("Dan's Test Game 78", 2023);
     gameBuilder.SetShortDescription("Action adventure rpg as a penguin");
     gameBuilder.SetFullDescription("Explore a quaint iceberg village, full of interesting villagers. whilst building their small town and completing their quests. ");
     gameBuilder.SetRatings(ratings);
@@ -65,13 +65,40 @@ void TestTempGameEntryReadWrite(shared_ptr<EntryDatabase>dataBase, shared_ptr<Ta
 
     geEditor.entry->SetShortDescription("Changed this desciption");
     geEditor.entry->PrintInfo();
-    geEditor.UpateEntry();
+    geEditor.UpdateDatabase();
 
     shared_ptr<GameEntry> ge2 = dataBase->GetGameEntry(gameEntry->Id());
     ge2->PrintInfo();
 
     dataBase->RemoveEntry(gameEntry->Id());
 
+    StudioEntryBuilder studioEntryBuilder(appDbManager);
+
+    Person dan("Daniel Filby", SimpleDate(2002, 1));
+    StudioExecutives execs(dan, vector<Person>{Person("Natela"), Person("Martin"), Person("Alex")});
+
+    studioEntryBuilder.SetNameYear("FalmouthGroup11", 2023);
+    studioEntryBuilder.SetDescription("A small studio based in falmouth. Consisting of five elite members");
+    studioEntryBuilder.SetStudioExecutives(execs);
+    studioEntryBuilder.SetNumGamesReleased(1);
+    studioEntryBuilder.SetValidId();
+
+    shared_ptr<StudioEntry> studioEntry;
+    if (studioEntryBuilder.BuildStudioEntry(studioEntry)) {
+        studioEntry->PrintInfo();
+    }
+
+    dataBase->AddEntry<StudioEntry>(studioEntry);
+
+    Entry_Editor<StudioEntry> seEditor = dataBase->EditEntry<StudioEntry>(studioEntry->Id());
+
+    seEditor.entry->mNumGamesReleased = 2;
+    seEditor.UpdateDatabase();
+
+    shared_ptr<StudioEntry> se2 = dataBase->GetStudioEntry(studioEntry->Id());
+    se2->PrintInfo();
+
+    dataBase->RemoveEntry<StudioEntry>(studioEntry);
 }
 
 
@@ -116,32 +143,5 @@ int main()
 
     //ratings2.DisplayAllRatings();
 
-    SimpleDate danBday(2002, 1);
-    std::cout << "Age: " << danBday.GetAge() << " Date: " << danBday.GetDateAsString() << "\n\n";
-
-    Person dan("Daniel Filby", danBday);
-    dan.Print();
-
-    Person p1("Natela");
-    Person p2("Martin");
-    Person p3("Alex");
-
-    StudioExecutives execs(dan, vector<Person>{p1,p2,p3});
-    execs.PrintAllExecs();
-
-    EntryInfo_Short studioinfo(ET_Studio, 2023, "Shady Seals");
-
-    StudioEntry se= StudioEntry();
-
-    se.SetBaseInfo(studioinfo);
-    se.mExecutives = execs;
-    se.SetDescription("A small studio based in falmouth. consists of five elite members");
-
-    se.PrintInfo();
-
-    auto bindaaat = se.GetBinaryData();
-
-    StudioEntry se2(studioinfo, bindaaat);
-    se2.PrintInfo();
     AppClose();
 }

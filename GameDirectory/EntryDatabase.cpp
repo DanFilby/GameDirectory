@@ -120,11 +120,12 @@ void EntryDatabase::WriteEntryData(shared_ptr<Entry> _Entry, const EntryDataPath
 
 		entriesDataFile.write(&_Entry->GetBinaryData().get()[0], _Entry->GetDataByteSize());
 
-		std::cout << _Entry->Name() << " - Successfully added game entry data to the database\n";
+		std::cout << _Entry->Name() << " - Successfully added entry data to the database\n";
 
 		WriteRelations(_Entry);
 
-		std::cout << _Entry->Name() << " - Successfully added game entry relations to the database\n";
+		std::cout << _Entry->Name() << " - Successfully added entry relations to the database\n";
+		entriesDataFile.close();
 	}
 	catch (int errCode) {
 		std::cout << "Error writing data to file\n";

@@ -89,7 +89,7 @@ struct Entry_Editor {
 		:entry(_entry), EDatabase(_database), WriteEntryDataFuncPtr(_updateEntryFuncPtr)
 	{}
 	
-	void UpateEntry() {
+	void UpdateDatabase() {
 		if (EDatabase) { (EDatabase->*WriteEntryDataFuncPtr)(dynamic_pointer_cast<Entry>(entry)); }
 	}
 };
