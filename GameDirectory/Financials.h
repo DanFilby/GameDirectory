@@ -133,7 +133,7 @@ struct IncomeStatement_FQ : MoneyFactoring, public FQ_Statement {
 		memcpy(&binaryData[0], &date.ToBinary()[0], FQDate::BYTESIZE);
 		memcpy(&binaryData[2 + 0 * sizeof(float)], &Revenue, sizeof(float));
 		memcpy(&binaryData[2 + 1 * sizeof(float)], &OperatingExpense, sizeof(float));
-		memcpy(&binaryData[2 + 2 * sizeof(float)], &OperatingExpense, sizeof(float));
+		memcpy(&binaryData[2 + 2 * sizeof(float)], &NetIncome, sizeof(float));
 		return binaryData;
 	}
 };
@@ -150,6 +150,15 @@ struct BalanceSheet_FQ : MoneyFactoring, public FQ_Statement {
 
 	const float Equity() { return TotalAssets - TotalLiabilites; }
 	
+	void PrintSummary() override {
+		std::cout << "Balance Sheet:\n" << "- " << date.ToString() << " -\n";
+	}
+
+	string ToString() override {
+		std::stringstream ss;
+		ss << date.ToString();
+		return ss.str();
+	}
 
 	unique_ptr<char[]> ToBinary() {
 		unique_ptr<char[]> binaryData = unique_ptr<char[]>(new char[BYTESIZE]);
@@ -172,6 +181,15 @@ struct CashFlow_FQ : MoneyFactoring, public FQ_Statement {
 
 	const float NetChangeInCash() { return Cash_FromOperations + Cash_FromInvesting + Cash_FromFinancing; }
 
+	void PrintSummary() override {
+		std::cout << "Cash Flow:\n" << "- " << date.ToString() << " -\n";
+	}
+
+	string ToString() override {
+		std::stringstream ss;
+		ss << date.ToString();
+		return ss.str();
+	}
 
 	unique_ptr<char[]> ToBinary() {
 		unique_ptr<char[]> binaryData = unique_ptr<char[]>(new char[BYTESIZE]);
