@@ -1,5 +1,6 @@
 #pragma once
 #include "Common.h"
+#include <sstream>
 
 //share
 //quater
@@ -9,6 +10,9 @@
 
 enum Quater : uint8_t { None = 0, Q1 = 1, Q2 = 2, Q3 = 3, Q4 = 4 };
 
+/// <summary>
+/// Functionality to factor money into billions, millions etc
+/// </summary>
 struct MoneyFactoring {
 	enum MoneyFactor { Billions = 0, Millions = 1, HundredThousands = 2, Thousands = 3, none = 4 };
 
@@ -51,6 +55,12 @@ struct FQDate {
 
 	void Print() { std::cout << "Q" << (int)quater << " " << (int)year + 1900 << "\n\n"; }
 
+	string ToString() {
+		std::stringstream ss;
+		ss << "Q" << (int)quater << " " << (int)year + 1900;
+		return ss.str(); 
+	}
+
 	FQDate() : year(0), quater(None){}
 
 	FQDate(int _actualYear) : year(_actualYear - 1900), quater(None) {}
@@ -72,13 +82,19 @@ struct FQDate {
 	}
 };
 
-
-struct FinancialQuater : MoneyFactoring {
-
-
-	static const uint8_t BYTESIZE = sizeof(float) * 3 + FQDate::BYTESIZE;
-
+struct FQ_Statement {
 	FQDate date;
+
+	FQ_Statement(FQDate _date) :date(_date){}
+
+	virtual FQDate GetDate() { return date; }
+	virtual string ToString() { return ""; }
+	virtual void PrintSummary() { return; }
+};
+
+
+struct IncomeStatement_FQ : MoneyFactoring, public FQ_Statement {
+	static const uint8_t BYTESIZE = FQDate::BYTESIZE + sizeof(float) * 3;
 
 	float Revenue;
 	float OperatingExpense;
@@ -87,8 +103,98 @@ struct FinancialQuater : MoneyFactoring {
 	const float NetProfitMargin() { return NetIncome / Revenue; }
 	const float EarningsPerShare(uint64_t numShares) { return NetIncome / (double)numShares; }
 
-	FinancialQuater():date(), Revenue(0), OperatingExpense(0), NetIncome(0) {}
+	IncomeStatement_FQ():FQ_Statement(FQDate()), Revenue(0), OperatingExpense(0), NetIncome(0) {}
 
+	IncomeStatement_FQ(FQDate _date, float _revenue, float _operatingExpense, float _netIncome)
+		:FQ_Statement(_date), Revenue(_revenue), OperatingExpense(_operatingExpense), NetIncome(_netIncome) {}
+
+	IncomeStatement_FQ(char* binData):IncomeStatement_FQ() {
+		date = FQDate(&binData[0]);
+		memcpy( &Revenue, &binData[2 + 0 * sizeof(float)], sizeof(float));
+		memcpy( &OperatingExpense, &binData[2 + 1 * sizeof(float)], sizeof(float));
+		memcpy( &NetIncome, &binData[2 + 2 * sizeof(float)], sizeof(float));
+	}
+
+	void PrintSummary() override {
+		std::cout << "Income Statement:\n" << "- " << date.ToString() << " -\n";
+		std::cout << "Revenue: " << Revenue << "\n";
+		std::cout << "Operating - Expense: " << OperatingExpense << "\n";
+		std::cout << "Net-Income: " << NetIncome << "\n\n";
+	}
+
+	string ToString() override {
+		std::stringstream ss;
+		ss << date.ToString() << " Revenue: " << Revenue << " Operating-Expense: " << OperatingExpense << " Net-Income: " << NetIncome;
+		return ss.str();
+	}
+
+	unique_ptr<char[]> ToBinary() {
+		unique_ptr<char[]> binaryData = unique_ptr<char[]>(new char[BYTESIZE]);
+		memcpy(&binaryData[0], &date.ToBinary()[0], FQDate::BYTESIZE);
+		memcpy(&binaryData[2 + 0 * sizeof(float)], &Revenue, sizeof(float));
+		memcpy(&binaryData[2 + 1 * sizeof(float)], &OperatingExpense, sizeof(float));
+		memcpy(&binaryData[2 + 2 * sizeof(float)], &OperatingExpense, sizeof(float));
+		return binaryData;
+	}
+};
+
+struct BalanceSheet_FQ : MoneyFactoring, public FQ_Statement {
+	static const uint8_t BYTESIZE = FQDate::BYTESIZE + sizeof(float) * 5;
+
+	float Cash;
+	float SharesOutstanding;
+
+	float TotalAssets;
+	float TotalLiabilites;
+	float TotalEquity;
+
+	const float Equity() { return TotalAssets - TotalLiabilites; }
+	
+
+	unique_ptr<char[]> ToBinary() {
+		unique_ptr<char[]> binaryData = unique_ptr<char[]>(new char[BYTESIZE]);
+		memcpy(&binaryData[0], &date.ToBinary()[0], FQDate::BYTESIZE);
+		//memcpy(&binaryData[2 + 0 * sizeof(float)], &Revenue, sizeof(float));
+		return binaryData;
+	}
+};
+
+struct CashFlow_FQ : MoneyFactoring, public FQ_Statement {
+	static const uint8_t BYTESIZE = 0;
+
+	float NetIncome;
+
+	float Cash_FromOperations;
+	float Cash_FromInvesting;
+	float Cash_FromFinancing;
+
+	float FreeCashFlow;
+
+	const float NetChangeInCash() { return Cash_FromOperations + Cash_FromInvesting + Cash_FromFinancing; }
+
+
+	unique_ptr<char[]> ToBinary() {
+		unique_ptr<char[]> binaryData = unique_ptr<char[]>(new char[BYTESIZE]);
+		memcpy(&binaryData[0], &date.ToBinary()[0], FQDate::BYTESIZE);
+		//memcpy(&binaryData[2 + 0 * sizeof(float)], &Revenue, sizeof(float));
+		return binaryData;
+	}
+};
+
+struct FinanceQuaterSummary {
+
+	IncomeStatement_FQ incomeStatement;
+	BalanceSheet_FQ balanceSheet;
+	CashFlow_FQ cashFlow;
+
+	const float ReturnOnAssets() { return 0.0f; }//return netIncome / TotalAssets; 	//these dont add up on google
+	const float ReturnOnEquity() { return 0.0f; }//return netIncome / (TotalAssets - Equity()); 
+
+
+};
+
+
+struct FinanceHistory_Year {
 
 
 };

@@ -74,7 +74,7 @@ void TestTempGameEntryReadWrite(shared_ptr<EntryDatabase>dataBase, shared_ptr<Ta
 
     StudioEntryBuilder studioEntryBuilder(appDbManager);
 
-    Person dan("Daniel Filby", SimpleDate(2002, 1));
+    Person dan("Daniel Filby", SimpleDate(1970, 1));
     StudioExecutives execs(dan, vector<Person>{Person("Natela"), Person("Martin"), Person("Alex")});
 
     studioEntryBuilder.SetNameYear("FalmouthGroup11", 2023);
@@ -142,6 +142,14 @@ int main()
     GameRatings ratings2(ratingsBinDat.get());
 
     //ratings2.DisplayAllRatings();
+
+    IncomeStatement_FQ incomeStatement{ FQDate(2008,Q1), 100,100,100 };
+
+    auto binDAtaa = incomeStatement.ToBinary();
+
+    IncomeStatement_FQ incomeStatement2{ binDAtaa.get() };
+
+    incomeStatement2.PrintSummary();
 
     AppClose();
 }
