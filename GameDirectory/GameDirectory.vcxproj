@@ -135,6 +135,7 @@
     <ClCompile Include="Entries.cpp" />
     <ClCompile Include="EntryBuilders.cpp" />
     <ClCompile Include="EntryDatabase.cpp" />
+    <ClCompile Include="FinancialHelpers.h" />
     <ClCompile Include="Financials.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
