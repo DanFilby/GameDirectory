@@ -18,7 +18,7 @@ using std::filesystem::path;
 #include "Common.h"
 
 //path to data directory
-static const string DIR_PATH = "Data/";
+static const string APP_DATA_DIR_PATH = "Data/";
 
 /// <summary>
 /// Database base class provides usefull functions for any class needing to store data
@@ -34,6 +34,7 @@ public:
 	/// ensures a directory exsits at the given path, by creating one if needed
 	/// </summary>
 	void SetupDir(string dirPath);
+	static bool FileExsits(string filePath);
 	/// <summary>
 	/// Checks the file is valid, and not empty
 	/// </summary>

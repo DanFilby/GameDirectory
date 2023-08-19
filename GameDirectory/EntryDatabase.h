@@ -99,7 +99,7 @@ class EntryDatabase : Database
 	//entries.dat contains each entry's name and link to its folder location. dupes?
 	const string ENTRIESLIST_FNAME = "Entries.dat";
 
-	inline static const string ENTRIESDATA_DIR_PATH = DIR_PATH + "Entries-Data/";
+	inline static const string ENTRIESDATA_DIR_PATH = APP_DATA_DIR_PATH + "Entries-Data/";
 	inline static const string ENTRIESDATA_GAME_DIRNAME = "Game-Entries/";
 	inline static const string ENTRIESDATA_STUDIO_DIRNAME = "Studio-Entries/";
 

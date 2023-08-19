@@ -27,17 +27,20 @@ void Database::SetupDir(string dirPath)
 
 }
 
+bool Database::FileExsits(string filePath)
+{
+	return std::filesystem::exists(path(filePath));
+}
+
 bool Database::FileReadCheck(string filePath)
 {
-	//check file exsists
-	if (!std::filesystem::exists(path(filePath))) {
-
+	if (!FileExsits(filePath)) {
 		std::cout << filePath << " - file doesn't exsist\n";
 
 		//create and check file
 		ofstream file = ofstream(filePath);
 		if (file.good()) { std::cout << filePath << " - file created\n\n"; file.close(); }
-		else{ std::cout << "Failed to create: " << filePath << "\n\n"; }
+		else { std::cout << "Failed to create: " << filePath << "\n\n"; }
 
 		return false;
 	}
@@ -55,7 +58,7 @@ bool Database::FileReadCheck(string filePath)
 
 void Database::FileDirectoriesCheck()
 {
-	SetupDir(DIR_PATH);
+	SetupDir(APP_DATA_DIR_PATH);
 }
 
 vector<string> StringFileMan::ReadStringFile(string filePath)
@@ -215,7 +218,7 @@ GenreListDataBase::GenreListDataBase()
 void GenreListDataBase::FileDirectoriesCheck()
 {
 	//check data directory is valid	
-	assert(IsDirVaild(DIR_PATH));
+	assert(IsDirVaild(APP_DATA_DIR_PATH));
 }
 
 string GenreListDataBase::GetGenre(uint8_t key)
@@ -287,18 +290,18 @@ void GenreListDataBase::PrintGenreList()
 void GenreListDataBase::LoadGenres()
 {
 	//check file's valid
-	if (!FileReadCheck(DIR_PATH + GENRELIST_FNAME)) {
+	if (!FileReadCheck(APP_DATA_DIR_PATH + GENRELIST_FNAME)) {
 		std::cout << "Error - " << GENRELIST_FNAME << " file not valid\n";
 		return;
 	}
 
-	mGenreList = ReadStringIndexFile(DIR_PATH + GENRELIST_FNAME);
+	mGenreList = ReadStringIndexFile(APP_DATA_DIR_PATH + GENRELIST_FNAME);
 }
 
 
 void GenreListDataBase::UpdateGenreListFile()
 {
-	WriteStringIndexFile(DIR_PATH + GENRELIST_FNAME, mGenreList);
+	WriteStringIndexFile(APP_DATA_DIR_PATH + GENRELIST_FNAME, mGenreList);
 }
 
 TagListDataBase::TagListDataBase()
@@ -311,7 +314,7 @@ TagListDataBase::TagListDataBase()
 void TagListDataBase::FileDirectoriesCheck()
 {
 	//check data directory is valid	
-	assert(IsDirVaild(DIR_PATH));
+	assert(IsDirVaild(APP_DATA_DIR_PATH));
 }
 
 string TagListDataBase::GetTag(uint8_t key)
@@ -379,15 +382,15 @@ void TagListDataBase::PrintTagList()
 void TagListDataBase::LoadTags()
 {
 	//check file's valid
-	if (!FileReadCheck(DIR_PATH + TAGLIST_FNAME)) {
+	if (!FileReadCheck(APP_DATA_DIR_PATH + TAGLIST_FNAME)) {
 		std::cout << "Error - " << TAGLIST_FNAME << " file not valid\n";
 		return;
 	}
 
-	mTagList = ReadStringIndexFile(DIR_PATH + TAGLIST_FNAME);
+	mTagList = ReadStringIndexFile(APP_DATA_DIR_PATH + TAGLIST_FNAME);
 }
 
 void TagListDataBase::UpdateTagListFile()
 {
-	WriteStringIndexFile(DIR_PATH + TAGLIST_FNAME, mTagList);
+	WriteStringIndexFile(APP_DATA_DIR_PATH + TAGLIST_FNAME, mTagList);
 }

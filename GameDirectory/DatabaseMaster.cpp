@@ -5,7 +5,7 @@
 void DatabaseMaster::AppInit()
 {
 	//check main directory valid, if not setup
-	SetupDir(DIR_PATH);
+	SetupDir(APP_DATA_DIR_PATH);
 
 	mEntryDatabase = nullptr;
 

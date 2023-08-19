@@ -1,5 +1,7 @@
 #pragma once
 #include "Common.h"
+#include "FinancialHelpers.h"
+
 #include <sstream>
 
 //share

@@ -5,7 +5,7 @@
 #include "Common.h"
 #include "Database.h"
 #include "Financials.h"
-
+#include "FinancialHelpers.h"
 
 enum EntryType : uint16_t { ET_Base = 0, ET_Game = 1, ET_Studio = 2, ET_Producer = 3 };
 using ENTRYID = uint16_t;

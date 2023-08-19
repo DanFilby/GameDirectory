@@ -19,7 +19,7 @@ EntryDatabase::~EntryDatabase()
 void EntryDatabase::FileDirectoriesCheck()
 {
 	//check data directory is valid	
-	assert(IsDirVaild(DIR_PATH));
+	assert(IsDirVaild(APP_DATA_DIR_PATH));
 
 	SetupDir(ENTRIESDATA_DIR_PATH);
 	SetupDir(ENTRIESDATA_DIR_PATH + ENTRIESDATA_GAME_DIRNAME);
@@ -27,9 +27,9 @@ void EntryDatabase::FileDirectoriesCheck()
 
 void EntryDatabase::LoadEntriesFile()
 {
-	FileReadCheck(DIR_PATH + ENTRIESLIST_FNAME);
+	FileReadCheck(APP_DATA_DIR_PATH + ENTRIESLIST_FNAME);
 
-	fstream entriesFile(DIR_PATH + ENTRIESLIST_FNAME, std::ios::in | std::ios::binary);
+	fstream entriesFile(APP_DATA_DIR_PATH + ENTRIESLIST_FNAME, std::ios::in | std::ios::binary);
 
 	//read the header into buffer
 	uint16_t* fileHeaderBuf = new uint16_t[8];
@@ -57,8 +57,8 @@ void EntryDatabase::LoadEntriesFile()
 
 void EntryDatabase::UpdateEntriesFile()
 {
-	ofstream entriesFile = std::ofstream(DIR_PATH + ENTRIESLIST_FNAME, std::ios::out | std::ios::binary);
-	if (!entriesFile.good()) { std::cout << "Failed to write to file: " << DIR_PATH + ENTRIESLIST_FNAME << "\n"; return; }
+	ofstream entriesFile = std::ofstream(APP_DATA_DIR_PATH + ENTRIESLIST_FNAME, std::ios::out | std::ios::binary);
+	if (!entriesFile.good()) { std::cout << "Failed to write to file: " << APP_DATA_DIR_PATH + ENTRIESLIST_FNAME << "\n"; return; }
 
 	//generate the file's header, containing number of each entry stored
 	EntryFileHeader entriesHeader = EntryFileHeader(GetEntryTypeCount());
