@@ -74,8 +74,8 @@ private:
 	}
 
 	static void SetDefinitionToFileFormat(string & definition) {
-		//check for commas and new lines
-
+		std::replace(definition.begin(), definition.end(), LINE_DELIM, '-');
+		std::replace(definition.begin(), definition.end(), '\n', '.');
 	}
 
 };
