@@ -9,6 +9,8 @@ class FinancialTermDescription : Database{
 	inline static const char LINE_DELIM = ':';
 
 public:
+	//TODO: add functionality to replace definition
+
 	static string GetDescription(string financialTerm){
 		string description;
 		if (!FileExsits(FINANCIAL_TERMS_FILE_PATH) || !IsValidFinancialTerm(financialTerm)
@@ -47,7 +49,7 @@ private:
 				std::stringstream streamBuffer(lineBuf);
 				getline(streamBuffer, fileTermBuf, LINE_DELIM);
 
-				if (financialTerm == fileTermBuf) {
+				if (financialTerm == fileTermBuf || financialTerm == ToCamalCase(fileTermBuf)) {
 					getline(streamBuffer, out_TermDefinition, '\n');
 					return true;
 				}
@@ -71,9 +73,19 @@ private:
 		for (char c : tempString) {
 			financialTerm.append(1,(char)std::tolower(c));
 		}
+
+		std::replace(financialTerm.begin(), financialTerm.end(), ' ', '_');
+	}
+
+	static string ToCamalCase(string str) {
+		//not exactly to camal case, but to compare against a camal case financial term input
+		str.erase(std::remove(str.begin(), str.end(), '_'), str.end());
+		return str;
 	}
 
 	static void SetDefinitionToFileFormat(string & definition) {
+		if (definition.size() > 255) { definition.resize(255); }
+
 		std::replace(definition.begin(), definition.end(), LINE_DELIM, '-');
 		std::replace(definition.begin(), definition.end(), '\n', '.');
 	}
