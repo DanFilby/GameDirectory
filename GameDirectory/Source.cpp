@@ -2,6 +2,7 @@
 #include "EntryDatabase.h"
 #include "EntryBuilders.h"
 #include "DatabaseMaster.h"
+#include "FinancialHelpers.h"
 
 using std::cout;
 
@@ -150,6 +151,10 @@ int main()
     IncomeStatement_FQ incomeStatement2{ binDAtaa.get() };
 
     incomeStatement2.PrintSummary();
+
+    FinancialTermDescription::AddDescription("Daniel", "dan is great");
+    string desc = FinancialTermDescription::GetDescription("Daniel");
+    std::cout << "\n\nDescription: " << desc;
 
     AppClose();
 }
