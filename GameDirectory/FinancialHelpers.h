@@ -21,7 +21,7 @@ public:
 	}
 
 	static void AddDescription(string financialTerm, string definition) {
-		if (!IsValidFinancialTerm(financialTerm)) { return; }
+		if (!IsValidFinancialTerm(financialTerm) || TermExsists(financialTerm)) { return; }
 
 		SetTermToFileFormat(financialTerm);
 		SetDefinitionToFileFormat(definition);
@@ -55,7 +55,7 @@ private:
 				}
 			}
 		}
-		return "definition not found";
+		return false;
 	}
 
 	static bool TermExsists(string& financialTerm) {
