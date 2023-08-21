@@ -33,6 +33,12 @@ public:
 		writeFile.write(ss.str().c_str(), ss.str().size());
 	}
 
+	static void EditDescription(string financialTerm, string definition) {
+
+		//same as add but open file as new and loop through replacing the old definition 
+
+	}
+
 private:
 	static bool TermExsists(string& financialTerm, string & out_TermDefinition) {
 		SetTermToFileFormat(financialTerm);
@@ -64,7 +70,7 @@ private:
 	}
 
 	static bool IsValidFinancialTerm(const string& financialTerm) {
-		if (financialTerm.size() <= 0 || financialTerm.size() >= 25) { return false; }
+		if (financialTerm.size() <= 0 || financialTerm.size() >= 32) { return false; }
 	}
 
 	static void SetTermToFileFormat(string& financialTerm) {
@@ -84,7 +90,7 @@ private:
 	}
 
 	static void SetDefinitionToFileFormat(string & definition) {
-		if (definition.size() > 255) { definition.resize(255); }
+		if (definition.size() > 512) { definition.resize(512); }
 
 		std::replace(definition.begin(), definition.end(), LINE_DELIM, '-');
 		std::replace(definition.begin(), definition.end(), '\n', '.');
