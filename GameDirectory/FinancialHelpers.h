@@ -34,9 +34,14 @@ public:
 	}
 
 	static void EditDescription(string financialTerm, string definition) {
+		if (!IsValidFinancialTerm(financialTerm) || !TermExsists(financialTerm)) { return; }
 
-		//same as add but open file as new and loop through replacing the old definition 
+		SetTermToFileFormat(financialTerm);
+		SetDefinitionToFileFormat(definition);
+		
+		RemoveTermFromFile(financialTerm);
 
+		AddDescription(financialTerm, definition);
 	}
 
 private:
@@ -44,29 +49,55 @@ private:
 		SetTermToFileFormat(financialTerm);
 
 		ifstream financialTermsFile = ifstream(FINANCIAL_TERMS_FILE_PATH, std::ios::in);
+		if (!financialTermsFile.is_open()) { return false; }
 
 		string lineBuf, fileTermBuf;
 
-		if (financialTermsFile.is_open()) {
-			while (financialTermsFile.good()) {
-				std::getline(financialTermsFile, lineBuf);
-				if (lineBuf.empty()) { continue; }
+		while (financialTermsFile.good()) {
+			std::getline(financialTermsFile, lineBuf);
+			if (lineBuf.empty()) { continue; }
 
-				std::stringstream streamBuffer(lineBuf);
-				getline(streamBuffer, fileTermBuf, LINE_DELIM);
+			std::stringstream streamBuffer(lineBuf);
+			getline(streamBuffer, fileTermBuf, LINE_DELIM);
 
-				if (financialTerm == fileTermBuf || financialTerm == ToCamalCase(fileTermBuf)) {
-					getline(streamBuffer, out_TermDefinition, '\n');
-					return true;
-				}
+			if (financialTerm == fileTermBuf || financialTerm == ToCamalCase(fileTermBuf)) {
+				getline(streamBuffer, out_TermDefinition, '\n');
+				return true;
 			}
 		}
+		
 		return false;
 	}
 
 	static bool TermExsists(string& financialTerm) {
 		string discard;
 		return TermExsists(financialTerm, discard);
+	}
+
+	static void RemoveTermFromFile(string financialTerm) {
+		if (!TermExsists(financialTerm)) { return; }
+
+		ifstream financialTermsFile = ifstream(FINANCIAL_TERMS_FILE_PATH, std::ios::in);
+		if (!financialTermsFile.is_open()) { return; }
+		std::stringstream fileContents;
+
+		string lineBuf, fileTermBuf;	
+
+		while (financialTermsFile.good()) {
+			std::getline(financialTermsFile, lineBuf);
+			if (lineBuf.empty()) { continue; }
+
+			//read financial term from file line
+			std::stringstream streamBuffer(lineBuf);
+			getline(streamBuffer, fileTermBuf, LINE_DELIM);
+
+			if (financialTerm == fileTermBuf || financialTerm == ToCamalCase(fileTermBuf)) { continue; }
+			else { fileContents << string(lineBuf) << "\n"; }
+		}
+		financialTermsFile.close();
+
+		ofstream financialTermsNewFile = ofstream(FINANCIAL_TERMS_FILE_PATH, std::ios::out | std::ios::trunc);
+		financialTermsNewFile << fileContents.rdbuf();
 	}
 
 	static bool IsValidFinancialTerm(const string& financialTerm) {
